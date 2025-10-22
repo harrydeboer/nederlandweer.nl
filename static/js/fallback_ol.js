@@ -1,0 +1,5 @@
+if($(':root').css('--ol-subtle-background-color') !== 'rgba(128, 128, 128, 0.25)') {
+    $("head").prepend('<link rel="stylesheet" href="/static/css/ol.min.css">');
+}
+
+window.ol || document.write('<script type="text/javascript" src="/static/dist/ol.min.js"><\/script>');

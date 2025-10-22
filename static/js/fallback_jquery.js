@@ -1,0 +1,1 @@
+window.jQuery || document.write('<script type="text/javascript" src="/static/dist/jquery.min.js"><\/script>');

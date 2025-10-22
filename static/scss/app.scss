@@ -1,0 +1,16 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+#map {
+  position: absolute;
+  height: 850px;
+  width: 50%;
+}
+
+.sensor-title {
+  color: blue;
+  font-weight: bold;
+}

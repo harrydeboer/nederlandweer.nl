@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Dashboard Meet Je Stad
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-11"><h1>Dashboard Meet Je Stad</h1></div>
+    </div>
+    <div id="sensors"
+         data-sensors="{{ sensors }}"
+         data-longitudes="{{ longitudes }}"
+         data-latitudes="{{ latitudes }}"
+         data-temperatures="{{ temperatures }}"
+         data-temperature-dates="{{ temperature_dates }}"
+         data-humidities="{{ humidities }}"
+         data-humidity-dates="{{ humidity_dates }}"
+         data-pm25="{{ pm25 }}"
+         data-pm25-dates="{{ pm25_dates }}"
+         data-pm10="{{ pm10 }}"
+         data-pm10-dates="{{ pm10_dates }}">
+    </div>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-6">
+            <div id="map" class="map">
+                <div id="popup"></div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <form action="" method="get">
+                <div class="row">
+                    <div class="col-md-2"><label for="pm">Alleen fijnstof</label></div>
+                    <div class="col-md-1">
+                        {% if pm == 'on' %}
+                            <input type="checkbox" name="pm" id="pm" class="form-check" checked>
+                        {% else %}
+                            <input type="checkbox" name="pm" id="pm" class="form-check">
+                        {% endif %}
+                    </div>
+                </div>
+                <input type="submit" value="Bereken" class="btn btn-success">
+            </form></div>
+    </div>
+{% endblock %}

@@ -1,0 +1,17 @@
+/.idea
+*__pycache__*
+/build
+/dist
+/node_modules
+/dashboard_meet_je_stad/ids
+/dashboard_meet_je_stad/out.csv
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pipenv/
