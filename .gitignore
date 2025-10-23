@@ -5,6 +5,7 @@
 /node_modules
 /dashboard_meet_je_stad/ids
 /dashboard_meet_je_stad/dataset.csv
+/dashboard_meet_je_stad/dataset_small.csv
 
 # Environments
 .env

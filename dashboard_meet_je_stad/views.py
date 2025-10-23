@@ -29,7 +29,7 @@ def index(request: WSGIRequest) -> HttpResponse:
                 if row[5] != '0':
                    pm_ids.append(row[0])
 
-    with open(os.path.dirname(os.path.abspath(__file__)) + '/dataset.csv') as csvfile:
+    with open(os.path.dirname(os.path.abspath(__file__)) + '/dataset_small.csv') as csvfile:
         reader = csv.reader(csvfile)
         id_sensor = 0
         longitudes = []
