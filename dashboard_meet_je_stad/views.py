@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.handlers.wsgi import WSGIRequest
+from dashboard_meet_je_stad.models import Sensor
 import os
 import csv
 import json
@@ -29,6 +30,7 @@ def index(request: WSGIRequest) -> HttpResponse:
                 if row[5] != '0':
                    pm_ids.append(row[0])
 
+    sensor_objects = {}
     with open(os.path.dirname(os.path.abspath(__file__)) + '/dataset_small.csv') as csvfile:
         reader = csv.reader(csvfile)
         id_sensor = 0
@@ -36,6 +38,12 @@ def index(request: WSGIRequest) -> HttpResponse:
         latitudes = []
 
         for row in reader:
+            if row[1] not in sensor_objects:
+                sensor = Sensor(int(row[1]))
+                sensor_objects[row[1]] = sensor
+                sensor.add_row(row)
+            else:
+                sensor_objects[row[1]].add_row(row)
             if pm == 'on' and row[1] not in pm_ids:
                 continue
             if id_sensor == int(row[1]):
