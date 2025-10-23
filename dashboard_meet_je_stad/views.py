@@ -22,14 +22,14 @@ def index(request: WSGIRequest) -> HttpResponse:
     pm10_dates = []
 
     if pm == 'on':
-        with open(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/utrecht_ids.csv') as csvfile:
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/utrecht_ids.csv') as csvfile:
             reader = csv.reader(csvfile)
 
             for row in reader:
                 if row[5] != '0':
                    pm_ids.append(row[0])
 
-    with open(os.path.dirname(os.path.abspath(__file__)) + '/out.csv') as csvfile:
+    with open(os.path.dirname(os.path.abspath(__file__)) + '/dataset.csv') as csvfile:
         reader = csv.reader(csvfile)
         id_sensor = 0
         longitudes = []
