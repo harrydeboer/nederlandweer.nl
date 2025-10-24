@@ -4,9 +4,8 @@
 /dist
 /node_modules
 /dashboard_meet_je_stad/ids
-/dashboard_meet_je_stad/dataset.csv
 /dashboard_meet_je_stad/dataset_small.csv
-
+/dashboard_meet_je_stad/utrecht_ids.csv
 # Environments
 .env
 .venv
