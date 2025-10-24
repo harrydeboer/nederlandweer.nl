@@ -66,6 +66,7 @@ TEMPLATES = [
             ],
             'libraries': {
                 'mtime': 'dashboard_meet_je_stad.templatetags.mtime',
+                'json_dumps': 'dashboard_meet_je_stad.templatetags.json_dumps',
             }
         },
     },

@@ -1,15 +1,5 @@
 let sensors = $('#sensors');
 let sensorIds = sensors.data('sensors');
-let longitudes = sensors.data('longitudes');
-let latitudes = sensors.data('latitudes');
-let temperatures = sensors.data('temperatures');
-let temperatureDates = sensors.data('temperature-dates');
-let humidities = sensors.data('humidities');
-let humidityDates = sensors.data('humidity-dates');
-let pm25 = sensors.data('pm25');
-let pm25Dates = sensors.data('pm25-dates');
-let pm10 = sensors.data('pm10');
-let pm10Dates = sensors.data('pm10-dates');
 
 function displayFloat(value) {
     if (value !== 0) {
@@ -28,18 +18,41 @@ function displayPMDate(date, value) {
 }
 
 sensorsArray = []
-for (let index = 0; index < sensorIds.length; ++index) {
+sensorIds.forEach((index) => {
+    let dates = $('#sensor-' + index + '-timestamp').data('timestamp');
+    let temperatures = $('#sensor-' + index + '-temperature').data('temperature');
+    let longitudes = $('#sensor-' + index + '-longitude').data('longitude');
+    let latitudes = $('#sensor-' + index + '-latitude').data('latitude');
+    let humidities = $('#sensor-' + index + '-humidity').data('humidity');
+    let pm25s = $('#sensor-' + index + '-pm25').data('pm25');
+    let pm10s = $('#sensor-' + index + '-pm10').data('pm10');
+    let total = 0;
+    for(let i = 0; i < longitudes.length; i++) {
+        total += longitudes[i];
+    }
+    let longitude = total / longitudes.length;
+    total = 0;
+    for(let i = 0; i < latitudes.length; i++) {
+        total += latitudes[i];
+    }
+    let latitude = total / latitudes.length;
+    let date = dates[dates.length - 1];
+    date = new Date(date + ' AM UTC').toLocaleString();
+    let temperature = temperatures[temperatures.length - 1];
+    let humidity = humidities[humidities.length - 1];
+    let pm25 = pm25s[pm25s.length - 1];
+    let pm10 = pm10s[pm10s.length - 1];
     let sensor = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.fromLonLat([longitudes[index], latitudes[index]])),
-        name: '<p class="sensor-title">Sensor ' + sensorIds[index] + '</p>' +
-            '<p class="text-nowrap">' + temperatureDates[index] +
-            ': Temperatuur ' + displayFloat(temperatures[index]) + '</p>' +
-            '<p class="text-nowrap">' + humidityDates[index] +
-            ': RV ' + displayFloat(humidities[index]) + '</p>' +
-            '<p class="text-nowrap">' + displayPMDate(pm25Dates[index], pm25[index]) +
-            'Fijnstof 2.5 ' + displayFloat(pm25[index]) + '</p>' +
-            '<p class="text-nowrap">' + displayPMDate(pm10Dates[index], pm10[index]) +
-            'Fijnstof 10 ' + displayFloat(pm10[index]) + '</p>',
+        geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude])),
+        name: '<p class="sensor-title">Sensor ' + index + '</p>' +
+            '<p class="text-nowrap">' + date +
+            ': Temperatuur ' + displayFloat(temperature) + '</p>' +
+            '<p class="text-nowrap">' + date +
+            ': RV ' + displayFloat(humidity) + '</p>' +
+            '<p class="text-nowrap">' + displayPMDate(date, pm25) +
+            'Fijnstof 2.5 ' + displayFloat(pm25) + '</p>' +
+            '<p class="text-nowrap">' + displayPMDate(date, pm10) +
+            'Fijnstof 10 ' + displayFloat(pm10) + '</p>',
     });
     sensor.setStyle(
         new ol.style.Style({
@@ -52,7 +65,7 @@ for (let index = 0; index < sensorIds.length; ++index) {
         }),
     );
     sensorsArray.push(sensor)
-}
+});
 
 const vectorSource = new ol.source.Vector({
     features: sensorsArray,

@@ -9,13 +9,17 @@ class Sensor:
         self.timestamp = []
         for key in service.row_keys:
             if key != 'id':
-                self.__setattr__(key, [])
-                test = self.__getattribute__(key)
+                if key == 'pm2.5':
+                    self.__setattr__('pm25', [])
+                else:
+                    self.__setattr__(key, [])
 
     def add_row(self, row: list):
         service = MeetJeStadAPIService()
         for index, key in enumerate(service.row_keys):
             if key != 'id':
+                if key == 'pm2.5':
+                    key = 'pm25'
                 values = self.__getattribute__(key)
                 if key == 'timestamp':
                     values.append(row[index])

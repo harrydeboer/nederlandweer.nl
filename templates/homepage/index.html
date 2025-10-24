@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load json_dumps %}
+
 {% block title %}
     Dashboard Meet Je Stad
 {% endblock %}
@@ -9,19 +11,16 @@
         <div class="col-md-1"></div>
         <div class="col-md-11"><h1>Dashboard Meet Je Stad</h1></div>
     </div>
-    <div id="sensors"
-         data-sensors="{{ sensors }}"
-         data-longitudes="{{ longitudes }}"
-         data-latitudes="{{ latitudes }}"
-         data-temperatures="{{ temperatures }}"
-         data-temperature-dates="{{ temperature_dates }}"
-         data-humidities="{{ humidities }}"
-         data-humidity-dates="{{ humidity_dates }}"
-         data-pm25="{{ pm25 }}"
-         data-pm25-dates="{{ pm25_dates }}"
-         data-pm10="{{ pm10 }}"
-         data-pm10-dates="{{ pm10_dates }}">
-    </div>
+    <div id="sensors" data-sensors="{{ sensorIds }}"></div>
+    {% for index, sensor in sensors.items %}
+        <div id="sensor-{{ sensor.id }}-timestamp" data-timestamp="{% json_dumps sensor.timestamp %}"></div>
+        <div id="sensor-{{ sensor.id }}-longitude" data-longitude="{% json_dumps sensor.longitude %}"></div>
+        <div id="sensor-{{ sensor.id }}-latitude" data-latitude="{% json_dumps sensor.latitude %}"></div>
+        <div id="sensor-{{ sensor.id }}-temperature" data-temperature="{% json_dumps sensor.temperature %}"></div>
+        <div id="sensor-{{ sensor.id }}-humidity" data-humidity="{% json_dumps sensor.humidity %}"></div>
+        <div id="sensor-{{ sensor.id }}-pm25" data-pm25="{% json_dumps sensor.pm25 %}"></div>
+        <div id="sensor-{{ sensor.id }}-pm10" data-pm10="{% json_dumps sensor.pm10 %}"></div>
+    {% endfor %}
     <div class="row">
         <div class="col-md-1"></div>
         <div class="col-md-6">
