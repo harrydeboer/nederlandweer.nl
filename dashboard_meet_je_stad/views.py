@@ -26,13 +26,13 @@ def index(request: WSGIRequest) -> HttpResponse:
         for row in reader:
             if pm == 'on' and row[1] not in pm_ids:
                 continue
-            if row[1] not in sensors:
+            if int(row[1]) not in sensors:
                 sensor = Sensor(int(row[1]))
-                sensors[row[1]] = sensor
+                sensors[int(row[1])] = sensor
                 sensor.add_row(row)
                 ids.append(row[1])
             else:
-                sensors[row[1]].add_row(row)
+                sensors[int(row[1])].add_row(row)
 
     return render(request, 'homepage/index.html',
-                  {'sensors': sensors, 'sensorIds': json.dumps(ids)})
+                  {'sensors': sorted(sensors.items()), 'sensorIds': json.dumps(ids)})

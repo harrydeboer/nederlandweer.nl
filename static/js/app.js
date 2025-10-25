@@ -130,3 +130,78 @@ map.on('pointermove', function (e) {
 });
 // Close the popup when the map is moved
 map.on('movestart', disposePopover);
+
+function graph() {
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(function(){ drawChart() });
+}
+
+function drawChart() {
+    let id = $('#sensor').val();
+    let vertical = 'y';
+    let horizontal = 't';
+    let horizontalData = [0];
+    let verticalData = [0];
+    let type = $('input[name=type]:checked').val();
+    let title = 'Grafiek';
+    if (id !== '') {
+        let rawData = $('#sensor-' + id + '-timestamp').data('timestamp');
+        horizontalData = [];
+        rawData.forEach(function (element) {
+            let date = new Date(element).toLocaleString();
+            horizontalData.push(date);
+        });
+        if (type === 'temperature') {
+            title = 'Temperatuur';
+            vertical = '°C';
+            verticalData = $('#sensor-' + id + '-temperature').data('temperature');
+        } else if (type === 'humidity') {
+            title = 'Luchtvochtigheid';
+            vertical = 'RV %';
+            verticalData = $('#sensor-' + id + '-humidity').data('humidity');
+        } else if (type === 'pm25') {
+            title = 'Fijnstof 2.5 µm';
+            vertical = 'µg/m3';
+            verticalData = $('#sensor-' + id + '-pm25').data('pm25');
+        } else if (type === 'pm10') {
+            title = 'Fijnstof 10 µm';
+            vertical = 'µg/m3';
+            verticalData = $('#sensor-' + id + '-pm10').data('pm10');
+        }
+    }
+
+    let nullData = verticalData.findIndex(
+              function(el) {
+                return (el === null);
+              }
+            );
+    if (nullData !== -1) {
+        verticalData = [0]
+        horizontalData = [0]
+    }
+
+    let dataGraph = horizontalData.map((name, index) =>
+	[name, verticalData[index]]);
+    let data = google.visualization.arrayToDataTable(
+        [[horizontal, vertical]].concat(dataGraph));
+
+    let options = {
+        title: title,
+        curveType: 'function',
+        vAxis: { title: vertical },
+        hAxis: { title: horizontal },
+        legend: { position: 'none' }
+    };
+    let chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+    chart.draw(data, options);
+}
+
+graph();
+
+$('#sensor').on('change', function () {
+    graph();
+});
+
+$('input[name=type]').on('change', function () {
+    graph();
+});

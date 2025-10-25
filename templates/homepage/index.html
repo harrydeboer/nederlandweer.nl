@@ -12,7 +12,7 @@
         <div class="col-md-11"><h1>Dashboard Meet Je Stad</h1></div>
     </div>
     <div id="sensors" data-sensors="{{ sensorIds }}"></div>
-    {% for index, sensor in sensors.items %}
+    {% for index, sensor in sensors %}
         <div id="sensor-{{ sensor.id }}-timestamp" data-timestamp="{% json_dumps sensor.timestamp %}"></div>
         <div id="sensor-{{ sensor.id }}-longitude" data-longitude="{% json_dumps sensor.longitude %}"></div>
         <div id="sensor-{{ sensor.id }}-latitude" data-latitude="{% json_dumps sensor.latitude %}"></div>
@@ -30,6 +30,18 @@
         </div>
         <div class="col-md-5">
             <form action="" method="get">
+                <div class="row">
+                    <div class="col-md-2"><label for="sensor">Sensor</label></div>
+                    <div class="col-md-1">
+                        <select name="sensor" id="sensor" class="form-select">
+                            <option value="">kies sensor</option>
+                            {% for index, sensor in sensors %}
+                                <option value="{{ index }}">{{ index }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                {% include "graph.html" %}
                 <div class="row">
                     <div class="col-md-2"><label for="pm">Alleen fijnstof</label></div>
                     <div class="col-md-1">
