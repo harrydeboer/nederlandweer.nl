@@ -170,18 +170,23 @@ function drawChart() {
         }
     }
 
-    let nullData = verticalData.findIndex(
-              function(el) {
-                return (el === null);
-              }
-            );
-    if (nullData !== -1) {
+    let indices = []
+    verticalData.forEach(function(element, index) {
+        if (element === null) {
+            indices.push(index)
+        }
+    });
+    for (var i = indices.length -1; i >= 0; i--) {
+        horizontalData.splice(indices[i], 1);
+        verticalData.splice(indices[i], 1);
+    }
+    if (horizontalData.length === 0 || verticalData.length === 0) {
         verticalData = [0]
         horizontalData = [0]
     }
 
     let dataGraph = horizontalData.map((name, index) =>
-	[name, verticalData[index]]);
+        [name, verticalData[index]]);
     let data = google.visualization.arrayToDataTable(
         [[horizontal, vertical]].concat(dataGraph));
 
