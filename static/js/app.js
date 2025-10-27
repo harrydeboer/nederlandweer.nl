@@ -33,6 +33,7 @@ sensorIds.forEach((index) => {
     let pm10 = pm10s[pm10s.length - 1];
     let sensor = new ol.Feature({
         geometry: new ol.geom.Point(ol.proj.fromLonLat(toMeanLonLat(index))),
+        id: index,
         name: '<p class="sensor-title">Sensor ' + index + '</p>' +
             '<p class="text-nowrap">' + date +
             ': Temperatuur ' + displayFloat(temperature) + '</p>' +
@@ -96,7 +97,9 @@ function disposePopover() {
 }
 // display popup on click
 map.on('click', function (evt) {
-    popupIcon(evt);
+    if (popupIcon(evt)) {
+        sensor.val()
+    }
 });
 
 // change mouse cursor when over marker
@@ -118,7 +121,7 @@ function popupIcon(evt) {
     }
     disposePopover();
     if (!feature) {
-        return;
+        return 0;
     }
     if (typeof evt === 'object') {
         popup.setPosition(evt.coordinate);
@@ -131,6 +134,13 @@ function popupIcon(evt) {
         content: feature.get('name'),
     });
     popover.show();
+
+    if (typeof evt === 'object') {
+        sensor.val(feature.get('id'));
+        graph();
+    }
+
+    return evt;
 }
 
 function toMeanLonLat(id) {
