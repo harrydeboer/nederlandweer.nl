@@ -1,4 +1,5 @@
 let sensors = $('#sensors');
+let sensor = $('#sensor');
 let sensorIds = sensors.data('sensors');
 
 function displayFloat(value) {
@@ -21,21 +22,9 @@ sensorsArray = []
 sensorIds.forEach((index) => {
     let dates = $('#sensor-' + index + '-timestamp').data('timestamp');
     let temperatures = $('#sensor-' + index + '-temperature').data('temperature');
-    let longitudes = $('#sensor-' + index + '-longitude').data('longitude');
-    let latitudes = $('#sensor-' + index + '-latitude').data('latitude');
     let humidities = $('#sensor-' + index + '-humidity').data('humidity');
     let pm25s = $('#sensor-' + index + '-pm25').data('pm25');
     let pm10s = $('#sensor-' + index + '-pm10').data('pm10');
-    let total = 0;
-    for(let i = 0; i < longitudes.length; i++) {
-        total += longitudes[i];
-    }
-    let longitude = total / longitudes.length;
-    total = 0;
-    for(let i = 0; i < latitudes.length; i++) {
-        total += latitudes[i];
-    }
-    let latitude = total / latitudes.length;
     let date = dates[dates.length - 1];
     date = new Date(date + ' AM UTC').toLocaleString();
     let temperature = temperatures[temperatures.length - 1];
@@ -43,7 +32,7 @@ sensorIds.forEach((index) => {
     let pm25 = pm25s[pm25s.length - 1];
     let pm10 = pm10s[pm10s.length - 1];
     let sensor = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude])),
+        geometry: new ol.geom.Point(ol.proj.fromLonLat(toMeanLonLat(index))),
         name: '<p class="sensor-title">Sensor ' + index + '</p>' +
             '<p class="text-nowrap">' + date +
             ': Temperatuur ' + displayFloat(temperature) + '</p>' +
@@ -107,20 +96,7 @@ function disposePopover() {
 }
 // display popup on click
 map.on('click', function (evt) {
-    const feature = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
-        return feature;
-    });
-    disposePopover();
-    if (!feature) {
-        return;
-    }
-    popup.setPosition(evt.coordinate);
-    popover = new bootstrap.Popover(element, {
-        placement: 'top',
-        html: true,
-        content: feature.get('name'),
-    });
-    popover.show();
+    popupIcon(evt);
 });
 
 // change mouse cursor when over marker
@@ -131,13 +107,63 @@ map.on('pointermove', function (e) {
 // Close the popup when the map is moved
 map.on('movestart', disposePopover);
 
+function popupIcon(evt) {
+    let feature;
+    if (typeof evt === 'object') {
+        feature = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+            return feature;
+        });
+    } else {
+        feature = sensorsArray[sensorIds.indexOf(evt)];
+    }
+    disposePopover();
+    if (!feature) {
+        return;
+    }
+    if (typeof evt === 'object') {
+        popup.setPosition(evt.coordinate);
+    } else {
+        popup.setPosition(ol.proj.fromLonLat(toMeanLonLat(evt)));
+    }
+    popover = new bootstrap.Popover(element, {
+        placement: 'top',
+        html: true,
+        content: feature.get('name'),
+    });
+    popover.show();
+}
+
+function toMeanLonLat(id) {
+    let longitudes = $('#sensor-' + id + '-longitude').data('longitude');
+    let latitudes = $('#sensor-' + id + '-latitude').data('latitude');
+    let total = 0;
+    let count = 0;
+    for(let i = 0; i < longitudes.length; i++) {
+        if (longitudes[i] !== null) {
+            total += longitudes[i];
+            count++;
+        }
+    }
+    let longitude = total / count;
+    total = 0;
+    count = 0;
+    for(let i = 0; i < latitudes.length; i++) {
+        if (latitudes[i] !== null) {
+            total += latitudes[i];
+            count++;
+        }
+    }
+    let latitude = total / count;
+
+    return [longitude, latitude];
+}
 function graph() {
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(function(){ drawChart() });
 }
 
 function drawChart() {
-    let id = $('#sensor').val();
+    let id = sensor.val();
     let vertical = 'y';
     let horizontal = 't';
     let horizontalData = [0];
@@ -203,7 +229,8 @@ function drawChart() {
 
 graph();
 
-$('#sensor').on('change', function () {
+sensor.on('change', function () {
+    popupIcon($(this).val());
     graph();
 });
 
