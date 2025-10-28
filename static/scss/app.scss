@@ -6,8 +6,8 @@ body {
 
 #map {
   position: absolute;
-  height: 850px;
-  width: 50%;
+  height: 700px;
+  width: 40%;
 }
 
 .sensor-title {
@@ -17,4 +17,8 @@ body {
 
 #sensor {
   width: 300px;
+}
+
+#curve_chart {
+  height: 500px;
 }

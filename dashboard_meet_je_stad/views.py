@@ -35,4 +35,4 @@ def index(request: WSGIRequest) -> HttpResponse:
                 sensors[int(row[1])].add_row(row)
 
     return render(request, 'homepage/index.html',
-                  {'sensors': sorted(sensors.items()), 'sensorIds': json.dumps(ids)})
+                  {'sensors': sorted(sensors.items()), 'sensorIds': json.dumps(ids), 'pm': pm})

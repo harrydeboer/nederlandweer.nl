@@ -30,7 +30,7 @@ for sensor_id_50 in range(0, int(last_sensor_id / sensor_step) + 2):
             ids[row[1]] = [row]
         else:
             ids[row[1]] += [row]
-UpdateUtrechtIdsService().update(ids, end_date.strftime('%Y-%m-%d'))
+UpdateUtrechtIdsService().update(ids, date_now.strftime('%Y-%m-%d'))
 utrecht_ids = []
 with open(os.path.dirname(os.getcwd()) + '/utrecht_ids.csv') as csvfile:
     reader = csv.reader(csvfile)

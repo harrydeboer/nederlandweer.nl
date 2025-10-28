@@ -74,7 +74,8 @@ const map = new ol.Map({
     ],
     target: document.getElementById('map'),
     view: new ol.View({
-        center: ol.proj.fromLonLat([5.085, 52.085]),
+
+        center: ol.proj.fromLonLat([5.11, 52.1]),
         zoom: 12.5,
     }),
 });
@@ -184,7 +185,7 @@ function drawChart() {
         let rawData = $('#sensor-' + id + '-timestamp').data('timestamp');
         horizontalData = [];
         rawData.forEach(function (element) {
-            let date = new Date(element).toLocaleString();
+            let date = new Date(element);
             horizontalData.push(date);
         });
         if (type === 'temperature') {
@@ -197,11 +198,11 @@ function drawChart() {
             verticalData = $('#sensor-' + id + '-humidity').data('humidity');
         } else if (type === 'pm25') {
             title = 'Fijnstof 2.5 µm';
-            vertical = 'µg/m3';
+            vertical = 'µg/m³';
             verticalData = $('#sensor-' + id + '-pm25').data('pm25');
         } else if (type === 'pm10') {
             title = 'Fijnstof 10 µm';
-            vertical = 'µg/m3';
+            vertical = 'µg/m³';
             verticalData = $('#sensor-' + id + '-pm10').data('pm10');
         }
     }
