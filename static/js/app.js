@@ -26,7 +26,7 @@ sensorIds.forEach((index) => {
     let pm25s = $('#sensor-' + index + '-pm25').data('pm25');
     let pm10s = $('#sensor-' + index + '-pm10').data('pm10');
     let date = dates[dates.length - 1];
-    date = new Date(date + ' AM UTC').toLocaleString();
+    date = new Date(date + ' UTC').toLocaleString();
     let temperature = temperatures[temperatures.length - 1];
     let humidity = humidities[humidities.length - 1];
     let pm25 = pm25s[pm25s.length - 1];
@@ -185,7 +185,7 @@ function drawChart() {
         let rawData = $('#sensor-' + id + '-timestamp').data('timestamp');
         horizontalData = [];
         rawData.forEach(function (element) {
-            let date = new Date(element);
+            let date = new Date(element + ' UTC');
             horizontalData.push(date);
         });
         if (type === 'temperature') {
@@ -231,7 +231,7 @@ function drawChart() {
         title: title,
         curveType: 'function',
         vAxis: { title: vertical },
-        hAxis: { title: horizontal },
+        hAxis: { title: horizontal, format: 'MM-dd HH:mm' },
         legend: { position: 'none' }
     };
     let chart = new google.visualization.LineChart(document.getElementById('curve_chart'));

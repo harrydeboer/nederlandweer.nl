@@ -56,7 +56,7 @@ with open(os.path.dirname(os.getcwd()) + '/dataset_small.csv') as csvfile:
     reader = csv.reader(csvfile)
     for index, row in enumerate(reader):
         date_row = datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S").replace(tzinfo=datetime.timezone.utc)
-        if date_now - date_row < datetime.timedelta(hours=48):
+        if date_now - date_row < datetime.timedelta(hours=24):
             rows.append(row)
 file = open(os.path.dirname(os.getcwd()) + "/dataset_small.csv", "w", newline='')
 csv.writer(file).writerows(rows)
