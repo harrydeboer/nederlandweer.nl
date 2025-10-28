@@ -177,7 +177,7 @@ function drawChart() {
     let id = sensor.val();
     let vertical = 'y';
     let horizontal = 't';
-    let horizontalData = [0];
+    let horizontalData = [new Date()];
     let verticalData = [0];
     let type = $('input[name=type]:checked').val();
     let title = 'Grafiek';
@@ -219,7 +219,7 @@ function drawChart() {
     }
     if (horizontalData.length === 0 || verticalData.length === 0) {
         verticalData = [0]
-        horizontalData = [0]
+        horizontalData = [new Date()];
     }
 
     let dataGraph = horizontalData.map((name, index) =>
