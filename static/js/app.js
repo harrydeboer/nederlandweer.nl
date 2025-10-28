@@ -35,14 +35,11 @@ sensorIds.forEach((index) => {
         geometry: new ol.geom.Point(ol.proj.fromLonLat(toMeanLonLat(index))),
         id: index,
         name: '<p class="sensor-title">Sensor ' + index + '</p>' +
-            '<p class="text-nowrap">' + date +
-            ': Temperatuur ' + displayFloat(temperature) + '</p>' +
-            '<p class="text-nowrap">' + date +
-            ': RV ' + displayFloat(humidity) + '</p>' +
-            '<p class="text-nowrap">' + displayPMDate(date, pm25) +
-            'Fijnstof 2.5 ' + displayFloat(pm25) + '</p>' +
-            '<p class="text-nowrap">' + displayPMDate(date, pm10) +
-            'Fijnstof 10 ' + displayFloat(pm10) + '</p>',
+            '<p>' + date + '</p>' +
+            '<p>Temperatuur: ' + displayFloat(temperature) + ' °C</p>' +
+            '<p>Luchtvochtigheid: ' + displayFloat(humidity) + ' RV %</p>' +
+            '<p>Fijnstof 2.5: ' + displayFloat(pm25) + ' µg/m³</p>' +
+            '<p>Fijnstof 10: ' + displayFloat(pm10) + ' µg/m³</p>',
     });
     sensor.setStyle(
         new ol.style.Style({
