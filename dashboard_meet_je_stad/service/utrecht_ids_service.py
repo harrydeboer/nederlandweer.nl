@@ -16,8 +16,9 @@ class UpdateUtrechtIdsService:
         with open(os.path.dirname(os.getcwd()) + "/utrecht_ids.csv", newline='') as csv_file:
             reader = csv.reader(csv_file, delimiter=',')
             for key, row in enumerate(reader):
-                rows_old[row[0]] = row
+                rows_old[row[1]] = row
         rows_utrecht = {}
+        values = []
         for index, rows in ids.items():
             latitudes = {}
             longitudes = {}
@@ -58,6 +59,7 @@ class UpdateUtrechtIdsService:
                     count_longitude = 1
                 if row[9] is not None or row[10] is not None:
                     particulate_matter = 1
+                values = row
             utrecht_city = False
             start_date_utrecht = ''
             end_date_utrecht = ''
@@ -86,14 +88,15 @@ class UpdateUtrechtIdsService:
                     end_date = ''
                 if end_date_utrecht == last_date:
                     end_date_utrecht = ''
-                rows_utrecht[index] = [index, start_date, end_date,
-                                       start_date_utrecht, end_date_utrecht, particulate_matter]
-
+                rows_utrecht[index] = values.copy()
+                rows_utrecht[index] += [longitudes[list(longitudes)[-1]], latitudes[list(latitudes)[-1]],
+                    start_date, end_date, start_date_utrecht, end_date_utrecht, particulate_matter]
         rows_new = []
         for index, row in rows_utrecht.items():
             rows_old[str(index)] = row
         for index, row in rows_old.items():
             rows_new.append(row)
-        file = open(os.path.dirname(os.getcwd()) + "/utrecht_ids.csv", "w", newline='')
-        csv.writer(file).writerows(rows_new)
-        file.close()
+        if len(values) > 0:
+            file = open(os.path.dirname(os.getcwd()) + "/utrecht_ids.csv", "w", newline='')
+            csv.writer(file).writerows(rows_new)
+            file.close()

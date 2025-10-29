@@ -10,27 +10,14 @@ function displayFloat(value) {
     }
 }
 
-function displayPMDate(date, value) {
-    if (value === 0) {
-        return '';
-    } else {
-        return date + ': ';
-    }
-}
-
 sensorsArray = []
 sensorIds.forEach((index) => {
-    let dates = $('#sensor-' + index + '-timestamp').data('timestamp');
-    let temperatures = $('#sensor-' + index + '-temperature').data('temperature');
-    let humidities = $('#sensor-' + index + '-humidity').data('humidity');
-    let pm25s = $('#sensor-' + index + '-pm25').data('pm25');
-    let pm10s = $('#sensor-' + index + '-pm10').data('pm10');
-    let date = dates[dates.length - 1];
+    let date = $('#sensor-' + index + '-timestamp').data('timestamp');
     date = new Date(date + ' UTC').toLocaleString();
-    let temperature = temperatures[temperatures.length - 1];
-    let humidity = humidities[humidities.length - 1];
-    let pm25 = pm25s[pm25s.length - 1];
-    let pm10 = pm10s[pm10s.length - 1];
+    let temperature = $('#sensor-' + index + '-temperature').data('temperature');
+    let humidity = $('#sensor-' + index + '-humidity').data('humidity');
+    let pm25 = $('#sensor-' + index + '-pm25').data('pm25');
+    let pm10 = $('#sensor-' + index + '-pm10').data('pm10');
     let sensor = new ol.Feature({
         geometry: new ol.geom.Point(ol.proj.fromLonLat(toMeanLonLat(index))),
         id: index,
@@ -142,8 +129,8 @@ function popupIcon(evt) {
 }
 
 function toMeanLonLat(id) {
-    let longitudes = $('#sensor-' + id + '-longitude').data('longitude');
-    let latitudes = $('#sensor-' + id + '-latitude').data('latitude');
+    let longitudes = $('#sensor-' + id + '-longitudes').data('longitudes');
+    let latitudes = $('#sensor-' + id + '-latitudes').data('latitudes');
     let total = 0;
     let count = 0;
     for(let i = 0; i < longitudes.length; i++) {
@@ -172,14 +159,14 @@ function graph() {
 
 function drawChart() {
     let id = sensor.val();
-    let vertical = 'y';
+    let vertical = '°C';
     let horizontal = 't';
     let horizontalData = [new Date()];
     let verticalData = [0];
     let type = $('input[name=type]:checked').val();
-    let title = 'Grafiek';
+    let title = 'Temperatuur';
     if (id !== '') {
-        let rawData = $('#sensor-' + id + '-timestamp').data('timestamp');
+        let rawData = $('#sensor-' + id + '-timestamps').data('timestamps');
         horizontalData = [];
         rawData.forEach(function (element) {
             let date = new Date(element + ' UTC');
@@ -188,19 +175,19 @@ function drawChart() {
         if (type === 'temperature') {
             title = 'Temperatuur';
             vertical = '°C';
-            verticalData = $('#sensor-' + id + '-temperature').data('temperature');
+            verticalData = $('#sensor-' + id + '-temperatures').data('temperatures');
         } else if (type === 'humidity') {
             title = 'Luchtvochtigheid';
             vertical = 'RV %';
-            verticalData = $('#sensor-' + id + '-humidity').data('humidity');
+            verticalData = $('#sensor-' + id + '-humidities').data('humidities');
         } else if (type === 'pm25') {
             title = 'Fijnstof 2.5 µm';
             vertical = 'µg/m³';
-            verticalData = $('#sensor-' + id + '-pm25').data('pm25');
+            verticalData = $('#sensor-' + id + '-pm25s').data('pm25s');
         } else if (type === 'pm10') {
             title = 'Fijnstof 10 µm';
             vertical = 'µg/m³';
-            verticalData = $('#sensor-' + id + '-pm10').data('pm10');
+            verticalData = $('#sensor-' + id + '-pm10s').data('pm10s');
         }
     }
 

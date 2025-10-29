@@ -35,8 +35,7 @@ utrecht_ids = []
 with open(os.path.dirname(os.getcwd()) + '/utrecht_ids.csv') as csvfile:
     reader = csv.reader(csvfile)
     for index, row in enumerate(reader):
-        utrecht_ids.append(row[0])
-
+        utrecht_ids.append(row[1])
 
 for index, rows in ids.items():
     os.makedirs(os.path.dirname(os.getcwd()) + '/ids/' + str(index), exist_ok=True)

@@ -52,11 +52,11 @@ class MeetJeStadAPIService:
                 for index, row in enumerate(reader):
                     if index == 0:
                         continue
-                    if is_active_only and row[2] != '':
+                    if is_active_only and row[len(self.row_keys) + 3] != '':
                         continue
-                    if is_particulate_matter_only and row[5] == '0':
+                    if is_particulate_matter_only and row[len(self.row_keys) + 6] == '0':
                         continue
-                    ids += row[0] + ','
+                    ids += row[1] + ','
                 ids = ids[:-1]
         else:
             for id_sensor in ids.split(','):

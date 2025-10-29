@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.handlers.wsgi import WSGIRequest
 from dashboard_meet_je_stad.models import Sensor
+from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
 import os
 import csv
 import json
@@ -11,14 +12,14 @@ def index(request: WSGIRequest) -> HttpResponse:
     sensors= {}
     pm_ids = []
     pm = request.GET.get('pm')
-    if pm == 'on':
-        with open(os.path.dirname(os.path.abspath(__file__)) + '/utrecht_ids.csv') as csvfile:
-            reader = csv.reader(csvfile)
-
-            for row in reader:
-                if row[5] != '0':
-                   pm_ids.append(row[0])
-
+    service = MeetJeStadAPIService()
+    utrecht_rows = []
+    with open(os.path.dirname(os.path.abspath(__file__)) + '/utrecht_ids.csv') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            if pm == 'on' and row[len(service.row_keys) + 6] != '0':
+                pm_ids.append(row[1])
+            utrecht_rows.append(row)
     ids = []
     with open(os.path.dirname(os.path.abspath(__file__)) + '/dataset_small.csv') as csvfile:
         reader = csv.reader(csvfile)
@@ -35,4 +36,5 @@ def index(request: WSGIRequest) -> HttpResponse:
                 sensors[int(row[1])].add_row(row)
 
     return render(request, 'homepage/index.html',
-                  {'sensors': sorted(sensors.items()), 'sensorIds': json.dumps(ids), 'pm': pm})
+                  {'sensors': sorted(sensors.items()), 'sensorIds': json.dumps(ids),
+                   'pm': pm, 'utrecht_rows': utrecht_rows, 'row_keys': service.row_keys})
