@@ -189,6 +189,20 @@ function drawChart() {
             vertical = 'µg/m³';
             verticalData = $('#sensor-' + id + '-pm10s').data('pm10s');
         }
+    } else {
+        if (type === 'temperature') {
+            title = 'Temperatuur';
+            vertical = '°C';
+        } else if (type === 'humidity') {
+            title = 'Luchtvochtigheid';
+            vertical = 'RV %';
+        } else if (type === 'pm25') {
+            title = 'Fijnstof 2.5 µm';
+            vertical = 'µg/m³';
+        } else if (type === 'pm10') {
+            title = 'Fijnstof 10 µm';
+            vertical = 'µg/m³';
+        }
     }
 
     let indices = []
