@@ -11,16 +11,7 @@
         <div class="col-md-1"></div>
         <div class="col-md-11"><h1>Dashboard Meet Je Stad</h1></div>
     </div>
-    <div id="sensors" data-sensors="{{ sensorIds }}"></div>
-    {% for row in utrecht_rows %}
-        <div id="sensor-{{ row.1 }}-timestamp" data-timestamp="{{ row.0 }}"></div>
-        <div id="sensor-{{ row.1 }}-longitude" data-longitude="{{ row.3 }}"></div>
-        <div id="sensor-{{ row.1 }}-latitude" data-latitude="{{ row.4 }}"></div>
-        <div id="sensor-{{ row.1 }}-temperature" data-temperature="{{ row.2 }}"></div>
-        <div id="sensor-{{ row.1 }}-humidity" data-humidity="{{ row.5 }}"></div>
-        <div id="sensor-{{ row.1 }}-pm25" data-pm25="{{ row.9 }}"></div>
-        <div id="sensor-{{ row.1 }}-pm10" data-pm10="{{ row.10 }}"></div>
-    {% endfor %}
+    <div id="sensors" data-sensors="{% json_dumps utrecht_rows %}"></div>
     {% for index, sensor in sensors %}
         <div id="sensor-{{ sensor.id }}-timestamps" data-timestamps="{% json_dumps sensor.timestamp %}"></div>
         <div id="sensor-{{ sensor.id }}-longitudes" data-longitudes="{% json_dumps sensor.longitude %}"></div>
@@ -58,6 +49,16 @@
                             <input type="checkbox" name="pm" id="pm" class="form-check" checked>
                         {% else %}
                             <input type="checkbox" name="pm" id="pm" class="form-check">
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2"><label for="inactive">Inactief</label></div>
+                    <div class="col-md-1">
+                        {% if inactive == 'on' %}
+                            <input type="checkbox" name="inactive" id="inactive" class="form-check" checked>
+                        {% else %}
+                            <input type="checkbox" name="inactive" id="inactive" class="form-check">
                         {% endif %}
                     </div>
                 </div>

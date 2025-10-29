@@ -12,6 +12,7 @@ def index(request: WSGIRequest) -> HttpResponse:
     sensors= {}
     pm_ids = []
     pm = request.GET.get('pm')
+    inactive = request.GET.get('inactive')
     service = MeetJeStadAPIService()
     utrecht_rows = []
     with open(os.path.dirname(os.path.abspath(__file__)) + '/utrecht_ids.csv') as csvfile:
@@ -36,5 +37,5 @@ def index(request: WSGIRequest) -> HttpResponse:
                 sensors[int(row[1])].add_row(row)
 
     return render(request, 'homepage/index.html',
-                  {'sensors': sorted(sensors.items()), 'sensorIds': json.dumps(ids),
+                  {'sensors': sorted(sensors.items()), 'sensorIds': json.dumps(ids), 'inactive': inactive,
                    'pm': pm, 'utrecht_rows': utrecht_rows, 'row_keys': service.row_keys})

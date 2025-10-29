@@ -1,6 +1,6 @@
 let sensors = $('#sensors');
 let sensor = $('#sensor');
-let sensorIds = sensors.data('sensors');
+let utrechtRows = sensors.data('sensors');
 
 function displayFloat(value) {
     if (value !== 0) {
@@ -11,17 +11,22 @@ function displayFloat(value) {
 }
 
 sensorsArray = []
-sensorIds.forEach((index) => {
-    let date = $('#sensor-' + index + '-timestamp').data('timestamp');
+utrechtRows.forEach((index) => {
+    let date = index[0];
     date = new Date(date + ' UTC').toLocaleString();
-    let temperature = $('#sensor-' + index + '-temperature').data('temperature');
-    let humidity = $('#sensor-' + index + '-humidity').data('humidity');
-    let pm25 = $('#sensor-' + index + '-pm25').data('pm25');
-    let pm10 = $('#sensor-' + index + '-pm10').data('pm10');
+    let temperature = index[2];
+    let humidity = index[5];
+    let pm25 = index[9];
+    let pm10 = index[10];
+    if ($('#inactive:checked').length === 0 && $('#sensor-' + index[1] + '-timestamps').length === 0) {
+        return;
+    }
     let sensor = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.fromLonLat(toMeanLonLat(index))),
+        geometry: new ol.geom.Point(ol.proj.fromLonLat([index[3], index[4]])),
         id: index,
-        name: '<p class="sensor-title">Sensor ' + index + '</p>' +
+        longitude: index[3],
+        latitude: index[4],
+        name: '<p class="sensor-title">Sensor ' + index[1] + '</p>' +
             '<p>' + date + '</p>' +
             '<p>Temperatuur: ' + displayFloat(temperature) + ' °C</p>' +
             '<p>Luchtvochtigheid: ' + displayFloat(humidity) + ' RV %</p>' +
@@ -102,7 +107,7 @@ function popupIcon(evt) {
             return feature;
         });
     } else {
-        feature = sensorsArray[sensorIds.indexOf(evt)];
+        feature = sensorsArray[utrechtRows.indexOf(evt)];
     }
     disposePopover();
     if (!feature) {
@@ -111,7 +116,7 @@ function popupIcon(evt) {
     if (typeof evt === 'object') {
         popup.setPosition(evt.coordinate);
     } else {
-        popup.setPosition(ol.proj.fromLonLat(toMeanLonLat(evt)));
+        popup.setPosition(ol.proj.fromLonLat([feature.longitude, feature.latitude]));
     }
     popover = new bootstrap.Popover(element, {
         placement: 'top',
@@ -128,30 +133,6 @@ function popupIcon(evt) {
     return evt;
 }
 
-function toMeanLonLat(id) {
-    let longitudes = $('#sensor-' + id + '-longitudes').data('longitudes');
-    let latitudes = $('#sensor-' + id + '-latitudes').data('latitudes');
-    let total = 0;
-    let count = 0;
-    for(let i = 0; i < longitudes.length; i++) {
-        if (longitudes[i] !== null) {
-            total += longitudes[i];
-            count++;
-        }
-    }
-    let longitude = total / count;
-    total = 0;
-    count = 0;
-    for(let i = 0; i < latitudes.length; i++) {
-        if (latitudes[i] !== null) {
-            total += latitudes[i];
-            count++;
-        }
-    }
-    let latitude = total / count;
-
-    return [longitude, latitude];
-}
 function graph() {
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(function(){ drawChart() });
