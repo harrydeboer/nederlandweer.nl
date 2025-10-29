@@ -20,6 +20,9 @@ utrechtRows.forEach((index) => {
     let pm10 = index[10];
     let sourceImage;
     let timestamps = $('#sensor-' + index[1] + '-timestamps');
+    if ($('#pm:checked').length === 1 && index[19] === '0') {
+        return;
+    }
     if ($('#inactive:checked').length === 0 && timestamps.length === 0) {
         return;
     }
