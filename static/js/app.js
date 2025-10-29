@@ -18,14 +18,21 @@ utrechtRows.forEach((index) => {
     let humidity = index[5];
     let pm25 = index[9];
     let pm10 = index[10];
-    if ($('#inactive:checked').length === 0 && $('#sensor-' + index[1] + '-timestamps').length === 0) {
+    let sourceImage;
+    let timestamps = $('#sensor-' + index[1] + '-timestamps');
+    if ($('#inactive:checked').length === 0 && timestamps.length === 0) {
         return;
     }
+    if (timestamps.length === 0) {
+        sourceImage = '/static/img/sensor-red.png'
+    } else {
+        sourceImage = '/static/img/sensor-green.png'
+    }
     let sensor = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.fromLonLat([index[3], index[4]])),
-        id: index,
-        longitude: index[3],
-        latitude: index[4],
+        geometry: new ol.geom.Point(ol.proj.fromLonLat([index[13], index[14]])),
+        id: index[1],
+        longitude: index[13],
+        latitude: index[14],
         name: '<p class="sensor-title">Sensor ' + index[1] + '</p>' +
             '<p>' + date + '</p>' +
             '<p>Temperatuur: ' + displayFloat(temperature) + ' °C</p>' +
@@ -37,7 +44,7 @@ utrechtRows.forEach((index) => {
         new ol.style.Style({
             image: new ol.style.Icon({
                 crossOrigin: 'anonymous',
-                src: '/static/img/sensor-blue.png',
+                src: sourceImage,
                 width: 30,
                 height: 30,
             }),
@@ -107,7 +114,11 @@ function popupIcon(evt) {
             return feature;
         });
     } else {
-        feature = sensorsArray[utrechtRows.indexOf(evt)];
+        sensorsArray.forEach(function (element) {
+            if (element.get('id') === evt) {
+                feature = element;
+            }
+        })
     }
     disposePopover();
     if (!feature) {
@@ -116,7 +127,7 @@ function popupIcon(evt) {
     if (typeof evt === 'object') {
         popup.setPosition(evt.coordinate);
     } else {
-        popup.setPosition(ol.proj.fromLonLat([feature.longitude, feature.latitude]));
+        popup.setPosition(ol.proj.fromLonLat([feature.get('longitude'), feature.get('latitude')]));
     }
     popover = new bootstrap.Popover(element, {
         placement: 'top',
@@ -146,8 +157,9 @@ function drawChart() {
     let verticalData = [0];
     let type = $('input[name=type]:checked').val();
     let title = 'Temperatuur';
-    if (id !== '') {
-        let rawData = $('#sensor-' + id + '-timestamps').data('timestamps');
+    let rawData = $('#sensor-' + id + '-timestamps');
+    if (id !== '' && rawData.length > 0) {
+        rawData = rawData.data('timestamps');
         horizontalData = [];
         rawData.forEach(function (element) {
             let date = new Date(element + ' UTC');

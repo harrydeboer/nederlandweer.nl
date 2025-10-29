@@ -35,9 +35,15 @@
                     <div class="col-md-1">
                         <select name="sensor" id="sensor" class="form-select">
                             <option value="">kies sensor</option>
-                            {% for index, sensor in sensors %}
-                                <option value="{{ index }}">{{ index }}</option>
-                            {% endfor %}
+                            {% if inactive == 'on' %}
+                                {% for row in utrecht_rows %}
+                                    <option value="{{ row.1 }}">{{ row.1 }}</option>
+                                {% endfor %}
+                            {% else %}
+                                {% for index, sensor in sensors %}
+                                    <option value="{{ index }}">{{ index }}</option>
+                                {% endfor %}
+                            {% endif %}
                         </select>
                     </div>
                 </div>
