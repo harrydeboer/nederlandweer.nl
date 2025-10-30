@@ -64,11 +64,10 @@ class UpdateUtrechtIdsService:
                 else:
                     latitude = float(latitude)
                 longitude = row[3]
-                if longitude is None or latitude == '':
+                if longitude is None or longitude == '':
                     continue
                 else:
                     longitude = float(longitude)
-                latitudes[date] = latitude
                 if date in latitudes:
                     count_latitude += 1
                     latitudes[date] = (latitude + latitudes[date] * (count_latitude - 1)) / count_latitude
@@ -110,7 +109,6 @@ class UpdateUtrechtIdsService:
                 if end_date_utrecht == last_date:
                     end_date_utrecht = ''
                 rows_utrecht[index] = values.copy()
-
                 if longitudes != {} and latitudes != {}:
                     longitude_file = longitudes[list(longitudes)[-1]]
                     latitude_file = latitudes[list(latitudes)[-1]]
