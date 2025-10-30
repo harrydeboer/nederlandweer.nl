@@ -22,7 +22,7 @@ def index(request: WSGIRequest) -> HttpResponse:
                 pm_ids.append(row[1])
             utrecht_rows.append(row)
     ids = []
-    with open(os.path.dirname(os.path.abspath(__file__)) + '/dataset_small.csv') as csvfile:
+    with open(os.path.dirname(os.path.abspath(__file__)) + '/dataset_small_utrecht.csv') as csvfile:
         reader = csv.reader(csvfile)
 
         for row in reader:

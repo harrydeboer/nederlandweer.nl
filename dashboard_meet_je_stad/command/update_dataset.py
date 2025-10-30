@@ -30,28 +30,20 @@ for sensor_id_50 in range(0, int(last_sensor_id / sensor_step) + 2):
             ids[row[1]] = [row]
         else:
             ids[row[1]] += [row]
-UpdateUtrechtIdsService().update(ids, date_now.strftime('%Y-%m-%d'))
-utrecht_ids = []
-with open(os.path.dirname(os.getcwd()) + '/utrecht_ids.csv') as csvfile:
-    reader = csv.reader(csvfile)
-    for index, row in enumerate(reader):
-        utrecht_ids.append(row[1])
 
 for index, rows in ids.items():
-    os.makedirs(os.path.dirname(os.getcwd()) + '/ids/' + str(index), exist_ok=True)
+    os.makedirs(os.path.dirname(os.getcwd()) + "/ids/" + str(index), exist_ok=True)
     file = open(os.path.dirname(os.getcwd()) + "/ids/" + str(index) + "/out.csv", "a", newline='')
     csv.writer(file).writerows(rows)
     file.close()
     if index > last_sensor_id:
         last_sensor_id = index
-
-    if str(index) in utrecht_ids:
-        file = open(os.path.dirname(os.getcwd()) + "/dataset_small.csv", "a", newline='')
-        csv.writer(file).writerows(rows)
-        file.close()
+    file = open(os.path.dirname(os.getcwd()) + "/dataset_small.csv", "a", newline='')
+    csv.writer(file).writerows(rows)
+    file.close()
 
 rows = []
-with open(os.path.dirname(os.getcwd()) + '/dataset_small.csv') as csvfile:
+with open(os.path.dirname(os.getcwd()) + "/dataset_small.csv") as csvfile:
     reader = csv.reader(csvfile)
     for index, row in enumerate(reader):
         date_row = datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S").replace(tzinfo=datetime.timezone.utc)
@@ -59,6 +51,16 @@ with open(os.path.dirname(os.getcwd()) + '/dataset_small.csv') as csvfile:
             rows.append(row)
 file = open(os.path.dirname(os.getcwd()) + "/dataset_small.csv", "w", newline='')
 csv.writer(file).writerows(rows)
+file.close()
+
+utrecht_ids = UpdateUtrechtIdsService().update(ids, date_now.strftime('%Y-%m-%d'), rows)
+
+rows_utrecht = []
+for row in rows:
+    if int(row[1]) in utrecht_ids:
+        rows_utrecht.append(row)
+file = open(os.path.dirname(os.getcwd()) + "/dataset_small_utrecht.csv", "w", newline='')
+csv.writer(file).writerows(rows_utrecht)
 file.close()
 
 dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')
