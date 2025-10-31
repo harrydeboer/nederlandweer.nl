@@ -1,7 +1,6 @@
-import csv
 import datetime
 import math
-import os
+from dashboard_meet_je_stad.repository.sensor_utrecht_repository import SensorUtrechtRepository
 from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
 
 class UpdateUtrechtIdsService:
@@ -13,12 +12,9 @@ class UpdateUtrechtIdsService:
 
     def update(self, ids: dict, last_date: str, rows: list) ->  list:
         service = MeetJeStadAPIService()
+        sensor_utrecht_repository = SensorUtrechtRepository()
         rows_dataset = {}
-        rows_old = {}
-        with open(os.path.dirname(os.getcwd()) + "/utrecht_ids.csv", newline='') as csv_file:
-            reader = csv.reader(csv_file, delimiter=',')
-            for key, row in enumerate(reader):
-                rows_old[row[1]] = row
+        rows_old = sensor_utrecht_repository.get()
         for row in rows:
             if row[1] not in rows_dataset:
                 rows_dataset[row[1]] = [row]
@@ -124,8 +120,6 @@ class UpdateUtrechtIdsService:
             if row[1] not in ids:
                 ids.append(int(row[1]))
         if len(values) > 0:
-            file = open(os.path.dirname(os.getcwd()) + "/utrecht_ids.csv", "w", newline='')
-            csv.writer(file).writerows(rows_new)
-            file.close()
+            sensor_utrecht_repository.write(rows_new)
 
         return sorted(ids)

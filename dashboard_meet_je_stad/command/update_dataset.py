@@ -1,12 +1,13 @@
 from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
 from dashboard_meet_je_stad.service.utrecht_ids_service import UpdateUtrechtIdsService
-import csv
+from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 import os
 import datetime
 import dotenv
 
 dotenv_file = dotenv.find_dotenv()
 dotenv.load_dotenv(dotenv_file)
+sensor_repository = SensorRepository()
 ids = {}
 sensor_step = 50
 last_sensor_id = int(os.getenv('LAST_SENSOR_ID'))
@@ -32,26 +33,16 @@ for sensor_id_50 in range(0, int(last_sensor_id / sensor_step) + 2):
             ids[row[1]] += [row]
 
 for index, rows in ids.items():
-    os.makedirs(os.path.dirname(os.getcwd()) + "/ids/" + str(index), exist_ok=True)
-    file = open(os.path.dirname(os.getcwd()) + "/ids/" + str(index) + "/out.csv", "a", newline='')
-    csv.writer(file).writerows(rows)
-    file.close()
+    sensor_repository.add_to_full(index, rows)
     if index > last_sensor_id:
         last_sensor_id = index
-    file = open(os.path.dirname(os.getcwd()) + "/dataset_small.csv", "a", newline='')
-    csv.writer(file).writerows(rows)
-    file.close()
+    sensor_repository.add_to_small(rows)
 
-rows = []
-with open(os.path.dirname(os.getcwd()) + "/dataset_small.csv") as csvfile:
-    reader = csv.reader(csvfile)
-    for index, row in enumerate(reader):
-        date_row = datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S").replace(tzinfo=datetime.timezone.utc)
-        if date_now - date_row < datetime.timedelta(hours=24):
-            rows.append(row)
-file = open(os.path.dirname(os.getcwd()) + "/dataset_small.csv", "w", newline='')
-csv.writer(file).writerows(rows)
-file.close()
+rows = sensor_repository.get_small_last_24(date_now)
+sensor_repository.write_to_small(rows)
+
+dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')
+dotenv.set_key(dotenv_file, "END_DATE", date_now.strftime('%Y-%m-%d,%H:%M:%S'), quote_mode='never')
 
 utrecht_ids = UpdateUtrechtIdsService().update(ids, date_now.strftime('%Y-%m-%d'), rows)
 
@@ -59,9 +50,4 @@ rows_utrecht = []
 for row in rows:
     if int(row[1]) in utrecht_ids:
         rows_utrecht.append(row)
-file = open(os.path.dirname(os.getcwd()) + "/dataset_small_utrecht.csv", "w", newline='')
-csv.writer(file).writerows(rows_utrecht)
-file.close()
-
-dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')
-dotenv.set_key(dotenv_file, "END_DATE", date_now.strftime('%Y-%m-%d,%H:%M:%S'), quote_mode='never')
+sensor_repository.write_to_small_utrecht(rows_utrecht)
