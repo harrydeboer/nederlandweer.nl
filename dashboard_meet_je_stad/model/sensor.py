@@ -4,10 +4,10 @@ from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAP
 class Sensor:
 
     def __init__(self, id_sensor: int):
-        service = MeetJeStadAPIService()
+        self.service = MeetJeStadAPIService()
         self.id = id_sensor
         self.timestamp = []
-        for key in service.row_keys:
+        for key in self.service.row_keys:
             if key != 'id':
                 if key == 'pm2.5':
                     self.__setattr__('pm25', [])
@@ -15,8 +15,7 @@ class Sensor:
                     self.__setattr__(key, [])
 
     def add_row(self, row: list):
-        service = MeetJeStadAPIService()
-        for index, key in enumerate(service.row_keys):
+        for index, key in enumerate(self.service.row_keys):
             if key != 'id':
                 if key == 'pm2.5':
                     key = 'pm25'

@@ -1,5 +1,4 @@
 from sensor import Sensor
-from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
 
 
 class SensorUtrecht(Sensor):
@@ -13,7 +12,6 @@ class SensorUtrecht(Sensor):
         self.start_date_utrecht = ''
         self.end_date_utrecht = ''
         self.particulate_matter = None
-        self.service = MeetJeStadAPIService()
 
     def add_row(self, row: list):
         super().add_row(row)
