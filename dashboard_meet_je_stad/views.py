@@ -5,7 +5,6 @@ from dashboard_meet_je_stad.model.sensor import Sensor
 from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
 from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 from dashboard_meet_je_stad.repository.sensor_utrecht_repository import SensorUtrechtRepository
-import json
 
 
 def index(request: WSGIRequest) -> HttpResponse:
@@ -22,7 +21,6 @@ def index(request: WSGIRequest) -> HttpResponse:
         if pm == 'on' and row[len(service.row_keys) + 6] != '0':
             pm_ids.append(row[1])
         utrecht_rows.append(row)
-    ids = []
     rows = sensor_repository.get_small_utrecht()
     for row in rows:
         if pm == 'on' and row[1] not in pm_ids:
@@ -31,10 +29,9 @@ def index(request: WSGIRequest) -> HttpResponse:
             sensor = Sensor(int(row[1]))
             sensors[int(row[1])] = sensor
             sensor.add_row(row)
-            ids.append(row[1])
         else:
             sensors[int(row[1])].add_row(row)
 
     return render(request, 'homepage/index.html',
-                  {'sensors': sorted(sensors.items()), 'sensorIds': json.dumps(ids), 'inactive': inactive,
+                  {'sensors': sorted(sensors.items()), 'inactive': inactive,
                    'pm': pm, 'utrecht_rows': utrecht_rows, 'row_keys': service.row_keys})
