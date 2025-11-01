@@ -116,7 +116,7 @@ class SensorUtrechtRepository:
                     end_date_utrecht = date
                     if not utrecht_city and start_date_utrecht == '':
                         start_date_utrecht = date
-                        utrecht_city = True
+                    utrecht_city = True
                 else:
                     utrecht_city = False
 
