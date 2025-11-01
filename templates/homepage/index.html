@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="col-md-5">
-            <form action="" method="get">
+            <form action="" method="get" id="dashboard-form">
                 <div class="row">
                     <div class="col-md-2"><label for="sensor">Sensor</label></div>
                     <div class="col-md-1">
@@ -37,11 +37,19 @@
                             <option value="">kies sensor</option>
                             {% if inactive == 'on' %}
                                 {% for row in utrecht_rows %}
-                                    <option value="{{ row.1 }}">{{ row.1 }}</option>
+                                    {% if row.1 == id_sensor %}
+                                        <option value="{{ row.1 }}" selected>{{ row.1 }}</option>
+                                    {% else %}
+                                        <option value="{{ row.1 }}">{{ row.1 }}</option>
+                                    {% endif %}
                                 {% endfor %}
                             {% else %}
                                 {% for index, sensor in sensors %}
-                                    <option value="{{ index }}">{{ index }}</option>
+                                    {% if sensor.id == id_sensor %}
+                                        <option value="{{ index }}" selected>{{ index }}</option>
+                                    {% else %}
+                                        <option value="{{ index }}">{{ index }}</option>
+                                    {% endif %}
                                 {% endfor %}
                             {% endif %}
                         </select>
