@@ -147,7 +147,7 @@ class Dashboard {
 
     sensorChange() {
         this.popupIcon(this.sensor.val());
-        graph();
+        this.graph();
     }
 
     disposePopover() {
@@ -167,11 +167,11 @@ class Dashboard {
 
     graph() {
         google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(this.drawChart);
+        google.charts.setOnLoadCallback(this.drawChart.bind(this));
     }
 
     drawChart() {
-        let id = $('#sensor').val();
+        let id = this.sensor.val();
         let vertical = '°C';
         let horizontal = 't';
         let horizontalData = [new Date()];
