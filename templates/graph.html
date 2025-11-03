@@ -4,7 +4,11 @@
             <label for="type-temperature">Temperatuur</label>
         </div>
         <div class="col col-md-6">
-            <input type="radio" value="temperature" name="type" id="type-temperature" checked>
+            {% if type_sensor == 'temperature' or not type_sensor %}
+                <input type="radio" value="temperature" name="type" id="type-temperature" checked>
+            {% else %}
+                <input type="radio" value="temperature" name="type" id="type-temperature">
+            {% endif %}
         </div>
     </div>
     <div class="row">
@@ -12,7 +16,11 @@
             <label for="type-humidity">Luchtvochtigheid</label>
         </div>
         <div class="col col-md-6">
-            <input type="radio" value="humidity" name="type" id="type-humidity">
+            {% if type_sensor == 'humidity' %}
+                <input type="radio" value="humidity" name="type" id="type-humidity" checked>
+            {% else %}
+                <input type="radio" value="humidity" name="type" id="type-humidity">
+            {% endif %}
         </div>
     </div>
     <div class="row">
@@ -20,7 +28,11 @@
             <label for="type-pm25">Fijnstof 2,5 µm</label>
         </div>
         <div class="col col-md-6">
-            <input type="radio" value="pm25" name="type" id="type-pm25">
+            {% if type_sensor == 'pm25' %}
+                <input type="radio" value="pm25" name="type" id="type-pm25" checked>
+            {% else %}
+                <input type="radio" value="pm25" name="type" id="type-pm25">
+            {% endif %}
         </div>
     </div>
     <div class="row">
@@ -28,7 +40,11 @@
             <label for="type-pm10">Fijnstof 10 µm</label>
         </div>
         <div class="col col-md-6">
-            <input type="radio" value="pm10" name="type" id="type-pm10">
+            {% if type_sensor == 'pm10' %}
+                <input type="radio" value="pm10" name="type" id="type-pm10" checked>
+            {% else %}
+                <input type="radio" value="pm10" name="type" id="type-pm10">
+            {% endif %}
         </div>
     </div>
 </div>

@@ -17,7 +17,7 @@ class HomepageView:
     def index(self, request: WSGIRequest) -> HttpResponse:
         sensors= {}
         pm_ids = []
-        [pm, inactive, id_sensor] = self._validate(request)
+        [pm, inactive, id_sensor, type_sensor] = self._validate(request)
 
         rows = self.sensor_utrecht_repository.get()
         utrecht_rows = []
@@ -37,20 +37,24 @@ class HomepageView:
                 sensors[int(row[1])].add_row(row)
 
         return render(request, 'homepage/index.html',
-                  {'sensors': sorted(sensors.items()), 'inactive': inactive, 'id_sensor': id_sensor,
-                   'pm': pm, 'utrecht_rows': utrecht_rows, 'row_keys': self.service.row_keys})
+                  {'sensors': sorted(sensors.items()), 'inactive': inactive, 'id_sensor': id_sensor, 'pm': pm,
+                   'type_sensor': type_sensor, 'utrecht_rows': utrecht_rows, 'row_keys': self.service.row_keys})
 
     def _validate(self, request: WSGIRequest):
         pm = request.GET.get('pm')
         inactive = request.GET.get('inactive')
         id_sensor = request.GET.get('sensor')
+        type_sensor = request.GET.get('type')
         if pm != 'on' and pm != 'off':
             pm = None
         if inactive != 'on' and inactive != 'off':
             inactive = None
+        if (type_sensor != 'temperature' and type_sensor != 'humidity'
+                and type_sensor != 'pm25' and type_sensor != 'pm10'):
+            type_sensor = None
         if id_sensor is not None and not id_sensor.isdigit():
             id_sensor = None
         elif id_sensor is not None and id_sensor.isdigit():
             id_sensor = int(id_sensor)
 
-        return [pm, inactive, id_sensor]
+        return [pm, inactive, id_sensor, type_sensor]
