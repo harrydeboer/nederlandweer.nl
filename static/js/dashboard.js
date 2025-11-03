@@ -6,7 +6,7 @@ class Dashboard {
         this.sensor = $('#sensor');
         this.type = $('input[name=type]');
         this.utrechtRows = this.sensors.data('sensors');
-        this.sensorsArray = this.getSensorsArray(this.utrechtRows)
+        this.sensorsArray = this.getSensorsArray(this.utrechtRows);
 
         const vectorSource = new ol.source.Vector({
             features: this.sensorsArray,
@@ -225,7 +225,7 @@ class Dashboard {
                 indices.push(index)
             }
         });
-        for (var i = indices.length -1; i >= 0; i--) {
+        for (let i = indices.length -1; i >= 0; i--) {
             horizontalData.splice(indices[i], 1);
             verticalData.splice(indices[i], 1);
         }
