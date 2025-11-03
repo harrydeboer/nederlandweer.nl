@@ -35,7 +35,7 @@
                     <div class="col-md-1">
                         <select name="sensor" id="sensor" class="form-select">
                             <option value="">kies sensor</option>
-                            {% if inactive == 'on' %}
+                            {% if form.inactive.value %}
                                 {% for row in utrecht_rows %}
                                     {% if row.1 == id_sensor %}
                                         <option value="{{ row.1 }}" selected>{{ row.1 }}</option>
@@ -55,25 +55,26 @@
                         </select>
                     </div>
                 </div>
-                {% include "graph.html" %}
                 <div class="row">
-                    <div class="col-md-2"><label for="pm">Alleen fijnstof</label></div>
+                    <div class="col col-md-6">
+                        {% for type in form.type %}
+                            <div class="row">
+                                {{ type }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div id="curve_chart" class="col col-md-6"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">{{ form.inactive.label_tag }}</div>
                     <div class="col-md-1">
-                        {% if pm == 'on' %}
-                            <input type="checkbox" name="pm" id="pm" class="form-check" checked>
-                        {% else %}
-                            <input type="checkbox" name="pm" id="pm" class="form-check">
-                        {% endif %}
+                        {{ form.inactive }}
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-2"><label for="inactive">Inactief</label></div>
+                    <div class="col-md-2">{{ form.pm.label_tag }}</div>
                     <div class="col-md-1">
-                        {% if inactive == 'on' %}
-                            <input type="checkbox" name="inactive" id="inactive" class="form-check" checked>
-                        {% else %}
-                            <input type="checkbox" name="inactive" id="inactive" class="form-check">
-                        {% endif %}
+                        {{ form.pm }}
                     </div>
                 </div>
                 <input type="submit" value="Toon" class="btn btn-success">
