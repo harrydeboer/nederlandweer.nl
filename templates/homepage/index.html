@@ -31,39 +31,20 @@
         <div class="col-md-5">
             <form action="" method="get" id="dashboard-form">
                 <div class="row">
-                    <div class="col-md-2"><label for="sensor">Sensor</label></div>
+                    <div class="col-md-2">{{ form.sensor.label_tag }}</div>
                     <div class="col-md-1">
-                        <select name="sensor" id="sensor" class="form-select">
-                            <option value="">kies sensor</option>
-                            {% if form.inactive.value %}
-                                {% for row in utrecht_rows %}
-                                    {% if row.1 == id_sensor %}
-                                        <option value="{{ row.1 }}" selected>{{ row.1 }}</option>
-                                    {% else %}
-                                        <option value="{{ row.1 }}">{{ row.1 }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            {% else %}
-                                {% for index, sensor in sensors %}
-                                    {% if sensor.id == id_sensor %}
-                                        <option value="{{ index }}" selected>{{ index }}</option>
-                                    {% else %}
-                                        <option value="{{ index }}">{{ index }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                        </select>
+                        {{ form.sensor }}
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col col-md-6">
+                    <div class="col col-md-3" id="types">
                         {% for type in form.type %}
                             <div class="row">
                                 {{ type }}
                             </div>
                         {% endfor %}
                     </div>
-                    <div id="curve_chart" class="col col-md-6"></div>
+                    <div id="curve_chart" class="col col-md-9"></div>
                 </div>
                 <div class="row">
                     <div class="col-md-2">{{ form.inactive.label_tag }}</div>

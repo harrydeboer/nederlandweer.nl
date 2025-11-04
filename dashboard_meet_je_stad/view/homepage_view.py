@@ -19,7 +19,14 @@ class HomepageView:
         sensors= {}
         pm_ids = []
         pm = False
-        form = DashboardForm(request.GET)
+        if request.GET:
+            if 'inactive' in request.GET:
+                inactive = request.GET['inactive']
+            else:
+                inactive = 'off'
+            form = DashboardForm(request.GET, is_inactive=inactive)
+        else:
+            form = DashboardForm(is_inactive='off')
         if form.is_valid():
             pm = form['pm'].value()
         rows = self.sensor_utrecht_repository.get()
