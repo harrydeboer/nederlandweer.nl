@@ -3,7 +3,7 @@ class Dashboard {
     constructor(form) {
         this.form = form;
         this.sensors = $('#sensors');
-        this.sensor = $('#sensor');
+        this.sensor = $('#id_sensor');
         this.type = $('input[name=type]');
         this.utrechtRows = this.sensors.data('sensors');
         this.sensorsArray = this.getSensorsArray(this.utrechtRows);
