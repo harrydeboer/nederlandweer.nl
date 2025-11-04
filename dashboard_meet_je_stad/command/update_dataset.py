@@ -44,7 +44,6 @@ rows = sensor_repository.get_small_last_24(date_now)
 sensor_repository.write_to_small(rows)
 
 dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')
-date_now = datetime.datetime.now(datetime.timezone.utc)
 dotenv.set_key(dotenv_file, "END_DATE", date_now.strftime('%Y-%m-%d,%H:%M:%S'), quote_mode='never')
 
 utrecht_ids = sensor_utrecht_repository.update(date_now.strftime('%Y-%m-%d'), rows)
