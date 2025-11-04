@@ -14,11 +14,11 @@ rows_new = {}
 sensor_step = 50
 last_sensor_id = int(os.getenv('LAST_SENSOR_ID'))
 end_date = datetime.datetime.strptime(os.getenv('END_DATE'),"%Y-%m-%d,%H:%M:%S").replace(tzinfo=datetime.timezone.utc)
+end_date += datetime.timedelta(seconds=1)
 date_now = datetime.datetime.now(datetime.timezone.utc)
 delta = date_now - end_date
 for sensor_id_50 in range(0, int(last_sensor_id / sensor_step) + 2):
     ids_range = str(sensor_id_50 * sensor_step + 1) + '-' + str((sensor_id_50 + 1) * sensor_step)
-    end_date += datetime.timedelta(seconds=1)
     results = MeetJeStadAPIService().get_data(
         end_date.strftime('%Y-%m-%d,%H:%M:%S'),
         date_now.strftime('%Y-%m-%d,%H:%M:%S'),
@@ -44,6 +44,7 @@ rows = sensor_repository.get_small_last_24(date_now)
 sensor_repository.write_to_small(rows)
 
 dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')
+date_now = datetime.datetime.now(datetime.timezone.utc)
 dotenv.set_key(dotenv_file, "END_DATE", date_now.strftime('%Y-%m-%d,%H:%M:%S'), quote_mode='never')
 
 utrecht_ids = sensor_utrecht_repository.update(date_now.strftime('%Y-%m-%d'), rows)

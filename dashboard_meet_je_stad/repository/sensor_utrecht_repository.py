@@ -8,20 +8,20 @@ import datetime
 class SensorUtrechtRepository:
 
     def __init__(self):
-        self.path_app = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.path_data = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) + '/data/'
         self.row_keys = MeetJeStadAPIService().row_keys
         self.utrecht_center_lat_degrees = 52.085 * math.pi / 180
         self.utrecht_center_long_degrees = 5.085 * math.pi / 180
         self.radius = 9.46
 
     def write(self, rows: list):
-        file = open(os.path.dirname(os.getcwd()) + "/utrecht_ids.csv", "w", newline='')
+        file = open(self.path_data + "utrecht_ids.csv", "w", newline='')
         csv.writer(file).writerows(rows)
         file.close()
 
     def get(self) -> dict:
         rows = {}
-        with open(self.path_app + '/utrecht_ids.csv') as csvfile:
+        with open(self.path_data + 'utrecht_ids.csv') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
                 rows[row[1]] = row
