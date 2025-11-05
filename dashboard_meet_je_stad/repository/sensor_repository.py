@@ -1,6 +1,7 @@
 import os
 import csv
 import datetime
+from dashboard_meet_je_stad.model.sensor import Sensor
 
 
 class SensorRepository:
@@ -24,13 +25,20 @@ class SensorRepository:
                     rows.append(row)
         return rows
 
-    def get_small_utrecht(self) -> list:
-        rows = []
+    def get_small_utrecht(self, utrecht_rows:dict) -> dict:
+        sensors = {}
         with open(self.path_data + 'dataset_small_utrecht.csv') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
-                rows.append(row)
-        return rows
+                if int(row[1]) not in utrecht_rows:
+                    continue
+                if int(row[1]) not in sensors:
+                    sensor = Sensor(int(row[1]))
+                    sensors[int(row[1])] = sensor
+                    sensor.add_row(row)
+                else:
+                    sensors[int(row[1])].add_row(row)
+        return sensors
 
     def add_to_small(self, rows: list):
         file = open(self.path_data + "dataset_small.csv", "a", newline='')

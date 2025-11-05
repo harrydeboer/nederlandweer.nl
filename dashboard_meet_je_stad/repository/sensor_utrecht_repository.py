@@ -1,6 +1,6 @@
 import os
 import csv
-from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
+from dashboard_meet_je_stad.model.sensor import Sensor
 import math
 import datetime
 
@@ -9,7 +9,7 @@ class SensorUtrechtRepository:
 
     def __init__(self):
         self.path_data = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) + '/data/'
-        self.row_keys = MeetJeStadAPIService().row_keys
+        self.row_keys = Sensor.row_keys
         self.utrecht_center_lat_degrees = 52.085 * math.pi / 180
         self.utrecht_center_long_degrees = 5.085 * math.pi / 180
         self.radius = 9.46
@@ -19,12 +19,15 @@ class SensorUtrechtRepository:
         csv.writer(file).writerows(rows)
         file.close()
 
-    def get(self) -> dict:
+    def get(self, pm:bool = False) -> dict:
         rows = {}
         with open(self.path_data + 'utrecht_ids.csv') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
-                rows[row[1]] = row
+                if pm and row[15] == '1':
+                    rows[int(row[1])] = row
+                elif not pm:
+                    rows[int(row[1])] = row
         return rows
 
     def update(self, last_date: str, rows_new_list: list) -> list:

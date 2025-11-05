@@ -1,25 +1,20 @@
-from sensor import Sensor
+from dashboard_meet_je_stad.model.sensor import Sensor
 
 
-class SensorUtrecht(Sensor):
+class SensorUtrecht:
 
-    def __init__(self, id_sensor: int):
-        super().__init__(id_sensor)
-        self.longitude_mean = None
-        self.latitude_mean = None
-        self.start_date = ''
-        self.end_date = ''
-        self.start_date_utrecht = ''
-        self.end_date_utrecht = ''
-        self.particulate_matter = None
+    row_keys = [
+        'mean_longitude',
+        'mean_latitude',
+        'start_date',
+        'end_date',
+        'start_date_utrecht',
+        'end_date_utrecht',
+        'is_particulate_matter'
+    ]
 
-    def add_row(self, row: list):
-        super().add_row(row)
-        offset = len(self.service.row_keys)
-        self.longitude_mean = row[offset]
-        self.latitude_mean = row[offset + 1]
-        self.start_date = row[offset + 2]
-        self.end_date = row[offset + 3]
-        self.start_date_utrecht = row[offset + 4]
-        self.end_date_utrecht = row[offset + 5]
-        self.particulate_matter = row[offset + 6]
+    def __init__(self, row: list):
+        for index, key in enumerate(Sensor.row_keys):
+            self.__setattr__(key, row[index])
+        for index, key in enumerate(self.row_keys):
+            self.__setattr__(key, len(Sensor.row_keys) + row[index])
