@@ -20,18 +20,23 @@ class HomepageView:
         row_keys = Sensor.row_keys
         row_keys_utrecht = SensorUtrecht.row_keys
         pm = False
+        inactive = 'off'
         if request.GET:
             if 'inactive' in request.GET:
                 inactive = request.GET['inactive']
             else:
                 inactive = 'off'
-            form = DashboardForm(request.GET, is_inactive=inactive)
+            form = DashboardForm(request.GET, is_inactive=inactive, sensors={}, pm=False)
         else:
-            form = DashboardForm(is_inactive='off')
+            form = DashboardForm(is_inactive=inactive, sensors= {}, pm=False)
         if form.is_valid():
             pm = form['pm'].value()
         utrecht_rows = self.sensor_utrecht_repository.get(pm=pm)
         sensors = self.sensor_repository.get_small_utrecht(utrecht_rows=utrecht_rows)
+        if request.GET:
+            form = DashboardForm(request.GET, is_inactive=inactive, sensors=sensors, pm=pm)
+        else:
+            form = DashboardForm(is_inactive=inactive, sensors=sensors, pm=pm)
 
         return render(request, 'homepage/index.html',
                   {'sensors': sorted(sensors.items()), 'form': form,

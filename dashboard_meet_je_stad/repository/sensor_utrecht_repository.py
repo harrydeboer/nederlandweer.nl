@@ -1,6 +1,7 @@
 import os
 import csv
 from dashboard_meet_je_stad.model.sensor import Sensor
+from dashboard_meet_je_stad.model.sensor_utrecht import SensorUtrecht
 import math
 import datetime
 
@@ -21,10 +22,13 @@ class SensorUtrechtRepository:
 
     def get(self, pm:bool = False) -> dict:
         rows = {}
+        keys = {}
+        for index, key in enumerate(SensorUtrecht.row_keys):
+            keys[key] = index
         with open(self.path_data + 'utrecht_ids.csv') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
-                if pm and row[15] == '1':
+                if pm and row[len(Sensor.row_keys) + keys['is_particulate_matter']] == '1':
                     rows[int(row[1])] = row
                 elif not pm:
                     rows[int(row[1])] = row
@@ -37,13 +41,19 @@ class SensorUtrechtRepository:
         rows_new = {}
         for row in rows_new_list:
             if row[1] not in rows_new:
-                rows_new[row[1]] = [row]
+                rows_new[int(row[1])] = [row]
             else:
-                rows_new[row[1]] += [row]
+                rows_new[int(row[1])] += [row]
 
         # Loop over all ids
         rows_utrecht = {}
         values = []
+        row_keys = {}
+        row_keys_utrecht = {}
+        for index_key, key in enumerate(Sensor.row_keys):
+            row_keys[key] = index_key
+        for index_key, key in enumerate(SensorUtrecht.row_keys):
+            row_keys_utrecht[key] = index_key
         for index, rows in rows_new.items():
 
             # Set initial values of utrecht_ids
@@ -51,14 +61,14 @@ class SensorUtrechtRepository:
             particulate_matter = 0
             if index in rows_old:
                 row = rows_old[index]
-                if row[len(self.row_keys) + 6] == '1':
+                if row[len(self.row_keys) + row_keys_utrecht['is_particulate_matter']] == '1':
                     particulate_matter = 1
-                start_date = row[len(self.row_keys) + 2]
-                start_date_utrecht = row[len(self.row_keys) + 4]
-                end_date_utrecht = row[len(self.row_keys) + 5]
+                start_date = row[len(self.row_keys) + row_keys_utrecht['start_date']]
+                start_date_utrecht = row[len(self.row_keys) + row_keys_utrecht['start_date_utrecht']]
+                end_date_utrecht = row[len(self.row_keys) + row_keys_utrecht['end_date_utrecht']]
                 utrecht_city = True
-                longitude_file = row[len(self.row_keys)]
-                latitude_file = row[len(self.row_keys) + 1]
+                longitude_file = row[len(self.row_keys) + row_keys_utrecht['mean_longitude']]
+                latitude_file = row[len(self.row_keys) + row_keys_utrecht['mean_latitude']]
             else:
                 start_date = ''
                 start_date_utrecht = ''
@@ -78,12 +88,12 @@ class SensorUtrechtRepository:
                 end_date = date
                 if key == 0 and start_date == '':
                     start_date = date
-                latitude = row[4]
+                latitude = row[row_keys['latitude']]
                 if latitude is None or latitude == '':
                     continue
                 else:
                     latitude = float(latitude)
-                longitude = row[3]
+                longitude = row[row_keys['longitude']]
                 if longitude is None or longitude == '':
                     continue
                 else:
@@ -100,8 +110,9 @@ class SensorUtrechtRepository:
                 else:
                     longitudes[date] = longitude
                     count_longitude = 1
-                if row[9] is not None or row[10] is not None:
-                    particulate_matter = 1
+                if row[row_keys['pm2.5']] is not None or row[row_keys['pm10']] is not None:
+                    if row[row_keys['pm2.5']] != '' or row[row_keys['pm10']] != '':
+                        particulate_matter = 1
                 values = row
 
             # Determine if coordinates are in Utrecht and update start_date and set utrecht_city to true or false

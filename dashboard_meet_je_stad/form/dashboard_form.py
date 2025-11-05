@@ -6,14 +6,17 @@ from dashboard_meet_je_stad.repository.sensor_utrecht_repository import SensorUt
 class DashboardForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
+        pm = kwargs.pop('pm')
+        sensors = kwargs.pop('sensors')
         is_inactive = kwargs.pop('is_inactive')
         repository = SensorUtrechtRepository()
-        rows = repository.get()
+        rows = repository.get(pm=pm)
         choices = [("", "-")]
-        for index, row in rows.items():
-            if is_inactive == 'off' and row[18] == '':
+        if is_inactive == 'on':
+            for index, row in rows.items():
                 choices.append((index, index))
-            elif is_inactive == 'on':
+        else:
+            for index, sensor in sensors.items():
                 choices.append((index, index))
         super().__init__(*args, **kwargs)
         self.fields['sensor'] = ChoiceField(choices=choices, required=False,
