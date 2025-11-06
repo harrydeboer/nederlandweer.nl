@@ -8,17 +8,23 @@ class DashboardForm(forms.Form):
     def __init__(self, *args, **kwargs):
         pm = kwargs.pop('pm')
         sensors = kwargs.pop('sensors')
-        is_inactive = kwargs.pop('is_inactive')
+        inactive = kwargs.pop('inactive')
         repository = SensorUtrechtRepository()
-        rows = repository.get(pm=pm)
+        if sensors == {}:
+            rows = repository.get()
+        else:
+            rows = repository.get(pm=pm)
         choices = [("", "-")]
-        if is_inactive == 'on':
+        if inactive:
             for index, row in rows.items():
                 choices.append((index, index))
         else:
             for index, sensor in sensors.items():
                 choices.append((index, index))
-        super().__init__(*args, **kwargs)
+        if len(args[0]) > 0:
+            super().__init__(*args, **kwargs)
+        else:
+            super().__init__(**kwargs)
         self.fields['sensor'] = ChoiceField(choices=choices, required=False,
                                             widget=forms.Select(attrs={'class': 'form-select'}))
 
