@@ -15,24 +15,30 @@ class SensorUtrechtRepository:
         self.utrecht_center_long_degrees = 5.085 * math.pi / 180
         self.radius = 9.46
 
-    def write(self, rows: list):
+    def write(self, rows: dict):
         file = open(self.path_data + "utrecht_ids.csv", "w", newline='')
-        csv.writer(file).writerows(rows)
+        rows_out = []
+        for index, sensor in rows.items():
+            row = []
+            for key in Sensor.row_keys:
+                row.append(sensor.__getattribute__(key))
+            for key in SensorUtrecht.row_keys:
+                row.append(sensor.__getattribute__(key))
+            rows_out.append(row)
+        csv.writer(file).writerows(rows_out)
         file.close()
 
     def get(self, pm:bool = False) -> dict:
-        rows = {}
-        keys = {}
-        for index, key in enumerate(SensorUtrecht.row_keys):
-            keys[key] = index
+        sensors_utrecht = {}
         with open(self.path_data + 'utrecht_ids.csv') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
-                if pm and row[len(Sensor.row_keys) + keys['is_particulate_matter']] == '1':
-                    rows[int(row[1])] = row
+                sensor_utrecht = SensorUtrecht(row, int(row[1]))
+                if pm and sensor_utrecht.is_particulate_matter == '1':
+                    sensors_utrecht[int(row[1])] = sensor_utrecht
                 elif not pm:
-                    rows[int(row[1])] = row
-        return rows
+                    sensors_utrecht[int(row[1])] = sensor_utrecht
+        return sensors_utrecht
 
     def update(self, last_date: str, rows_new_list: list) -> list:
         rows_old = self.get()
@@ -61,14 +67,14 @@ class SensorUtrechtRepository:
             particulate_matter = 0
             if index in rows_old:
                 row = rows_old[index]
-                if row[len(self.row_keys) + row_keys_utrecht['is_particulate_matter']] == '1':
+                if row.is_particulate_matter == '1':
                     particulate_matter = 1
-                start_date = row[len(self.row_keys) + row_keys_utrecht['start_date']]
-                start_date_utrecht = row[len(self.row_keys) + row_keys_utrecht['start_date_utrecht']]
-                end_date_utrecht = row[len(self.row_keys) + row_keys_utrecht['end_date_utrecht']]
+                start_date = row.start_date
+                start_date_utrecht = row.start_date_utrecht
+                end_date_utrecht = row.end_date_utrecht
                 utrecht_city = True
-                longitude_file = row[len(self.row_keys) + row_keys_utrecht['mean_longitude']]
-                latitude_file = row[len(self.row_keys) + row_keys_utrecht['mean_latitude']]
+                longitude_file = row.mean_longitude
+                latitude_file = row.mean_latitude
             else:
                 start_date = ''
                 start_date_utrecht = ''
@@ -140,21 +146,21 @@ class SensorUtrechtRepository:
                     end_date = ''
                 if end_date_utrecht == last_date:
                     end_date_utrecht = ''
-                rows_utrecht[index] = values.copy()
                 if longitudes != {} and latitudes != {}:
                     longitude_file = longitudes[list(longitudes)[-1]]
                     latitude_file = latitudes[list(latitudes)[-1]]
-                rows_utrecht[index] += [longitude_file, latitude_file, start_date, end_date,
-                                        start_date_utrecht, end_date_utrecht, particulate_matter]
+                extra_row = [longitude_file, latitude_file, start_date, end_date,
+                             start_date_utrecht, end_date_utrecht, particulate_matter]
+                rows_utrecht[index] = SensorUtrecht(values.copy() + extra_row, index)
 
         # Update the utrecht_ids
         ids = []
-        output = []
+        output = {}
         for index, row in rows_utrecht.items():
             rows_old[index] = row
-            ids.append(int(row[1]))
+            ids.append(int(row.id))
         for index, row in rows_old.items():
-            output.append(row)
+            output[index] = row
             if index not in ids:
                 ids.append(int(index))
         if len(values) > 0:

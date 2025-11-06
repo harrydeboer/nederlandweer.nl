@@ -3,8 +3,6 @@ class Dashboard {
     constructor(form) {
         this.form = form;
         this.sensors = $('#sensors');
-        this.rowKeys = $('#row-keys').data('row-keys');
-        this.rowKeysUtrecht = $('#row-keys-utrecht').data('row-keys-utrecht');
         this.sensor = $('#id_sensor');
         this.type = $('input[name=type]');
         this.utrechtRows = this.sensors.data('sensors');
@@ -51,26 +49,18 @@ class Dashboard {
 
     getSensorsArray(utrechtRows) {
         let sensorsArray = []
-        let keys = [];
-        this.rowKeys.forEach(function(index, element) {
-            keys[index] = element;
-        });
-        let keysUtrecht = [];
-        this.rowKeysUtrecht.forEach(function(index, element) {
-            keysUtrecht[index] = element;
-        });
         Object.keys(utrechtRows).forEach((index) => {
             let row = utrechtRows[index]
-            let date = row[keys['timestamp']];
+            let date = row['timestamp'];
             date = new Date(date + ' UTC').toLocaleString();
-            let temperature = row[keys['temperature']];
-            let humidity = row[keys['humidity']];
-            let pm25 = row[keys['pm25']];
-            let pm10 = row[keys['pm10']];
+            let temperature = row['temperature'];
+            let humidity = row['humidity'];
+            let pm25 = row['pm25'];
+            let pm10 = row['pm10'];
             let sourceImage;
             let timestamps = $('#sensor-' + index + '-timestamps');
             if ($('#id_pm:checked').length === 1 &&
-                row[this.rowKeys.length + keysUtrecht['is_particulate_matter']] === '0') {
+                row['is_particulate_matter'] === '0') {
                 return;
             }
             if ($('#id_inactive:checked').length === 0 && timestamps.length === 0) {
@@ -81,8 +71,8 @@ class Dashboard {
             } else {
                 sourceImage = '/static/img/sensor-green.png'
             }
-            let mean_longitude = row[this.rowKeys.length + keysUtrecht['mean_longitude']]
-            let mean_latitude = row[this.rowKeys.length + keysUtrecht['mean_latitude']]
+            let mean_longitude = row['mean_longitude'];
+            let mean_latitude = row['mean_latitude'];
             let sensor = new ol.Feature({
                 geometry: new ol.geom.Point(ol.proj.fromLonLat([mean_longitude, mean_latitude])),
                 id: index,

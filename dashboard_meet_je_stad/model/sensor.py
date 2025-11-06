@@ -17,14 +17,19 @@ class Sensor:
     ]
 
     def __init__(self, id_sensor: int):
-        self.id = id_sensor
         self.timestamp = []
-        for key in self.row_keys:
-            if key != 'id':
-                if key == 'pm2.5':
-                    self.__setattr__('pm25', [])
-                else:
-                    self.__setattr__(key, [])
+        self.id = id_sensor
+        self.temperature = []
+        self.longitude = []
+        self.latitude = []
+        self.humidity = []
+        self.supply = []
+        self.battery = []
+        self.firmware_version = []
+        self.pm25 = []
+        self.pm10 = []
+        self.lux = []
+        self.extra = []
 
     def add_row(self, row: list):
         for index, key in enumerate(self.row_keys):
