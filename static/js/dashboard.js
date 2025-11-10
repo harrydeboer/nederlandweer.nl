@@ -80,10 +80,10 @@ class Dashboard {
                 latitude: mean_latitude,
                 name: '<p class="sensor-title">Sensor ' + index + '</p>' +
                     '<p>' + date + '</p>' +
-                    '<p>Temperatuur: ' + this.displayFloat(temperature) + ' °C</p>' +
-                    '<p>Luchtvochtigheid: ' + this.displayFloat(humidity) + ' RV %</p>' +
-                    '<p>Fijnstof 2.5: ' + this.displayFloat(pm25) + ' µg/m³</p>' +
-                    '<p>Fijnstof 10: ' + this.displayFloat(pm10) + ' µg/m³</p>',
+                    '<p>Temperatuur: ' + this.displayFloat(temperature[0]) + ' °C</p>' +
+                    '<p>Luchtvochtigheid: ' + this.displayFloat(humidity[0]) + ' RV %</p>' +
+                    '<p>Fijnstof 2.5: ' + this.displayFloat(pm25[0]) + ' µg/m³</p>' +
+                    '<p>Fijnstof 10: ' + this.displayFloat(pm10[0]) + ' µg/m³</p>',
             });
             sensor.setStyle(
                 new ol.style.Style({

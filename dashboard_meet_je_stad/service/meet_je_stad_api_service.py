@@ -4,6 +4,8 @@ from typing import Literal
 import datetime
 import csv
 from dashboard_meet_je_stad.model.sensor import Sensor
+from dashboard_meet_je_stad.model.sensor_utrecht import SensorUtrecht
+from dashboard_meet_je_stad.repository.sensor_utrecht_repository import SensorUtrechtRepository
 
 
 class MeetJeStadAPIService:
@@ -30,19 +32,20 @@ class MeetJeStadAPIService:
             raise Exception('Format must be csv or json.')
 
         if ids == 'Utrecht':
+            keys = {}
+            for index, key in enumerate(SensorUtrecht.keys):
+                keys[key] = index
             ids = ''
-            with open(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) +
-                      '/data/utrecht_ids.csv') as csvfile:
-                reader = csv.reader(csvfile)
-                for index, row in enumerate(reader):
-                    if index == 0:
-                        continue
-                    if is_active_only and row[len(Sensor.row_keys) + 3] != '':
-                        continue
-                    if is_particulate_matter_only and row[len(Sensor.row_keys) + 6] == '0':
-                        continue
-                    ids += row[1] + ','
-                ids = ids[:-1]
+            sensors_utrecht = SensorUtrechtRepository().get()
+            for index, sensor in sensors_utrecht.items():
+                if index == 0:
+                    continue
+                if is_active_only and sensor.end_date is not None:
+                    continue
+                if is_particulate_matter_only and sensor.is_particulate_matter == '0':
+                    continue
+                ids += str(index) + ','
+            ids = ids[:-1]
         else:
             for id_sensor in ids.split(','):
                 if len(id_sensor.split('-')) > 1:
@@ -67,9 +70,9 @@ class MeetJeStadAPIService:
         for row in response.json():
             result = []
             for key in row:
-                if key not in Sensor.row_keys and key != 'row':
+                if key not in Sensor.measurement_keys and key != 'row':
                     print('Invalid key ' + key + ' in row.')
-            for key in Sensor.row_keys:
+            for key in Sensor.measurement_keys:
                 if key in row:
                     result.append(row[key])
                 else:
@@ -78,7 +81,7 @@ class MeetJeStadAPIService:
 
         results.reverse()
         row_keys_flipped = {}
-        for key, value in enumerate(Sensor.row_keys):
+        for key, value in enumerate(Sensor.measurement_keys):
             row_keys_flipped[value] = key
         results.sort(key=lambda x: x[row_keys_flipped['id']])
 

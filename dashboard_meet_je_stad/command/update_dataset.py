@@ -46,10 +46,10 @@ sensor_repository.write_to_small(rows)
 dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')
 dotenv.set_key(dotenv_file, "END_DATE", date_now.strftime('%Y-%m-%d,%H:%M:%S'), quote_mode='never')
 
-utrecht_ids = sensor_utrecht_repository.update(date_now.strftime('%Y-%m-%d'), rows)
+sensors_utrecht = sensor_utrecht_repository.update(date_now, rows)
 
 rows_utrecht = []
 for row in rows:
-    if int(row[1]) in utrecht_ids:
+    if int(row[1]) in sensors_utrecht:
         rows_utrecht.append(row)
 sensor_repository.write_to_small_utrecht(rows_utrecht)

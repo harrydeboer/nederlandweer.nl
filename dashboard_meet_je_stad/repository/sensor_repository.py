@@ -25,19 +25,17 @@ class SensorRepository:
                     rows.append(row)
         return rows
 
-    def get_small_utrecht(self, utrecht_rows:dict) -> dict:
+    def get_small_utrecht(self, sensors_utrecht:dict) -> dict:
         sensors = {}
         with open(self.path_data + 'dataset_small_utrecht.csv') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
-                if int(row[1]) not in utrecht_rows:
+                if int(row[1]) not in sensors_utrecht:
                     continue
                 if int(row[1]) not in sensors:
-                    sensor = Sensor(int(row[1]))
-                    sensors[int(row[1])] = sensor
-                    sensor.add_row(row)
+                    sensors[int(row[1])] = Sensor(row)
                 else:
-                    sensors[int(row[1])].add_row(row)
+                    sensors[int(row[1])].add_measurement(row)
         return sensors
 
     def add_to_small(self, rows: list):

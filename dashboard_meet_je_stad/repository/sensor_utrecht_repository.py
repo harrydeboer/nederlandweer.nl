@@ -10,7 +10,6 @@ class SensorUtrechtRepository:
 
     def __init__(self):
         self.path_data = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) + '/data/'
-        self.row_keys = Sensor.row_keys
         self.utrecht_center_lat_degrees = 52.085 * math.pi / 180
         self.utrecht_center_long_degrees = 5.085 * math.pi / 180
         self.radius = 9.46
@@ -20,9 +19,9 @@ class SensorUtrechtRepository:
         rows_out = []
         for index, sensor in rows.items():
             row = []
-            for key in Sensor.row_keys:
+            for key in Sensor.measurement_keys:
                 row.append(sensor.__getattribute__(key))
-            for key in SensorUtrecht.row_keys:
+            for key in SensorUtrecht.measurement_keys:
                 row.append(sensor.__getattribute__(key))
             rows_out.append(row)
         csv.writer(file).writerows(rows_out)
@@ -33,42 +32,42 @@ class SensorUtrechtRepository:
         with open(self.path_data + 'utrecht_ids.csv') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
-                sensor_utrecht = SensorUtrecht(row, int(row[1]))
-                if pm and sensor_utrecht.is_particulate_matter == '1':
+                sensor_utrecht = SensorUtrecht(row)
+                if pm and sensor_utrecht.is_particulate_matter:
                     sensors_utrecht[int(row[1])] = sensor_utrecht
                 elif not pm:
                     sensors_utrecht[int(row[1])] = sensor_utrecht
         return sensors_utrecht
 
-    def update(self, last_date: str, rows_new_list: list) -> list:
-        rows_old = self.get()
+    def update(self, date_now: datetime.datetime, sensors_list: list) -> dict:
+        sensors_utrecht = self.get()
 
-        #Make dictionary of the new rows
-        rows_new = {}
-        for row in rows_new_list:
-            if row[1] not in rows_new:
-                rows_new[int(row[1])] = [row]
+        #Make dictionary of sensors
+        sensors = {}
+        for row in sensors_list:
+            if row[1] not in sensors:
+                sensors[int(row[1])] = [row]
             else:
-                rows_new[int(row[1])] += [row]
+                sensors[int(row[1])] += [row]
 
-        # Loop over all ids
+        # Loop over all sensors
         rows_utrecht = {}
         values = []
         row_keys = {}
         row_keys_utrecht = {}
-        for index_key, key in enumerate(Sensor.row_keys):
+        for index_key, key in enumerate(Sensor.measurement_keys):
             row_keys[key] = index_key
-        for index_key, key in enumerate(SensorUtrecht.row_keys):
+        for index_key, key in enumerate(SensorUtrecht.measurement_keys):
             row_keys_utrecht[key] = index_key
-        for index, rows in rows_new.items():
+        for index, rows in sensors.items():
 
-            # Set initial values of utrecht_ids
-            end_date = ''
-            particulate_matter = 0
-            if index in rows_old:
-                row = rows_old[index]
-                if row.is_particulate_matter == '1':
-                    particulate_matter = 1
+            # Set initial values of sensors_utrecht
+            end_date = None
+            particulate_matter = False
+            if index in sensors_utrecht:
+                row = sensors_utrecht[index]
+                if row.is_particulate_matter:
+                    particulate_matter = True
                 start_date = row.start_date
                 start_date_utrecht = row.start_date_utrecht
                 end_date_utrecht = row.end_date_utrecht
@@ -76,12 +75,12 @@ class SensorUtrechtRepository:
                 longitude_file = row.mean_longitude
                 latitude_file = row.mean_latitude
             else:
-                start_date = ''
-                start_date_utrecht = ''
-                end_date_utrecht = ''
+                start_date = None
+                start_date_utrecht = None
+                end_date_utrecht = None
                 utrecht_city = False
-                longitude_file = ''
-                latitude_file = ''
+                longitude_file = None
+                latitude_file = None
 
             #Calculate the mean longitudes and latitudes per day
             latitudes = {}
@@ -118,7 +117,7 @@ class SensorUtrechtRepository:
                     count_longitude = 1
                 if row[row_keys['pm2.5']] is not None or row[row_keys['pm10']] is not None:
                     if row[row_keys['pm2.5']] != '' or row[row_keys['pm10']] != '':
-                        particulate_matter = 1
+                        particulate_matter = True
                 values = row
 
             # Determine if coordinates are in Utrecht and update start_date and set utrecht_city to true or false
@@ -142,28 +141,21 @@ class SensorUtrechtRepository:
 
             # Write row to rows_utrecht
             if utrecht_city or start_date_utrecht != '':
-                if end_date == last_date:
+                if end_date == date_now:
                     end_date = ''
-                if end_date_utrecht == last_date:
+                if end_date_utrecht == date_now:
                     end_date_utrecht = ''
                 if longitudes != {} and latitudes != {}:
                     longitude_file = longitudes[list(longitudes)[-1]]
                     latitude_file = latitudes[list(latitudes)[-1]]
                 extra_row = [longitude_file, latitude_file, start_date, end_date,
                              start_date_utrecht, end_date_utrecht, particulate_matter]
-                rows_utrecht[index] = SensorUtrecht(values.copy() + extra_row, index)
+                rows_utrecht[index] = SensorUtrecht(values.copy() + extra_row)
 
-        # Update the utrecht_ids
-        ids = []
-        output = {}
+        # Update the sensors utrecht
         for index, row in rows_utrecht.items():
-            rows_old[index] = row
-            ids.append(int(row.id))
-        for index, row in rows_old.items():
-            output[index] = row
-            if index not in ids:
-                ids.append(int(index))
+            sensors_utrecht[index] = row
         if len(values) > 0:
-            self.write(output)
+            self.write(sensors_utrecht)
 
-        return sorted(ids)
+        return sensors_utrecht

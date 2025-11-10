@@ -1,6 +1,9 @@
+import datetime
+
+
 class Sensor:
 
-    row_keys = [
+    measurement_keys = [
         'timestamp',
         'id',
         'temperature',
@@ -16,9 +19,9 @@ class Sensor:
         'extra'
     ]
 
-    def __init__(self, id_sensor: int):
+    def __init__(self, measurement: list):
         self.timestamp = []
-        self.id = id_sensor
+        self.id = []
         self.temperature = []
         self.longitude = []
         self.latitude = []
@@ -30,20 +33,28 @@ class Sensor:
         self.pm10 = []
         self.lux = []
         self.extra = []
+        self.add_measurement(measurement)
 
-    def add_row(self, row: list):
-        for index, key in enumerate(self.row_keys):
-            if key != 'id':
-                if key == 'pm2.5':
-                    key = 'pm25'
-                values = self.__getattribute__(key)
-                if key == 'timestamp':
-                    values.append(row[index])
-                    self.timestamp = values
+    def add_measurement(self, measurement: list):
+        for index, key in enumerate(Sensor.measurement_keys):
+            if key == 'pm2.5':
+                key = 'pm25'
+            measurements = self.__getattribute__(key)
+            if key == 'timestamp':
+                measurements.append(datetime.datetime.strptime(measurement[index],"%Y-%m-%d %H:%M:%S")
+                                    .replace(tzinfo=datetime.timezone.utc))
+                self.timestamp = measurements
+            elif key == 'id':
+                self.id = int(measurement[index])
+            else:
+                if measurement[index] != '':
+                    measurements.append(float(measurement[index]))
                 else:
-                    if row[index] != '':
-                        values.append(float(row[index]))
-                        self.__setattr__(key, values)
-                    else:
-                        values.append(None)
-                        self.__setattr__(key, values)
+                    measurements.append(None)
+                self.__setattr__(key, measurements)
+
+    def dates_to_string(self) -> list:
+        dates = []
+        for date in self.timestamp:
+            dates.append(date.strftime('%Y-%m-%d,%H:%M:%S'))
+        return dates

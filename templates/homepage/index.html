@@ -11,9 +11,9 @@
         <div class="col-md-1"></div>
         <div class="col-md-11"><h1>Dashboard Meet Je Stad</h1></div>
     </div>
-    <div id="sensors" data-sensors="{% json_dumps utrecht_rows %}"></div>
+    <div id="sensors" data-sensors="{% json_dumps sensors_utrecht %}"></div>
     {% for index, sensor in sensors %}
-        <div id="sensor-{{ sensor.id }}-timestamps" data-timestamps="{% json_dumps sensor.timestamp %}"></div>
+        <div id="sensor-{{ sensor.id }}-timestamps" data-timestamps="{% json_dumps sensor.dates_to_string %}"></div>
         <div id="sensor-{{ sensor.id }}-longitudes" data-longitudes="{% json_dumps sensor.longitude %}"></div>
         <div id="sensor-{{ sensor.id }}-latitudes" data-latitudes="{% json_dumps sensor.latitude %}"></div>
         <div id="sensor-{{ sensor.id }}-temperatures" data-temperatures="{% json_dumps sensor.temperature %}"></div>

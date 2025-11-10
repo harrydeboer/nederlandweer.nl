@@ -11,12 +11,12 @@ class DashboardForm(forms.Form):
         inactive = kwargs.pop('inactive')
         repository = SensorUtrechtRepository()
         if sensors == {}:
-            rows = repository.get()
+            sensors_utrecht = repository.get()
         else:
-            rows = repository.get(pm=pm)
+            sensors_utrecht = repository.get(pm=pm)
         choices = [("", "-")]
         if inactive:
-            for index, row in rows.items():
+            for index, row in sensors_utrecht.items():
                 choices.append((index, index))
         else:
             for index, sensor in sensors.items():
