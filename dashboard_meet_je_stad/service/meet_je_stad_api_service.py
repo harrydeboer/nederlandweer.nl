@@ -4,7 +4,6 @@ from typing import Literal
 import datetime
 import csv
 from dashboard_meet_je_stad.model.measurement import Measurement
-from dashboard_meet_je_stad.model.sensor import Sensor
 from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 
 
@@ -70,9 +69,9 @@ class MeetJeStadAPIService:
         for row in response.json():
             result = []
             for key in row:
-                if key not in Sensor.properties and key != 'row':
+                if key not in Measurement.properties and key != 'row':
                     print('Invalid key ' + key + ' in row.')
-            for key in Sensor.properties:
+            for key in Measurement.properties:
                 if key in row:
                     result.append(row[key])
                 else:
