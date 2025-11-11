@@ -36,9 +36,21 @@ class Measurement:
         self.pm25 = self.set_float(measurement[properties_flipped['pm2.5']])
         self.pm10 = self.set_float(measurement[properties_flipped['pm10']])
         self.lux = self.set_float(measurement[properties_flipped['lux']])
-        self.extra = self.set_float(measurement[properties_flipped['extra']])
+        self.extra = measurement[properties_flipped['extra']]
+
+    def to_list(self):
+        row = []
+        for prop in self.properties:
+            if prop == 'timestamp':
+                row.append(self.timestamp.strftime('%Y-%m-%d %H:%M:%S'))
+            else:
+                if prop == 'pm2.5':
+                    row.append(self.pm25)
+                else:
+                    row.append(self.__getattribute__(prop))
+        return row
 
     def set_float(self, value) -> float | None:
-        if value == '':
+        if value == '' or value is None:
             return None
         return float(value)

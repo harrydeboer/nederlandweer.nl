@@ -15,14 +15,17 @@ class MeasurementRepository:
         csv.writer(file).writerows(rows)
         file.close()
 
-    def get_small_last_24(self, date_now: datetime.datetime) -> list:
-        measurements = []
+    def get_small_last_24(self, date_now: datetime.datetime) -> dict:
+        measurements = {}
         with open(self.path_data + "dataset_small.csv") as csvfile:
             reader = csv.reader(csvfile)
             for index, row in enumerate(reader):
                 date_row = datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S").replace(tzinfo=datetime.timezone.utc)
                 if date_now - date_row < datetime.timedelta(hours=24):
-                    measurements.append(row)
+                    if int(row[1]) in measurements:
+                        measurements[int(row[1])].append(Measurement(row))
+                    else:
+                        measurements[int(row[1])] = [Measurement(row)]
         return measurements
 
     def get_small_utrecht(self, sensors:dict) -> dict:
@@ -46,12 +49,20 @@ class MeasurementRepository:
         csv.writer(file).writerows(rows)
         file.close()
 
-    def write_to_small(self, rows: list):
+    def write_to_small(self, measurements_dict: dict):
+        rows = []
+        for index, measurements in measurements_dict.items():
+            for measurement in measurements:
+                rows.append(measurement.to_list())
         file = open(self.path_data + "dataset_small.csv", "w", newline='')
         csv.writer(file).writerows(rows)
         file.close()
 
-    def write_to_small_utrecht(self, rows: list):
+    def write_to_small_utrecht(self, measurements_dict: dict):
+        rows = []
+        for index, measurements in measurements_dict.items():
+            for measurement in measurements:
+                rows.append(measurement.to_list())
         file = open(self.path_data + "/dataset_small_utrecht.csv", "w", newline='')
         csv.writer(file).writerows(rows)
         file.close()

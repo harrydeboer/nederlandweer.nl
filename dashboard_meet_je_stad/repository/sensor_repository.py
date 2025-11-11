@@ -15,21 +15,22 @@ class SensorRepository:
         self.radius = 9.46
 
     def write(self, sensors: dict):
-        file = open(self.path_data + "utrecht_ids.csv", "w", newline='')
+        file = open(self.path_data + "sensor.csv", "w", newline='')
         rows_out = []
         for index, sensor in sensors.items():
-            row = []
-            for key in Measurement.properties:
-                row.append(sensor.measurements[0].__getattribute__(key))
+            row = sensor.measurements[0].to_list()
             for key in Sensor.properties:
-                row.append(sensor.__getattribute__(key))
+                if isinstance(sensor.__getattribute__(key), datetime.datetime):
+                    row.append(sensor.__getattribute__(key).strftime('%Y-%m-%d'))
+                else:
+                    row.append(sensor.__getattribute__(key))
             rows_out.append(row)
         csv.writer(file).writerows(rows_out)
         file.close()
 
     def get(self, pm:bool = False) -> dict:
         sensors = {}
-        with open(self.path_data + 'utrecht_ids.csv') as csvfile:
+        with open(self.path_data + 'sensor.csv') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
                 sensor_utrecht = Sensor(row)
@@ -39,35 +40,33 @@ class SensorRepository:
                     sensors[int(row[1])] = sensor_utrecht
         return sensors
 
-    def update(self, date_now: datetime.datetime, sensors_list: list) -> dict:
-        sensors_utrecht = self.get()
-
-        #Make dictionary of sensors
-        sensors = {}
-        for row in sensors_list:
-            if row[1] not in sensors:
-                sensors[int(row[1])] = [row]
-            else:
-                sensors[int(row[1])] += [row]
+    def update(self, date_now: datetime.datetime, measurements: dict) -> dict:
+        sensors = self.get()
 
         # Loop over all sensors
         rows_utrecht = {}
         values = []
-        row_keys = {}
-        for index_key, key in enumerate(Measurement.properties):
-            row_keys[key] = index_key
-        for index, sensor in sensors.items():
+        for index, measurements in measurements.items():
 
             # Set initial values of sensors_utrecht
             end_date = None
             particulate_matter = False
-            if index in sensors_utrecht:
-                row = sensors_utrecht[index]
+            if index in sensors:
+                row = sensors[index]
                 if row.is_particulate_matter:
                     particulate_matter = True
-                start_date = row.start_date
-                start_date_utrecht = row.start_date_utrecht
-                end_date_utrecht = row.end_date_utrecht
+                if row.start_date is None:
+                    start_date = None
+                else:
+                    start_date = row.start_date
+                if row.start_date_utrecht is None:
+                    start_date_utrecht = None
+                else:
+                    start_date_utrecht = row.start_date_utrecht
+                if row.end_date_utrecht is None:
+                    end_date_utrecht = None
+                else:
+                    end_date_utrecht = row.end_date_utrecht
                 utrecht_city = True
                 longitude_file = row.mean_longitude
                 latitude_file = row.mean_latitude
@@ -84,18 +83,17 @@ class SensorRepository:
             longitudes = {}
             count_latitude = 0
             count_longitude = 0
-            for key, row in enumerate(sensor):
-                date_object = datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")
-                date = date_object.strftime('%Y-%m-%d')
+            for key, measurement in enumerate(measurements):
+                date = measurement.timestamp
                 end_date = date
                 if key == 0 and start_date == '':
                     start_date = date
-                latitude = row[row_keys['latitude']]
+                latitude = measurement.latitude
                 if latitude is None or latitude == '':
                     continue
                 else:
                     latitude = float(latitude)
-                longitude = row[row_keys['longitude']]
+                longitude = measurement.longitude
                 if longitude is None or longitude == '':
                     continue
                 else:
@@ -112,10 +110,10 @@ class SensorRepository:
                 else:
                     longitudes[date] = longitude
                     count_longitude = 1
-                if row[row_keys['pm2.5']] is not None or row[row_keys['pm10']] is not None:
-                    if row[row_keys['pm2.5']] != '' or row[row_keys['pm10']] != '':
+                if measurement.pm25 is not None or measurement.pm10 is not None:
+                    if measurement.pm25 != '' or measurement.pm10 != '':
                         particulate_matter = True
-                values = row
+                values = measurement.to_list()
 
             # Determine if coordinates are in Utrecht and update start_date and set utrecht_city to true or false
             for date, latitude in latitudes.items():
@@ -140,19 +138,29 @@ class SensorRepository:
             if utrecht_city or start_date_utrecht != '':
                 if end_date == date_now:
                     end_date = ''
+                else:
+                    end_date = end_date.strftime('%Y-%m-%d')
                 if end_date_utrecht == date_now:
                     end_date_utrecht = ''
+                elif not isinstance(end_date_utrecht, str) and end_date_utrecht is not None:
+                    end_date_utrecht = end_date_utrecht.strftime('%Y-%m-%d')
+                if not isinstance(start_date, str) and start_date is not None:
+                    start_date = start_date.strftime('%Y-%m-%d')
+                if not isinstance(start_date_utrecht, str) and start_date_utrecht is not None:
+                    start_date_utrecht = start_date_utrecht.strftime('%Y-%m-%d')
                 if longitudes != {} and latitudes != {}:
                     longitude_file = longitudes[list(longitudes)[-1]]
                     latitude_file = latitudes[list(latitudes)[-1]]
-                extra_row = [longitude_file, latitude_file, start_date, end_date,
-                             start_date_utrecht, end_date_utrecht, particulate_matter]
-                rows_utrecht[index] = Sensor(values.copy() + extra_row)
+                extra_row = [longitude_file, latitude_file, start_date,
+                             end_date, start_date_utrecht,
+                             end_date_utrecht, particulate_matter]
+                if values:
+                    rows_utrecht[index] = Sensor(values.copy() + extra_row)
 
         # Update the sensors utrecht
         for index, row in rows_utrecht.items():
-            sensors_utrecht[index] = row
+            sensors[index] = row
         if len(values) > 0:
-            self.write(sensors_utrecht)
+            self.write(sensors)
 
-        return sensors_utrecht
+        return sensors

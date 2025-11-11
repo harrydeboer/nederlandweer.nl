@@ -1,5 +1,5 @@
 from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
-from dashboard_meet_je_stad.repository.sensor_utrecht_repository import SensorUtrechtRepository
+from dashboard_meet_je_stad.repository.measurement_repository import MeasurementRepository
 from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 import os
 import datetime
@@ -8,8 +8,8 @@ import dotenv
 
 dotenv_file = dotenv.find_dotenv()
 dotenv.load_dotenv(dotenv_file)
+measurement_repository = MeasurementRepository()
 sensor_repository = SensorRepository()
-sensor_utrecht_repository = SensorUtrechtRepository()
 rows_new = {}
 sensor_step = 50
 last_sensor_id = int(os.getenv('LAST_SENSOR_ID'))
@@ -35,21 +35,25 @@ for sensor_id_50 in range(0, int(last_sensor_id / sensor_step) + 2):
             rows_new[row[1]] += [row]
 
 for index, rows in rows_new.items():
-    sensor_repository.add_to_full(index, rows)
+    measurement_repository.add_to_full(index, rows)
     if index > last_sensor_id:
         last_sensor_id = index
-    sensor_repository.add_to_small(rows)
+    measurement_repository.add_to_small(rows)
 
-rows = sensor_repository.get_small_last_24(date_now)
-sensor_repository.write_to_small(rows)
+measurements = measurement_repository.get_small_last_24(date_now)
+measurement_repository.write_to_small(measurements)
 
 dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')
 dotenv.set_key(dotenv_file, "END_DATE", date_now.strftime('%Y-%m-%d,%H:%M:%S'), quote_mode='never')
 
-sensors_utrecht = sensor_utrecht_repository.update(date_now, rows)
+sensors = sensor_repository.update(date_now, measurements)
 
-rows_utrecht = []
-for row in rows:
-    if int(row[1]) in sensors_utrecht:
-        rows_utrecht.append(row)
-sensor_repository.write_to_small_utrecht(rows_utrecht)
+measurements_utrecht = {}
+for index, measurements_out in measurements.items():
+    if index in sensors:
+        for measurement in measurements_out:
+            if measurement.id in measurements_utrecht:
+                measurements_utrecht[measurement.id].append(measurement)
+            else:
+                measurements_utrecht[measurement.id] = [measurement]
+measurement_repository.write_to_small_utrecht(measurements_utrecht)

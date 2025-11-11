@@ -19,12 +19,12 @@ class Sensor:
         for index, prop in enumerate(self.properties):
             properties_flipped[prop] = index
         mean_longitude = measurement[len(Measurement.properties) + properties_flipped['mean_longitude']]
-        if mean_longitude == '':
+        if mean_longitude == '' or mean_longitude is None:
             self.mean_longitude = None
         else:
             self.mean_longitude = float(mean_longitude)
         mean_latitude = measurement[len(Measurement.properties) + properties_flipped['mean_latitude']]
-        if mean_latitude == '':
+        if mean_latitude == '' or mean_longitude is None:
             self.mean_latitude = None
         else:
             self.mean_latitude = float(mean_latitude)
@@ -42,7 +42,7 @@ class Sensor:
         self.add_measurement(Measurement(measurement))
 
     def set_date(self, date:str):
-        if date == '':
+        if date == '' or date is None:
             return None
         else:
             return datetime.datetime.strptime(
