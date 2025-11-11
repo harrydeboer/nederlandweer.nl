@@ -6,10 +6,10 @@ class Dashboard {
         this.sensor = $('#id_sensor');
         this.type = $('input[name=type]');
         this.utrechtRows = this.sensors.data('sensors');
-        this.sensorsArray = this.getSensorsArray(this.utrechtRows);
+        this.features = this.getFeatures(this.utrechtRows);
 
         const vectorSource = new ol.source.Vector({
-            features: this.sensorsArray,
+            features: this.features,
         });
 
         const vectorLayer = new ol.layer.Vector({
@@ -47,18 +47,18 @@ class Dashboard {
         this.graph();
     }
 
-    getSensorsArray(utrechtRows) {
-        let sensorsArray = []
+    getFeatures(utrechtRows) {
+        let features = []
         Object.keys(utrechtRows).forEach((index) => {
             let row = utrechtRows[index]
-            let date = row['timestamp'];
+            let date = row['timestamp'].slice(-1)[0] ;
             date = new Date(date + ' UTC').toLocaleString();
-            let temperature = row['temperature'];
-            let humidity = row['humidity'];
-            let pm25 = row['pm25'];
-            let pm10 = row['pm10'];
+            let temperature = row['temperature'].slice(-1)[0];
+            let humidity = row['humidity'].slice(-1)[0];
+            let pm25 = row['pm25'].slice(-1)[0];
+            let pm10 = row['pm10'].slice(-1)[0];
             let sourceImage;
-            let timestamps = $('#sensor-' + index + '-timestamps');
+            let timestamps = this.utrechtRows[index].timestamp
             if ($('#id_pm:checked').length === 1 &&
                 row['is_particulate_matter'] === '0') {
                 return;
@@ -80,10 +80,10 @@ class Dashboard {
                 latitude: mean_latitude,
                 name: '<p class="sensor-title">Sensor ' + index + '</p>' +
                     '<p>' + date + '</p>' +
-                    '<p>Temperatuur: ' + this.displayFloat(temperature[0]) + ' °C</p>' +
-                    '<p>Luchtvochtigheid: ' + this.displayFloat(humidity[0]) + ' RV %</p>' +
-                    '<p>Fijnstof 2.5: ' + this.displayFloat(pm25[0]) + ' µg/m³</p>' +
-                    '<p>Fijnstof 10: ' + this.displayFloat(pm10[0]) + ' µg/m³</p>',
+                    '<p>Temperatuur: ' + this.displayFloat(temperature) + ' °C</p>' +
+                    '<p>Luchtvochtigheid: ' + this.displayFloat(humidity) + ' RV %</p>' +
+                    '<p>Fijnstof 2.5: ' + this.displayFloat(pm25) + ' µg/m³</p>' +
+                    '<p>Fijnstof 10: ' + this.displayFloat(pm10) + ' µg/m³</p>',
             });
             sensor.setStyle(
                 new ol.style.Style({
@@ -95,10 +95,10 @@ class Dashboard {
                     }),
                 }),
             );
-            sensorsArray.push(sensor)
+            features.push(sensor)
         });
 
-        return sensorsArray;
+        return features;
     }
 
     popupIcon(evt) {
@@ -108,7 +108,7 @@ class Dashboard {
                 return feature;
             });
         } else {
-            this.sensorsArray.forEach(function (element) {
+            this.features.forEach(function (element) {
                 if (element.get('id') === evt) {
                     feature = element;
                 }
@@ -182,9 +182,13 @@ class Dashboard {
         let verticalData = [0];
         let type = $('input[name=type]:checked').val();
         let title = 'Temperatuur';
-        let rawData = $('#sensor-' + id + '-timestamps');
-        if (id !== '' && rawData.length > 0) {
-            rawData = rawData.data('timestamps');
+        let rawData;
+        if (id === '') {
+            rawData = [0];
+        } else {
+            rawData = this.utrechtRows[id].timestamp;
+        }
+        if (id !== '' && rawData.length > 1) {
             horizontalData = [];
             rawData.forEach(function (element) {
                 let date = new Date(element + ' UTC');
@@ -193,19 +197,19 @@ class Dashboard {
             if (type === 'temperature') {
                 title = 'Temperatuur';
                 vertical = '°C';
-                verticalData = $('#sensor-' + id + '-temperatures').data('temperatures');
+                verticalData = this.utrechtRows[id].temperature;
             } else if (type === 'humidity') {
                 title = 'Luchtvochtigheid';
                 vertical = 'RV %';
-                verticalData = $('#sensor-' + id + '-humidities').data('humidities');
+                verticalData = this.utrechtRows[id].humidity;
             } else if (type === 'pm25') {
                 title = 'Fijnstof 2.5 µm';
                 vertical = 'µg/m³';
-                verticalData = $('#sensor-' + id + '-pm25s').data('pm25s');
+                verticalData = this.utrechtRows[id].pm25;
             } else if (type === 'pm10') {
                 title = 'Fijnstof 10 µm';
                 vertical = 'µg/m³';
-                verticalData = $('#sensor-' + id + '-pm10s').data('pm10s');
+                verticalData = this.utrechtRows[id].pm10;
             }
         } else {
             if (type === 'temperature') {

@@ -3,9 +3,9 @@ import requests
 from typing import Literal
 import datetime
 import csv
+from dashboard_meet_je_stad.model.measurement import Measurement
 from dashboard_meet_je_stad.model.sensor import Sensor
-from dashboard_meet_je_stad.model.sensor_utrecht import SensorUtrecht
-from dashboard_meet_je_stad.repository.sensor_utrecht_repository import SensorUtrechtRepository
+from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 
 
 class MeetJeStadAPIService:
@@ -33,10 +33,10 @@ class MeetJeStadAPIService:
 
         if ids == 'Utrecht':
             keys = {}
-            for index, key in enumerate(SensorUtrecht.keys):
+            for index, key in enumerate(Measurement.properties):
                 keys[key] = index
             ids = ''
-            sensors_utrecht = SensorUtrechtRepository().get()
+            sensors_utrecht = SensorRepository().get()
             for index, sensor in sensors_utrecht.items():
                 if index == 0:
                     continue
@@ -70,9 +70,9 @@ class MeetJeStadAPIService:
         for row in response.json():
             result = []
             for key in row:
-                if key not in Sensor.measurement_keys and key != 'row':
+                if key not in Sensor.properties and key != 'row':
                     print('Invalid key ' + key + ' in row.')
-            for key in Sensor.measurement_keys:
+            for key in Sensor.properties:
                 if key in row:
                     result.append(row[key])
                 else:
@@ -81,7 +81,7 @@ class MeetJeStadAPIService:
 
         results.reverse()
         row_keys_flipped = {}
-        for key, value in enumerate(Sensor.measurement_keys):
+        for key, value in enumerate(Measurement.properties):
             row_keys_flipped[value] = key
         results.sort(key=lambda x: x[row_keys_flipped['id']])
 
