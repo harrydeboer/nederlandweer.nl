@@ -18,7 +18,7 @@ class SensorRepository:
         file = open(self.path_data + "sensor.csv", "w", newline='')
         rows_out = []
         for index, sensor in sensors.items():
-            row = sensor.measurements[0].to_list()
+            row = sensor.measurements[-1].to_list()
             for key in Sensor.properties:
                 if isinstance(sensor.__getattribute__(key), datetime.datetime):
                     row.append(sensor.__getattribute__(key).strftime('%Y-%m-%d'))
