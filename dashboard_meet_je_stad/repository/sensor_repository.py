@@ -29,7 +29,10 @@ class SensorRepository:
                         row.append('0')
                 else:
                     if isinstance(sensor.__getattribute__(key), datetime.datetime):
-                        row.append(sensor.__getattribute__(key).strftime('%Y-%m-%d'))
+                        if key == 'start_date':
+                            row.append(sensor.__getattribute__(key).strftime('%Y-%m-%d %H:%M:%S'))
+                        else:
+                            row.append(sensor.__getattribute__(key).strftime('%Y-%m-%d'))
                     else:
                         row.append(sensor.__getattribute__(key))
             rows_out.append(row)
@@ -65,7 +68,7 @@ class SensorRepository:
 
         return sensors
 
-    def update(self, date_now: datetime.datetime, measurements: dict) -> dict:
+    def update(self, measurements: dict) -> dict:
         sensors = self.get()
 
         # Loop over all sensors
@@ -74,7 +77,6 @@ class SensorRepository:
         for index, measurements in measurements.items():
 
             # Set initial values of sensors
-            end_date = None
             particulate_matter = False
             if index in sensors:
                 row = sensors[index]
@@ -110,7 +112,6 @@ class SensorRepository:
             count_longitude = 0
             for key, measurement in enumerate(measurements):
                 date = measurement.timestamp
-                end_date = date
                 if key == 0 and start_date == '':
                     start_date = date
                 latitude = measurement.latitude
@@ -152,25 +153,19 @@ class SensorRepository:
                                                     (1 - math.cos(
                                                         degrees_lon - self.utrecht_center_long_degrees))) / 2)) * 6371
                 if distance < self.radius:
-                    end_date_utrecht = date
                     if not utrecht_city and start_date_utrecht == '':
                         start_date_utrecht = date
+                    end_date_utrecht = date
                     utrecht_city = True
                 else:
                     utrecht_city = False
 
             # Write row to rows_utrecht
             if utrecht_city or (start_date_utrecht != '' and start_date_utrecht is not None):
-                if end_date == date_now:
-                    end_date = ''
-                else:
-                    end_date = end_date.strftime('%Y-%m-%d')
-                if end_date_utrecht == date_now:
-                    end_date_utrecht = ''
-                elif not isinstance(end_date_utrecht, str) and end_date_utrecht is not None:
+                if not isinstance(end_date_utrecht, str) and end_date_utrecht is not None:
                     end_date_utrecht = end_date_utrecht.strftime('%Y-%m-%d')
                 if not isinstance(start_date, str) and start_date is not None:
-                    start_date = start_date.strftime('%Y-%m-%d')
+                    start_date = start_date.strftime('%Y-%m-%d %H:%M:%S')
                 if not isinstance(start_date_utrecht, str) and start_date_utrecht is not None:
                     start_date_utrecht = start_date_utrecht.strftime('%Y-%m-%d')
                 if longitudes != {} and latitudes != {}:
@@ -181,8 +176,7 @@ class SensorRepository:
                 else:
                     particulate_matter = '0'
                 extra_row = [longitude_file, latitude_file, start_date,
-                             end_date, start_date_utrecht,
-                             end_date_utrecht, particulate_matter]
+                             start_date_utrecht, end_date_utrecht, particulate_matter]
                 if values:
                     rows_utrecht[index] = Sensor(values.copy() + extra_row)
 

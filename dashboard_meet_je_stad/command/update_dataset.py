@@ -46,7 +46,7 @@ measurement_repository.write_to_small(measurements)
 dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')
 dotenv.set_key(dotenv_file, "END_DATE", date_now.strftime('%Y-%m-%d,%H:%M:%S'), quote_mode='never')
 
-sensors = sensor_repository.update(date_now, measurements)
+sensors = sensor_repository.update(measurements)
 
 measurements_utrecht = {}
 for index, measurements_out in measurements.items():

@@ -8,7 +8,6 @@ class Sensor:
         'mean_longitude',
         'mean_latitude',
         'start_date',
-        'end_date',
         'start_date_utrecht',
         'end_date_utrecht',
         'is_particulate_matter',
@@ -29,8 +28,12 @@ class Sensor:
             self.mean_latitude = None
         else:
             self.mean_latitude = float(mean_latitude)
-        self.start_date = self.set_date(measurement[len(Measurement.properties) + properties_flipped['start_date']])
-        self.end_date = self.set_date(measurement[len(Measurement.properties) + properties_flipped['end_date']])
+        start_date = measurement[len(Measurement.properties) + properties_flipped['start_date']]
+        if start_date == '':
+            self.start_date = None
+        else:
+            self.start_date = datetime.datetime.strptime(
+                start_date, "%Y-%m-%d %H:%M:%S").replace(tzinfo=datetime.timezone.utc)
         self.start_date_utrecht = self.set_date(measurement[len(Measurement.properties) +
                                                             properties_flipped['start_date_utrecht']])
         self.end_date_utrecht = self.set_date(measurement[len(Measurement.properties) +
