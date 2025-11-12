@@ -20,10 +20,18 @@ class SensorRepository:
         for index, sensor in sensors.items():
             row = sensor.measurements[-1].to_list()
             for key in Sensor.properties:
-                if isinstance(sensor.__getattribute__(key), datetime.datetime):
-                    row.append(sensor.__getattribute__(key).strftime('%Y-%m-%d'))
+                if key == 'is_active':
+                    continue
+                if key == 'is_particulate_matter':
+                    if sensor.__getattribute__(key):
+                        row.append('1')
+                    else:
+                        row.append('0')
                 else:
-                    row.append(sensor.__getattribute__(key))
+                    if isinstance(sensor.__getattribute__(key), datetime.datetime):
+                        row.append(sensor.__getattribute__(key).strftime('%Y-%m-%d'))
+                    else:
+                        row.append(sensor.__getattribute__(key))
             rows_out.append(row)
         csv.writer(file).writerows(rows_out)
         file.close()
@@ -33,11 +41,28 @@ class SensorRepository:
         with open(self.path_data + 'sensor.csv') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
-                sensor_utrecht = Sensor(row)
-                if pm and sensor_utrecht.is_particulate_matter:
-                    sensors[int(row[1])] = sensor_utrecht
+                sensor = Sensor(row)
+                if pm and sensor.is_particulate_matter:
+                    sensors[int(row[1])] = sensor
                 elif not pm:
-                    sensors[int(row[1])] = sensor_utrecht
+                    sensors[int(row[1])] = sensor
+        return sensors
+
+    def get_small_utrecht(self, sensors:dict) -> dict:
+        measurements = {}
+        with open(self.path_data + 'dataset_small_utrecht.csv') as csvfile:
+            reader = csv.reader(csvfile)
+            for row in reader:
+                if int(row[1]) not in sensors:
+                    continue
+                if int(row[1]) in measurements:
+                    measurements[int(row[1])].append(Measurement(row))
+                else:
+                    measurements[int(row[1])] = [Measurement(row)]
+        for index, rows in measurements.items():
+            sensors[index].set_measurements(rows)
+            sensors[index].is_active = True
+
         return sensors
 
     def update(self, date_now: datetime.datetime, measurements: dict) -> dict:
@@ -48,7 +73,7 @@ class SensorRepository:
         values = []
         for index, measurements in measurements.items():
 
-            # Set initial values of sensors_utrecht
+            # Set initial values of sensors
             end_date = None
             particulate_matter = False
             if index in sensors:
@@ -135,7 +160,7 @@ class SensorRepository:
                     utrecht_city = False
 
             # Write row to rows_utrecht
-            if utrecht_city or start_date_utrecht != '':
+            if utrecht_city or (start_date_utrecht != '' and start_date_utrecht is not None):
                 if end_date == date_now:
                     end_date = ''
                 else:
@@ -151,13 +176,17 @@ class SensorRepository:
                 if longitudes != {} and latitudes != {}:
                     longitude_file = longitudes[list(longitudes)[-1]]
                     latitude_file = latitudes[list(latitudes)[-1]]
+                if particulate_matter:
+                    particulate_matter = '1'
+                else:
+                    particulate_matter = '0'
                 extra_row = [longitude_file, latitude_file, start_date,
                              end_date, start_date_utrecht,
                              end_date_utrecht, particulate_matter]
                 if values:
                     rows_utrecht[index] = Sensor(values.copy() + extra_row)
 
-        # Update the sensors utrecht
+        # Update the sensors
         for index, row in rows_utrecht.items():
             sensors[index] = row
         if len(values) > 0:

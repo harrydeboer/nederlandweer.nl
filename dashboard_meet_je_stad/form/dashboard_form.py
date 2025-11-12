@@ -8,12 +8,10 @@ class DashboardForm(forms.Form):
         sensors = kwargs.pop('sensors')
         inactive = kwargs.pop('inactive')
         choices = [("", "-")]
-        if inactive:
-            for index, row in sensors.items():
-                choices.append((index, index))
-        else:
-            for index, sensor in sensors.items():
-                choices.append((index, index))
+        for index, sensor in sensors.items():
+            if not inactive and not sensor.is_active:
+                continue
+            choices.append((index, index))
         if len(args[0]) > 0:
             super().__init__(*args, **kwargs)
         else:

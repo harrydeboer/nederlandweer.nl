@@ -28,22 +28,6 @@ class MeasurementRepository:
                         measurements[int(row[1])] = [Measurement(row)]
         return measurements
 
-    def get_small_utrecht(self, sensors:dict) -> dict:
-        measurements = {}
-        with open(self.path_data + 'dataset_small_utrecht.csv') as csvfile:
-            reader = csv.reader(csvfile)
-            for row in reader:
-                if int(row[1]) not in sensors:
-                    continue
-                if int(row[1]) in measurements:
-                    measurements[int(row[1])].append(Measurement(row))
-                else:
-                    measurements[int(row[1])] = [Measurement(row)]
-        for index, rows in measurements.items():
-            sensors[index].set_measurements(rows)
-
-        return sensors
-
     def add_to_small(self, rows: list):
         file = open(self.path_data + "dataset_small.csv", "a", newline='')
         csv.writer(file).writerows(rows)

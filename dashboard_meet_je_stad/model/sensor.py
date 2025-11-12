@@ -11,7 +11,8 @@ class Sensor:
         'end_date',
         'start_date_utrecht',
         'end_date_utrecht',
-        'is_particulate_matter'
+        'is_particulate_matter',
+        'is_active',
     ]
 
     def __init__(self, measurement: list):
@@ -38,6 +39,7 @@ class Sensor:
             self.is_particulate_matter = True
         else:
             self.is_particulate_matter = False
+        self.is_active = False
         self.measurements = []
         self.add_measurement(Measurement(measurement))
 
