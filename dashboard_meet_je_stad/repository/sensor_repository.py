@@ -4,12 +4,17 @@ from dashboard_meet_je_stad.model.measurement import Measurement
 from dashboard_meet_je_stad.model.sensor import Sensor
 import math
 import datetime
+import sys
 
 
 class SensorRepository:
 
     def __init__(self):
-        self.path_data = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) + '/data/'
+        self.path_data = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        if sys.argv[1:2] == ['test']:
+            self.path_data += '/tests/data/'
+        else:
+            self.path_data += '/data/'
         self.utrecht_center_lat_degrees = 52.085 * math.pi / 180
         self.utrecht_center_long_degrees = 5.085 * math.pi / 180
         self.radius = 9.46

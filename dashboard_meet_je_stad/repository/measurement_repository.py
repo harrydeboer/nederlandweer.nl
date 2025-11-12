@@ -2,12 +2,17 @@ import os
 import csv
 import datetime
 from dashboard_meet_je_stad.model.measurement import Measurement
+import sys
 
 
 class MeasurementRepository:
 
     def __init__(self):
-        self.path_data = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) + '/data/'
+        self.path_data = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        if  sys.argv[1:2] == ['test']:
+            self.path_data += '/tests/data/'
+        else:
+            self.path_data += '/data/'
 
     def add_to_full(self, id_sensor: int, rows: list):
         os.makedirs(self.path_data + "ids/" + str(id_sensor), exist_ok=True)

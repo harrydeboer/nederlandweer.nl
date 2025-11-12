@@ -2,4 +2,4 @@
 
 source .venv/Scripts/activate
 
-python manage.py test tests/Functional/View/ tests/Unit/Service/
+python manage.py test tests/Functional/View/ tests/Unit/Service/ tests/Unit/Repository
