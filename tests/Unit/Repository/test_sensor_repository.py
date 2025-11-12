@@ -7,5 +7,5 @@ class TestSensorRepository(unittest.TestCase):
     def test_get_data(self) -> None:
         repository = SensorRepository()
 
-        result = repository.get(True)
-        self.assertEqual(result, {})
+        result = repository.get(False)
+        self.assertEqual(len(result), 1)
