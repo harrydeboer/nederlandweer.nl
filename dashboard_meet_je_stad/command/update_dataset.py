@@ -26,7 +26,7 @@ for sensor_id_50 in range(0, int(last_sensor_id / sensor_step) + 2):
         'json',
         ids_range,
         False,
-        2 * delta.days * 24 * 4 * sensor_step,
+        2 * (delta.days + 1) * 24 * 4 * sensor_step,
         False)
     for row in results:
         if row[1] not in rows_new:
