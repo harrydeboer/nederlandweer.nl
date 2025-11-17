@@ -29,7 +29,7 @@ class Sensor:
         else:
             self.mean_latitude = float(mean_latitude)
         start_date = measurement[len(Measurement.properties) + properties_flipped['start_date']]
-        if start_date == '':
+        if start_date == '' or start_date is None:
             self.start_date = None
         else:
             self.start_date = datetime.datetime.strptime(

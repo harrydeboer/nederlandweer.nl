@@ -35,11 +35,13 @@ class MeetJeStadAPIService:
             for index, key in enumerate(Measurement.properties):
                 keys[key] = index
             ids = ''
-            sensors_utrecht = SensorRepository().get()
-            for index, sensor in sensors_utrecht.items():
+            sensors = SensorRepository().get()
+            for index, sensor in sensors.items():
+                last_measurement = datetime.datetime.strftime(sensor.measurements[0].timestamp, '%Y-%m-%d %H:%M:%S')
+                delta = date_end - datetime.datetime.strptime(last_measurement, "%Y-%m-%d %H:%M:%S")
                 if index == 0:
                     continue
-                if is_active_only and sensor.end_date is not None:
+                if is_active_only and delta.days > 0:
                     continue
                 if is_particulate_matter_only and sensor.is_particulate_matter == '0':
                     continue

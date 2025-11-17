@@ -3,6 +3,7 @@ import csv
 import datetime
 from dashboard_meet_je_stad.model.measurement import Measurement
 import sys
+from typing import List, Dict
 
 
 class MeasurementRepository:
@@ -20,8 +21,8 @@ class MeasurementRepository:
         csv.writer(file).writerows(rows)
         file.close()
 
-    def get_small_last_24(self, date_now: datetime.datetime) -> dict:
-        measurements = {}
+    def get_small_last_24(self, date_now: datetime.datetime) -> Dict[int, List[Measurement]]:
+        measurements = {} # type: Dict[int, List[Measurement]]
         with open(self.path_data + "dataset_small.csv") as csvfile:
             reader = csv.reader(csvfile)
             for index, row in enumerate(reader):
