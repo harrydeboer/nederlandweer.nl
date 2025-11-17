@@ -22,7 +22,7 @@ class MeasurementRepository:
         file.close()
 
     def get_small_last_24(self, date_now: datetime.datetime) -> Dict[int, List[Measurement]]:
-        measurements = {} # type: Dict[int, List[Measurement]]
+        measurements = {}
         with open(self.path_data + "dataset_small.csv") as csvfile:
             reader = csv.reader(csvfile)
             for index, row in enumerate(reader):

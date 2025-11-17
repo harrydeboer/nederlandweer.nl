@@ -5,7 +5,7 @@ from dashboard_meet_je_stad.model.sensor import Sensor
 import math
 import datetime
 import sys
-from typing import List, Dict
+from typing import Dict
 
 
 class SensorRepository:
@@ -46,7 +46,7 @@ class SensorRepository:
         file.close()
 
     def get(self, pm:bool = False) -> Dict[int, Sensor]:
-        sensors = {} # type: Dict[int, Sensor]
+        sensors = {}
         with open(self.path_data + 'sensor.csv') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
@@ -59,12 +59,7 @@ class SensorRepository:
 
 
     def get_small_utrecht(self, sensors:Dict[int, Sensor]) -> Dict[int, Sensor]:
-        """
-                    :returns: appropriate release object
-                    :rtype: AlphaRelease, BetaRelease, or VRelease
-                    """
-
-        measurements = {} # type: Dict[int, List[Measurement]]
+        measurements = {}
         with open(self.path_data + 'dataset_small_utrecht.csv') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
