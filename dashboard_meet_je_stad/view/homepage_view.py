@@ -15,12 +15,20 @@ class HomepageView:
     def index(self, request: WSGIRequest) -> HttpResponse:
         pm = False
         inactive = False
-        form = DashboardForm(request.GET, inactive=inactive, sensors={})
+        interval = '24hour'
+        id_sensor = None
+        form = DashboardForm(request.GET, inactive=True, sensors=self.sensor_repository.find_all())
         if form.is_valid():
             pm = form['pm'].value()
             inactive = form['inactive'].value()
+            interval = form['interval'].value()
+            id_sensor = form['sensor'].value()
+            if id_sensor == '':
+                id_sensor = None
+            else:
+                id_sensor = int(id_sensor)
         sensors = self.sensor_repository.find_all(pm=pm)
-        sensors = self.sensor_repository.get_small_utrecht(sensors=sensors)
+        sensors = self.sensor_repository.get_small_utrecht(sensors=sensors, interval=interval, id_sensor=id_sensor)
         form = DashboardForm(request.GET, inactive=inactive, sensors=sensors)
 
         return render(request, 'homepage/index.html',{'form': form, 'sensors': sensors})

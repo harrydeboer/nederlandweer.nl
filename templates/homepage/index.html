@@ -38,6 +38,13 @@
                     <div id="curve_chart" class="col col-md-9"></div>
                 </div>
                 <div class="row">
+                    {% for interval in form.interval %}
+                        <div class="row">
+                            {{ interval }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="row">
                     <div class="col-md-2">{{ form.inactive.label_tag }}</div>
                     <div class="col-md-1">
                         {{ form.inactive }}

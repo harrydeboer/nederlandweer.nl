@@ -2,6 +2,7 @@ import os
 import csv
 import datetime
 from dashboard_meet_je_stad.model.measurement import Measurement
+from dashboard_meet_je_stad.model.sensor import Sensor
 import sys
 from typing import List, Dict
 
@@ -21,6 +22,14 @@ class MeasurementRepository:
         csv.writer(file).writerows(rows)
         file.close()
 
+    def get(self, id_sensor: int) -> List[Measurement]:
+        measurements = []
+        with open(self.path_data + "ids/" + str(id_sensor) + "/out.csv") as csvfile:
+            reader = csv.reader(csvfile)
+            for index, row in enumerate(reader):
+                measurements.append(Measurement(row))
+        return measurements
+
     def get_small_last_24(self, date_now: datetime.datetime) -> Dict[int, List[Measurement]]:
         measurements = {}
         with open(self.path_data + "dataset_small.csv") as csvfile:
@@ -32,6 +41,19 @@ class MeasurementRepository:
                         measurements[int(row[1])].append(Measurement(row))
                     else:
                         measurements[int(row[1])] = [Measurement(row)]
+        return measurements
+
+    def get_small_utrecht(self, sensors: Dict[int, Sensor]) -> Dict[int, List[Measurement]]:
+        measurements = {}
+        with open(self.path_data + 'dataset_small_utrecht.csv') as csvfile:
+            reader = csv.reader(csvfile)
+            for row in reader:
+                if int(row[1]) not in sensors:
+                    continue
+                if int(row[1]) in measurements:
+                    measurements[int(row[1])].append(Measurement(row))
+                else:
+                    measurements[int(row[1])] = [Measurement(row)]
         return measurements
 
     def add_to_small(self, rows: list):

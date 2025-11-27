@@ -1,7 +1,7 @@
 import os
 import csv
-from dashboard_meet_je_stad.model.measurement import Measurement
 from dashboard_meet_je_stad.model.sensor import Sensor
+from dashboard_meet_je_stad.repository.measurement_repository import MeasurementRepository
 import math
 import datetime
 import sys
@@ -19,6 +19,7 @@ class SensorRepository:
         self.utrecht_center_lat_degrees = 52.085 * math.pi / 180
         self.utrecht_center_long_degrees = 5.085 * math.pi / 180
         self.radius = 9.46
+        self.measurement_repository = MeasurementRepository()
 
     def write(self, sensors: dict):
         file = open(self.path_data + "sensor.csv", "w", newline='')
@@ -57,24 +58,20 @@ class SensorRepository:
                     sensors[int(row[1])] = sensor
         return sensors
 
-    def get(self, sensor_id: int) -> Sensor:
-        return self.find_all()[sensor_id]
+    def get(self, id_sensor: int) -> Sensor:
+        sensor = self.find_all()[id_sensor]
+        sensor.set_measurements(self.measurement_repository.get(id_sensor))
+        return sensor
 
-    def get_small_utrecht(self, sensors:Dict[int, Sensor]) -> Dict[int, Sensor]:
-        measurements = {}
-        with open(self.path_data + 'dataset_small_utrecht.csv') as csvfile:
-            reader = csv.reader(csvfile)
-            for row in reader:
-                if int(row[1]) not in sensors:
-                    continue
-                if int(row[1]) in measurements:
-                    measurements[int(row[1])].append(Measurement(row))
-                else:
-                    measurements[int(row[1])] = [Measurement(row)]
+    def get_small_utrecht(self, sensors:Dict[int, Sensor], interval: str, id_sensor: int) -> Dict[int, Sensor]:
+        measurements = self.measurement_repository.get_small_utrecht(sensors)
         for index, rows in measurements.items():
             sensors[index].set_measurements(rows)
             sensors[index].is_active = True
 
+        if id_sensor is not None and interval == '3month':
+            sensors[id_sensor] = self.get(id_sensor)
+            sensors[id_sensor].is_active = True
         return sensors
 
     def update(self, measurements: dict) -> dict:

@@ -11,7 +11,7 @@ class DashboardForm(forms.Form):
         for index, sensor in sensors.items():
             if not inactive and not sensor.is_active:
                 continue
-            choices.append((index, index))
+            choices.append((str(index), str(index)))
         if len(args[0]) > 0:
             super().__init__(*args, **kwargs)
         else:
@@ -33,6 +33,16 @@ class DashboardForm(forms.Form):
         widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
         choices=choices,
         initial='temperature'
+    )
+
+    choices_graph = [
+        ('24hour', '24 uur'),
+        ('3month', '3 maanden'),
+    ]
+    interval = forms.ChoiceField(
+        widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
+        choices=choices_graph,
+        initial='24hour'
     )
 
     sensor = forms.ChoiceField()
