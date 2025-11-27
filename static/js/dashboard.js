@@ -44,6 +44,11 @@ class Dashboard {
         this.type.on('change', this.graph.bind(this));
 
         this.graph();
+
+        let that = this;
+        setTimeout(function () {
+            that.popupIcon(that.sensor.val());
+        }, 500);
     }
 
     makeFeatures() {
