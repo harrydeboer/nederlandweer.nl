@@ -45,7 +45,7 @@ class SensorRepository:
         csv.writer(file).writerows(rows_out)
         file.close()
 
-    def get(self, pm:bool = False) -> Dict[int, Sensor]:
+    def find_all(self, pm:bool = False) -> Dict[int, Sensor]:
         sensors = {}
         with open(self.path_data + 'sensor.csv') as csvfile:
             reader = csv.reader(csvfile)
@@ -57,6 +57,8 @@ class SensorRepository:
                     sensors[int(row[1])] = sensor
         return sensors
 
+    def get(self, sensor_id: int) -> Sensor:
+        return self.find_all()[sensor_id]
 
     def get_small_utrecht(self, sensors:Dict[int, Sensor]) -> Dict[int, Sensor]:
         measurements = {}
@@ -76,7 +78,7 @@ class SensorRepository:
         return sensors
 
     def update(self, measurements: dict) -> dict:
-        sensors = self.get()
+        sensors = self.find_all()
 
         # Loop over all sensors
         rows_utrecht = {}

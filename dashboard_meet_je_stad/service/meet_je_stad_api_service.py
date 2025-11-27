@@ -35,7 +35,7 @@ class MeetJeStadAPIService:
             for index, key in enumerate(Measurement.properties):
                 keys[key] = index
             ids = ''
-            sensors = SensorRepository().get()
+            sensors = SensorRepository().find_all()
             for index, sensor in sensors.items():
                 last_measurement = datetime.datetime.strftime(sensor.measurements[0].timestamp, '%Y-%m-%d %H:%M:%S')
                 delta = date_end - datetime.datetime.strptime(last_measurement, "%Y-%m-%d %H:%M:%S")

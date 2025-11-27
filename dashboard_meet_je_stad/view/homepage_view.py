@@ -19,7 +19,7 @@ class HomepageView:
         if form.is_valid():
             pm = form['pm'].value()
             inactive = form['inactive'].value()
-        sensors = self.sensor_repository.get(pm=pm)
+        sensors = self.sensor_repository.find_all(pm=pm)
         sensors = self.sensor_repository.get_small_utrecht(sensors=sensors)
         form = DashboardForm(request.GET, inactive=inactive, sensors=sensors)
 
