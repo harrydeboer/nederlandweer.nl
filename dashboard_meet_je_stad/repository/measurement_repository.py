@@ -24,10 +24,14 @@ class MeasurementRepository:
 
     def get(self, id_sensor: int) -> List[Measurement]:
         measurements = []
+        date = datetime.datetime.now(datetime.timezone.utc)
+        date -= datetime.timedelta(days=92)
         with open(self.path_data + "ids/" + str(id_sensor) + "/out.csv") as csvfile:
             reader = csv.reader(csvfile)
             for index, row in enumerate(reader):
-                measurements.append(Measurement(row))
+                measurement = Measurement(row)
+                if measurement.timestamp > date:
+                    measurements.append(measurement)
         return measurements
 
     def get_small_last_24(self, date_now: datetime.datetime) -> Dict[int, List[Measurement]]:
