@@ -154,6 +154,11 @@ class Dashboard {
 
     sensorChange() {
         this.popupIcon(this.sensor.val());
+        if (this.sensors[this.sensor.val()].timestamp.length > 96) {
+            $("input[name=interval][value='3month']").prop("checked",true);
+        } else {
+            $("input[name=interval][value='24hour']").prop("checked",true);
+        }
         this.graph();
     }
 
