@@ -63,6 +63,11 @@ class SensorRepository:
         sensor.set_measurements(self.measurement_repository.get(id_sensor))
         return sensor
 
+    def get_3month(self, id_sensor: int) -> Sensor:
+        sensor = self.find_all()[id_sensor]
+        sensor.set_measurements(self.measurement_repository.get_3month(id_sensor))
+        return sensor
+
     def get_small_utrecht(self, sensors:Dict[int, Sensor], interval: str, id_sensor: int) -> Dict[int, Sensor]:
         measurements = self.measurement_repository.get_small_utrecht(sensors)
         for index, rows in measurements.items():
@@ -70,7 +75,7 @@ class SensorRepository:
             sensors[index].is_active = True
 
         if id_sensor is not None and interval == '3month':
-            sensors[id_sensor] = self.get(id_sensor)
+            sensors[id_sensor] = self.get_3month(id_sensor)
             sensors[id_sensor].is_active = True
         return sensors
 
