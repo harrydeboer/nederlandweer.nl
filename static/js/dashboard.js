@@ -247,11 +247,7 @@ class Dashboard {
         data.addColumn('number', 'Value');
 
         horizontalData.forEach(function(element, index) {
-            if (verticalData[index] === '') {
-                data.addRow([horizontalData[index], null])
-            } else {
-                data.addRow([horizontalData[index], verticalData[index]])
-            }
+            data.addRow([horizontalData[index], verticalData[index]])
         })
 
         let options = {
