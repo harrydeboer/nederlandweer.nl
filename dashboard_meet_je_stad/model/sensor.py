@@ -73,6 +73,8 @@ class Sensor:
             properties[prop] = []
             for measurement in self.measurements:
                 value = measurement.__getattribute__(prop)
+                if value is None:
+                    value = ''
                 if isinstance(value, datetime.datetime):
                     properties[prop].append(value.strftime('%Y-%m-%d %H:%M:%S'))
                 else:

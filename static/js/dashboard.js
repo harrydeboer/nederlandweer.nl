@@ -253,26 +253,16 @@ class Dashboard {
         }
 
         let data = new google.visualization.DataTable();
+        data.addColumn('date', 'Date');
+        data.addColumn('number', 'Value');
 
-        let jsonData = [
-            ['dummy1', 'dummy2'],
-        ];
         horizontalData.forEach(function(element, index) {
-            jsonData.push([element, verticalData[index]])
-        })
-        jsonData.forEach(function (row, indexRow) {
-            if (indexRow === 0) {
-                row.forEach(function (column, indexCol) {
-                    if (indexCol === 0) {
-                        data.addColumn('date', column);
-                    } else {
-                        data.addColumn('number', column);
-                    }
-                });
+            if (verticalData[index] === '') {
+                data.addRow([horizontalData[index], null])
             } else {
-                data.addRow(row);
+                data.addRow([horizontalData[index], verticalData[index]])
             }
-        });
+        })
 
         let options = {
             title: title,
