@@ -237,16 +237,6 @@ class Dashboard {
             }
         }
 
-        let indices = []
-        verticalData.forEach(function(element, index) {
-            if (element === null) {
-                indices.push(index)
-            }
-        });
-        for (let i = indices.length -1; i >= 0; i--) {
-            horizontalData.splice(indices[i], 1);
-            verticalData.splice(indices[i], 1);
-        }
         if (horizontalData.length === 0 || verticalData.length === 0) {
             verticalData = [null]
             horizontalData = [new Date()];
