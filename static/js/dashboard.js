@@ -189,7 +189,7 @@ class Dashboard {
         let vertical = '°C';
         let horizontal = 't';
         let horizontalData = [new Date()];
-        let verticalData = [0];
+        let verticalData = [null];
         let type = $('input[name=type]:checked').val();
         let title = 'Temperatuur';
         let rawData;
@@ -248,14 +248,31 @@ class Dashboard {
             verticalData.splice(indices[i], 1);
         }
         if (horizontalData.length === 0 || verticalData.length === 0) {
-            verticalData = [0]
+            verticalData = [null]
             horizontalData = [new Date()];
         }
 
-        let dataGraph = horizontalData.map((name, index) =>
-            [name, verticalData[index]]);
-        let data = google.visualization.arrayToDataTable(
-            [[horizontal, vertical]].concat(dataGraph));
+        let data = new google.visualization.DataTable();
+
+        let jsonData = [
+            ['dummy1', 'dummy2'],
+        ];
+        horizontalData.forEach(function(element, index) {
+            jsonData.push([element, verticalData[index]])
+        })
+        jsonData.forEach(function (row, indexRow) {
+            if (indexRow === 0) {
+                row.forEach(function (column, indexCol) {
+                    if (indexCol === 0) {
+                        data.addColumn('date', column);
+                    } else {
+                        data.addColumn('number', column);
+                    }
+                });
+            } else {
+                data.addRow(row);
+            }
+        });
 
         let options = {
             title: title,
