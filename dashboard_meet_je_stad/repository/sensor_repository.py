@@ -2,6 +2,7 @@ import os
 import csv
 from dashboard_meet_je_stad.model.sensor import Sensor
 from dashboard_meet_je_stad.repository.measurement_repository import MeasurementRepository
+from dashboard_meet_je_stad.service.make_grid_service import MakeGridService
 import math
 import datetime
 import sys
@@ -20,6 +21,7 @@ class SensorRepository:
         self.utrecht_center_long_degrees = 5.085 * math.pi / 180
         self.radius = 9.46
         self.measurement_repository = MeasurementRepository()
+        self.make_grid_service = MakeGridService()
 
     def write(self, sensors: dict):
         file = open(self.path_data + "sensor.csv", "w", newline='')
@@ -74,9 +76,14 @@ class SensorRepository:
             sensors[index].set_measurements(rows)
             sensors[index].is_active = True
 
+        sensors = self.make_grid_service.make_grid(sensors, '24hour')
+
         if id_sensor is not None and interval == '3month':
             sensors[id_sensor] = self.get_3month(id_sensor)
             sensors[id_sensor].is_active = True
+            sensors_3month = {id_sensor: sensors[id_sensor]}
+            sensors[id_sensor] = self.make_grid_service.make_grid(sensors_3month, '3month')[id_sensor]
+
         return sensors
 
     def update(self, measurements: dict) -> dict:
