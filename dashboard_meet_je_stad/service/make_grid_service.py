@@ -37,16 +37,17 @@ class MakeGridService:
                     index_next = index
                 if measurements[index].temperature is None:
                     measurements[index] = measurement
-                elif measurements[index - 1].temperature is None:
+                elif index - 1 in measurements and measurements[index - 1].temperature is None:
                     measurements[index - 1] = measurement
-                elif index_next > index + 1:
+                elif index + 1 in measurements and index_next > index + 1:
                     measurements[index + 1] = measurement
                 else:
-                    diff_earlier = measurements[index].timestamp.timestamp() - measurement
-                    diff_later = (sensor.measurements[index_measurement + 1].timestamp.timestamp() -
-                                  measurements[index].timestamp.timestamp())
-                    if diff_earlier > diff_later:
-                        measurements[index] = measurement
+                    diff_earlier = abs(measurement.timestamp.timestamp() - measurements[index].timestamp.timestamp())
+                    if index_measurement + 1 in sensor.measurements:
+                        diff_later = abs(sensor.measurements[index_measurement + 1].timestamp.timestamp() -
+                                      measurements[index].timestamp.timestamp())
+                        if diff_later > diff_earlier:
+                            measurements[index] = measurement
             if measurements[-1].timestamp > date_now and measurements[-1].temperature is None:
                 measurements = measurements[:-1]
             sensors[id_sensor].set_measurements(measurements)
