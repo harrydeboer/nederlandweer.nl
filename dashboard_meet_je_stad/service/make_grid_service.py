@@ -30,28 +30,14 @@ class MakeGridService:
                 continue
             for index_measurement, measurement in enumerate(sensor.measurements):
                 index = round((measurement.timestamp.timestamp() - measurements[0].timestamp.timestamp()) / 60 / 15)
-                if index_measurement + 1 in sensor.measurements:
-                    index_next = round((sensor.measurements[index_measurement + 1].timestamp.timestamp()
-                                        - measurements[0].timestamp.timestamp()) / 60 / 15)
-                else:
-                    index_next = index
                 if measurements[index].temperature is None:
                     measurements[index] = measurement
-                elif index - 1 in measurements and measurements[index - 1].temperature is None:
-                    measurements[index - 1] = measurement
-                elif index + 1 in measurements and index_next > index + 1:
-                    measurements[index + 1] = measurement
                 else:
                     diff_current = abs(measurement.timestamp.timestamp() - measurements[index].timestamp.timestamp())
-                    diff_earlier = 1000000000
-                    diff_later = 1000000000
                     if index_measurement - 1 in sensor.measurements:
                         diff_earlier = abs(measurements[index].timestamp.timestamp() -
                                            sensor.measurements[index_measurement - 1].timestamp.timestamp())
-                    if index_measurement + 1 in sensor.measurements:
-                        diff_later = abs(sensor.measurements[index_measurement + 1].timestamp.timestamp() -
-                                      measurements[index].timestamp.timestamp())
-                    if diff_later > diff_current and diff_earlier > diff_current:
+                        if diff_earlier > diff_current:
                             measurements[index] = measurement
             if measurements[-1].timestamp > date_now and measurements[-1].temperature is None:
                 measurements = measurements[:-1]
