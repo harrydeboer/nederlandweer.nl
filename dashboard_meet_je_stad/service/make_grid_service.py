@@ -25,6 +25,8 @@ class MakeGridService:
                 continue
             for index_measurement, measurement in enumerate(sensor.measurements):
                 index = round((measurement.timestamp.timestamp() - measurements[0].timestamp.timestamp()) / 60 / 15)
+                if index < 0:
+                    continue
                 if measurements[index].temperature is None:
                     measurements[index] = measurement
                 else:
