@@ -5,9 +5,7 @@ body {
 }
 
 #map {
-  position: absolute;
-  height: 700px;
-  width: 40%;
+  height: calc(100vh - 52px); /* 100% of the viewport height - navbar height */
 }
 
 .sensor-title {

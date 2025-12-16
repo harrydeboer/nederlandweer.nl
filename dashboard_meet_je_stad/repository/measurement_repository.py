@@ -31,10 +31,10 @@ class MeasurementRepository:
 
         return measurements
 
-    def get_3month(self, id_sensor: int) -> List[Measurement]:
+    def get_days(self, id_sensor: int, days:float) -> List[Measurement]:
         measurements = []
         date = datetime.datetime.now(datetime.timezone.utc)
-        date -= datetime.timedelta(days=91)
+        date -= datetime.timedelta(days=days)
         with open(self.path_data + "ids/" + str(id_sensor) + "/out.csv") as csvfile:
             reader = csv.reader(csvfile)
             for index, row in enumerate(reader):

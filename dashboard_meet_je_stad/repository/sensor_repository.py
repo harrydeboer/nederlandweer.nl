@@ -65,9 +65,9 @@ class SensorRepository:
         sensor.set_measurements(self.measurement_repository.get(id_sensor))
         return sensor
 
-    def get_3month(self, id_sensor: int) -> Sensor:
+    def get_days(self, id_sensor: int, days:float) -> Sensor:
         sensor = self.find_all()[id_sensor]
-        sensor.set_measurements(self.measurement_repository.get_3month(id_sensor))
+        sensor.set_measurements(self.measurement_repository.get_days(id_sensor, days))
         return sensor
 
     def get_small_utrecht(self, sensors:Dict[int, Sensor], interval: str, id_sensor: int) -> Dict[int, Sensor]:
@@ -76,13 +76,13 @@ class SensorRepository:
             sensors[index].set_measurements(rows)
             sensors[index].is_active = True
 
-        sensors = self.make_grid_service.make_grid(sensors, '24hour')
+        sensors = self.make_grid_service.make_grid(sensors, 1)
 
         if id_sensor is not None and interval == '3month':
-            sensors[id_sensor] = self.get_3month(id_sensor)
+            sensors[id_sensor] = self.get_days(id_sensor, 91)
             sensors[id_sensor].is_active = True
             sensors_3month = {id_sensor: sensors[id_sensor]}
-            sensors[id_sensor] = self.make_grid_service.make_grid(sensors_3month, '3month')[id_sensor]
+            sensors[id_sensor] = self.make_grid_service.make_grid(sensors_3month, 91)[id_sensor]
 
         return sensors
 

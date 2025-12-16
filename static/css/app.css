@@ -1,1 +1,1 @@
-html,body{margin:0;height:100%}#map{position:absolute;height:700px;width:40%}.sensor-title{color:blue;font-weight:bold}#sensor{width:300px}#curve_chart{height:500px}#types{margin-top:200px}#id_sensor{width:100px}/*# sourceMappingURL=app.css.map */
+html,body{margin:0;height:100%}#map{height:calc(100vh - 52px)}.sensor-title{color:blue;font-weight:bold}#sensor{width:300px}#curve_chart{height:500px}#types{margin-top:200px}#id_sensor{width:100px}/*# sourceMappingURL=app.css.map */

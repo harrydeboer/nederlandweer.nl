@@ -5,7 +5,7 @@ import datetime
 
 
 class MakeGridService:
-    def make_grid(self, sensors:Dict[int, Sensor], interval:str)  -> Dict[int, Sensor]:
+    def make_grid(self, sensors:Dict[int, Sensor], days:float)  -> Dict[int, Sensor]:
         for id_sensor, sensor in sensors.items():
             measurements = []
             date_now = datetime.datetime.now(datetime.timezone.utc)
@@ -14,13 +14,8 @@ class MakeGridService:
                                                       microseconds=date_now.microsecond)
             last_date += datetime.timedelta(minutes=15)
 
-            if interval == '24hour':
-                last_date -= datetime.timedelta(days=1)
-            elif interval == '3month':
-                last_date -= datetime.timedelta(days=91)
-            range_end = 96 + 1
-            if interval == '3month':
-                range_end = 96 * 91 + 1
+            last_date -= datetime.timedelta(days=days)
+            range_end = round(96 * days + 1)
             for index in range(0, range_end):
                 measurements.append(Measurement([last_date.strftime('%Y-%m-%d %H:%M:%S'),
                                                  sensor.measurements[-1].id, None, None, None, None, None,
