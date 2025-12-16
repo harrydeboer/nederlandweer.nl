@@ -16,6 +16,8 @@ class MakeGridService:
 
             last_date -= datetime.timedelta(days=days)
             range_end = round(96 * days + 1)
+            if len(sensor.measurements) == 0:
+                continue
             for index in range(0, range_end):
                 measurements.append(Measurement([last_date.strftime('%Y-%m-%d %H:%M:%S'),
                                                  sensor.measurements[-1].id, None, None, None, None, None,
