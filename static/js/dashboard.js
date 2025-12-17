@@ -153,13 +153,15 @@ class Dashboard {
     }
 
     sensorChange() {
-        this.popupIcon(this.sensor.val());
-        let dateFirst = new Date(this.sensors[this.sensor.val()].timestamp[0])
-        let dateLast = new Date(this.sensors[this.sensor.val()].timestamp.slice(-1)[0])
-        if ((dateLast.getTime() - dateFirst.getTime()) / 1000 > 24 * 60 * 60) {
-            $("input[name=interval][value='3month']").prop("checked",true);
-        } else {
-            $("input[name=interval][value='24hour']").prop("checked",true);
+        if (this.sensor.val() !== '') {
+            this.popupIcon(this.sensor.val());
+            let dateFirst = new Date(this.sensors[this.sensor.val()].timestamp[0])
+            let dateLast = new Date(this.sensors[this.sensor.val()].timestamp.slice(-1)[0])
+            if ((dateLast.getTime() - dateFirst.getTime()) / 1000 > 24 * 60 * 60) {
+                $("input[name=interval][value='3month']").prop("checked",true);
+            } else {
+                $("input[name=interval][value='24hour']").prop("checked",true);
+            }
         }
         this.graph();
     }
