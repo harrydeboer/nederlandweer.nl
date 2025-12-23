@@ -1,5 +1,22 @@
-if($(':root').css('--ol-subtle-background-color') !== 'rgba(128, 128, 128, 0.25)') {
-    $("head").prepend('<link rel="stylesheet" href="/static/css/ol.min.css">');
+if(getComputedStyle(document.querySelector(':root')).getPropertyValue('--ol-subtle-background-color')
+    !== 'rgba(128, 128, 128, 0.25)') {
+    let rel = document.createElement('link');
+    rel.rel = "stylesheet";
+    rel.href = "/static/css/ol.min.css"
+    document.head.append(rel);
 }
 
-window.ol || document.write('<script type="text/javascript" src="/static/dist/ol.min.js"><\/script>');
+if (!window.ol) {
+    let myScript = document.createElement('script');
+
+    myScript.setAttribute('src','/static/dist/ol.min.js');
+
+    document.head.append(myScript);
+
+    function defer() {
+        if (!window.ol) {
+            setTimeout(function() { defer(); }, 50);
+        }
+    }
+    defer();
+}

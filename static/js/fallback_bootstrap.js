@@ -1,6 +1,26 @@
-if($('body').css('color') !== 'rgb(33, 37, 41)') {
-    $("head").prepend('<link rel="stylesheet" href="/static/css/bootstrap.min.css">');
+if(window.getComputedStyle(document.body)['color'] !== 'rgb(33, 37, 41)') {
+    let rel = document.createElement('link');
+    rel.rel = "stylesheet";
+    rel.href = "/css/bootstrap.min.css"
+    document.head.append(rel);
+
+    let relApp = document.createElement('link');
+    relApp.rel = "stylesheet";
+    relApp.href = "/css/app.css"
+    document.head.append(relApp);
 }
 
-window.bootstrap || document.write('<script type="text/javascript" ' +
-    'src="/static/dist/bootstrap.bundle.min.js"><\/script>');
+if (!window.bootstrap) {
+    let myScript = document.createElement('script');
+
+    myScript.setAttribute('src','/dist/bootstrap.bundle.min.js');
+
+    document.head.append(myScript);
+
+    function defer() {
+        if (!window.bootstrap) {
+            setTimeout(function() { defer() }, 50);
+        }
+    }
+    defer();
+}
