@@ -1,10 +1,9 @@
 import unittest
 import numpy as np
 import datetime as datetime
-from nederland_weer.services import DayYearArrayBuildService
-from nederland_weer.models import KNMIData
-from nederland_weer.models import Curve
-from nederland_weer.models import DataColumn
+from nederland_weer.repository.knmi_data_repository import KNMIDataRepository
+from nederland_weer.model.knmi_data import KNMIData
+from nederland_weer.model.curve import Curve
 
 
 class TestCurve(unittest.TestCase):
@@ -14,8 +13,8 @@ class TestCurve(unittest.TestCase):
         self.first_year = 1906
         self.last_year = 2019
         self.knmi_data = KNMIData()
-        temp_array = DayYearArrayBuildService.make_array(self.knmi_data.array,
-                                                         self.first_year, self.last_year, DataColumn.mean_temp)
+        temp_array = KNMIDataRepository().get(self.knmi_data.array,
+                                                         self.first_year, self.last_year, 'mean_temp')
         self.curve = Curve(temp_array.mean(axis=1), True, self.first_year, self.last_year)
         self.curve_lin_extrapolate = Curve(temp_array.mean(axis=0), False, self.first_year, self.last_year)
 
@@ -44,10 +43,10 @@ class TestCurve(unittest.TestCase):
 
         first_year = 1906
         last_year = 2019
-        speed_2d = DayYearArrayBuildService.make_array(self.knmi_data.array, first_year,
-                                                       last_year, DataColumn.wind_speed_va)
-        angle_2d = DayYearArrayBuildService.make_array(self.knmi_data.array, first_year,
-                                                       last_year, DataColumn.wind_direction)
+        speed_2d = KNMIDataRepository().get(self.knmi_data.array, first_year,
+                                                       last_year, 'wind_speed_va')
+        angle_2d = KNMIDataRepository().get(self.knmi_data.array, first_year,
+                                                       last_year, 'wind_direction')
         angle = self.curve.mean_of_angle(speed_2d, angle_2d)
 
         self.assertEqual(angle.size, 365)

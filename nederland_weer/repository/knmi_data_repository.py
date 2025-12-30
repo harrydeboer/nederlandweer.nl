@@ -1,17 +1,16 @@
 import numpy as np
 import datetime as dt
-from nederland_weer.models import DataColumn
+from nederland_weer.model.measurement import Measurement
 
 
-class DayYearArrayBuildService:
+class KNMIDataRepository:
 
     # An array of weather values per day and per year is made.
-    @staticmethod
-    def make_array(knmi_data: np.ndarray, first_year: int, last_year: int, column_name: DataColumn) -> np.ndarray:
+    def get(self, knmi_data: np.ndarray, first_year: int, last_year: int, column_name: str) -> np.ndarray:
 
         dates = knmi_data[:, 1]
 
-        column_number, factor = column_name.value
+        column_number, factor = Measurement().__getattribute__(column_name)
         column = knmi_data[:, column_number]
 
         # The date array is initialized with zeros.

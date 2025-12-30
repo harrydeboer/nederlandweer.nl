@@ -32,7 +32,8 @@ if os.getenv('DEBUG') == '1':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', 'nederlandweer', 'nederlandweer.nl', 'www.nederlandweer.nl', '157.245.68.107']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', 'nederlandweer',
+                 'nederlandweer.nl', 'www.nederlandweer.nl', '157.245.68.107']
 
 
 # Application definition
@@ -80,7 +81,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'nederland_weer.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
@@ -114,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'nl'
 
 TIME_ZONE = 'UTC'
 
@@ -130,7 +130,7 @@ STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-]
+    ]
 
 if os.getenv('DEBUG') == '1':
     CSRF_COOKIE_SECURE = False

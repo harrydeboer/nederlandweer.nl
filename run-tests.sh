@@ -4,4 +4,5 @@ if [[ ${OSTYPE} == 'msys' ]]; then
 else
   source .venv/bin/activate
 fi
-python UnitTestLauncher.py
+
+python manage.py test tests/Functional/View/ tests/Unit/Service/ tests/Unit/Repository tests/Unit/Model/

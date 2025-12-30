@@ -1,4 +1,4 @@
-from nederland_weer.models import KNMIData
+from nederland_weer.model.knmi_data import KNMIData
 
 
 def min_max_years():
