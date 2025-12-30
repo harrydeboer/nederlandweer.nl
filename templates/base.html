@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load mtime %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="{% mtime 'favicon/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% mtime 'favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% mtime 'favicon/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% mtime 'favicon/site.webmanifest' %}">
+    <link rel="mask-icon" href="{% mtime 'favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="{% mtime 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% mtime 'css/app.css' %}">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col"><h1>Nederland Weer</h1></div>
+    </div>
+</div>
+{% block nav %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <button class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbar_supported_content"
+                    aria-controls="navbar_supported_content"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbar_supported_content">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li><a href="{% url 'home' %}" class="pageLink">Home</a></li>
+                    <li><a href="{% url 'temperature' %}" class="pageLink">Temperatuur</a></li>
+                    <li><a href="{% url 'rain' %}" class="pageLink">Regen</a></li>
+                    <li><a href="{% url 'sunshine' %}" class="pageLink">Zon</a></li>
+                    <li><a href="{% url 'wind' %}" class="pageLink">Wind</a></li>
+                    <li><a href="{% url 'tropical' %}" class="pageLink">Tropisch</a></li>
+                    <li><a href="{% url 'extreme' %}" class="pageLink">Extreem</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+<div class="container">
+    {% block content %}
+    {% endblock %}
+</div>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="{% mtime 'dist/jquery.min.js' %}"></script>
+<script src="{% mtime 'dist/bootstrap.bundle.min.js' %}"></script>
+<script src="{% mtime 'dist/app.min.js' %}"></script>
+</body>
+</html>

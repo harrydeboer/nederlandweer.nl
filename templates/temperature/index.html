@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% include "graph.html" %}
+    <div>
+        <a class="btn btn-primary button" data-url="temperatuur-dag">Maak dag grafiek</a>
+        <a class="btn btn-primary button" data-url="temperatuur-jaar">Maak jaar grafiek</a>
+    </div>
+{% endblock %}

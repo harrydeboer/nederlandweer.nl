@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+$font-stack: 'Open Sans', sans-serif;
+
+body {
+  font-family: $font-stack;
+  font-size: 20px;
+}
+
+#mainRow {
+  width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.inputYear {
+  width: 200px;
+  display: inline;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pageLink {
+  margin-right: 30px;
+}
+
+.button {
+  display: inline;
+  width: 200px;
+}
+
+#curve_chart {
+  width: 900px;
+  height: 500px
+}
+
+#error-message {
+  color: red;
+  font-weight: bold;
+}
