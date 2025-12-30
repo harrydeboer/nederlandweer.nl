@@ -7,9 +7,9 @@ from nederland_weer.service.curve_service import CurveService
 
 class TemperatureView:
 
-    def __init__(self):
-        self.knmiData = KNMIData()
-        self.curve_service = CurveService()
+    def __init__(self, knmi_data: KNMIData):
+        self.knmiData = knmi_data
+        self.curve_service = CurveService(knmi_data)
 
     def temperature(self, request: WSGIRequest) -> HttpResponse:
         return render(request, 'temperature/index.html', {'minYear': self.knmiData.minYearFile,

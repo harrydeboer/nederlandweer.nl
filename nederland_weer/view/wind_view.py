@@ -9,9 +9,9 @@ from nederland_weer.service.curve_service import CurveService
 
 class WindView:
 
-    def __init__(self):
-        self.knmiData = KNMIData()
-        self.curve_service = CurveService()
+    def __init__(self, knmi_data: KNMIData):
+        self.knmiData = knmi_data
+        self.curve_service = CurveService(knmi_data)
         self.knmi_data_repository = KNMIDataRepository()
 
     def wind(self, request: WSGIRequest) -> HttpResponse:

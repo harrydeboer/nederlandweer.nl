@@ -10,10 +10,10 @@ import numpy as np
 
 class TropicalView:
 
-    def __init__(self):
-        self.knmiData = KNMIData()
+    def __init__(self, knmi_data: KNMIData):
+        self.knmiData = knmi_data
         self.knmi_data_repository = KNMIDataRepository()
-        self.curve_service = CurveService()
+        self.curve_service = CurveService(knmi_data)
 
     def tropical(self, request: WSGIRequest) -> HttpResponse:
         return render(request, 'tropical/index.html', {'minYear': self.knmiData.minYearFile,

@@ -6,9 +6,9 @@ import json
 
 class CurveService:
 
-    def __init__(self):
+    def __init__(self, knmi_data:KNMIData):
         self.knmi_repository = KNMIDataRepository()
-        self.knmiData = KNMIData()
+        self.knmiData = knmi_data
 
     def get_curve(self, column_name: str, axis: int, first_year: int, last_year: int) -> Curve:
         array = self.knmi_repository.get(self.knmiData.array, first_year, last_year, column_name)
