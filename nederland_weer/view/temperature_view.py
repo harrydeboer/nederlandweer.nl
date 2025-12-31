@@ -18,7 +18,7 @@ class TemperatureView:
     def temperature_day(self, request: WSGIRequest, first_year: int, last_year: int) -> HttpResponse:
         data = {}
         curve = self.curve_service.get_curve('mean_temp', 1, first_year, last_year)
-        locale.setlocale(locale.LC_TIME, "nl_NL")
+        locale.setlocale(locale.LC_TIME, "nl_NL.utf8")
         data['json'] = self.curve_service.curve_to_json(curve)
         data['minYear'] = self.knmiData.minYearFile
         data['maxYear'] = self.knmiData.maxYearFile
