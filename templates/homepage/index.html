@@ -3,4 +3,32 @@
 {% block content %}
     Deze site analyseert het weer van Nederland. De weer gegevens kunnen gemiddeld worden over de jaren
     of over de dagen met een grafiek als resultaat.
+    <div class="container">
+        <div class="row justify-content-md-center">
+            <form action="" method="get" id="dashboard-form">
+                <input type="hidden" value="{{ minYear }}" id="minYear">
+                <input type="hidden" value="{{ maxYear }}" id="maxYear">
+                <input type="hidden" value="{{ title }}" id="graph-title">
+                <input type="hidden" value="{{ vertical }}" id="graph-vertical">
+                <input type="hidden" value="{{ horizontal }}" id="graph-horizontal">
+                <div class="col col-lg-2"><label for="firstYear">Begin jaar: </label>
+                    {{ form.begin_year }}</div>
+                <div class="col col-lg-2"><label for="lastYear">Eind jaar: </label>
+                    {{ form.end_year }}</div>
+                <div class="row">
+                    <div class="col-md-2">{{ form.type.label_tag }}</div>
+                    <div class="col-md-1">
+                        {{ form.type }}
+                    </div>
+                    <div id="curve_chart" class="col col-md-9"></div>
+                </div>
+                <input type="submit" value="Toon" class="btn btn-success">
+            </form>
+            <div id="error-message"></div>
+            <div id="curve_chart" class="col col-lg-3"></div>
+        </div>
+    </div>
+
+    <div id="curveData" data-chart="{{ json }}"></div>
+    <div id="textOutput">{{ text_output }}</div>
 {% endblock %}
