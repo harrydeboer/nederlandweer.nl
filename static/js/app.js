@@ -1,10 +1,3 @@
-url = window.location.href.split('/')
-
-if (url[4] !== undefined ) {
-    $('#firstYear').val(url[4])
-    $('#lastYear').val(url[5])
-}
-
 function graph(title, vertical, horizontal) {
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(function(){ drawChart(title, vertical, horizontal) });
@@ -13,17 +6,28 @@ function graph(title, vertical, horizontal) {
 function drawChart(title, vertical, horizontal) {
     let jsonData = $('#curveData').data('chart');
     if (Object.keys(jsonData).length === 0) {
-        jsonData = [1906, 0, 0]
+        jsonData = [1906, 0, 0];
     }
 
     let data = new google.visualization.DataTable();
+    if (jsonData.length === 365) {
+        data.addColumn('date', 'x');
+    } else {
         data.addColumn('number', 'x');
-        data.addColumn('number', 'y');
-        data.addColumn('number', 'ysmooth');
+    }
 
-        jsonData.forEach(function(element, index) {
-            data.addRow([jsonData[index][0], jsonData[index][1], jsonData[index][2]])
-        })
+    data.addColumn('number', 'y');
+    data.addColumn('number', 'ysmooth');
+
+    jsonData.forEach(function(element, index) {
+        if (jsonData.length === 365) {
+            let date = new Date("December 31, 2024");
+            date.setDate(date.getDate() + jsonData[index][0]);
+            data.addRow([date, jsonData[index][1], jsonData[index][2]]);
+        } else {
+            data.addRow([jsonData[index][0], jsonData[index][1], jsonData[index][2]]);
+        }
+    })
 
     let options = {
         title: title,
@@ -39,5 +43,5 @@ function drawChart(title, vertical, horizontal) {
 }
 
 if ($('#curve_chart').length > 0) {
-    graph($('#graph-title').val(), $('#graph-vertical').val(), $('#graph-horizontal').val())
+    graph($('#graph-title').val(), $('#graph-vertical').val(), $('#graph-horizontal').val());
 }
