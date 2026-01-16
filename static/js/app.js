@@ -33,7 +33,7 @@ function drawChart(title, vertical, horizontal) {
         title: title,
         curveType: 'function',
         vAxis: { title: vertical },
-        hAxis: { title: horizontal},
+        hAxis: { title: horizontal, format: 'MMM-dd' },
         legend: { position: 'bottom' }
     };
 
