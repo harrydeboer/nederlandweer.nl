@@ -33,7 +33,7 @@ function drawChart(title, vertical, horizontal) {
         title: title,
         curveType: 'function',
         vAxis: { title: vertical },
-        legend: { position: 'bottom' }
+        legend: { position: 'none' }
     };
     if (jsonData.length === 365) {
         options['hAxis'] = { title: horizontal, format: 'MMM-dd' };
