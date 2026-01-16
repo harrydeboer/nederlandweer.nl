@@ -5,6 +5,11 @@
     of over de dagen met een grafiek als resultaat.
     <div class="container">
         <div class="row justify-content-md-center">
+            <div id="error-message">
+                {% for key, error in form.errors.items %}
+                    {{ error }}
+                {% endfor %}
+            </div>
             <form action="" method="get" id="dashboard-form">
                 <input type="hidden" value="{{ minYear }}" id="minYear">
                 <input type="hidden" value="{{ maxYear }}" id="maxYear">
@@ -20,15 +25,14 @@
                     <div class="col-md-1">
                         {{ form.type }}
                     </div>
-                    <div id="curve_chart" class="col col-md-9"></div>
                 </div>
                 <input type="submit" value="Toon" class="btn btn-success">
             </form>
-            <div id="error-message"></div>
+        </div>
+        <div class="row">
             <div id="curve_chart" class="col col-lg-3"></div>
         </div>
+        <div id="curveData" data-chart="{{ json }}"></div>
+        <div id="textOutput">{{ text_output }}</div>
     </div>
-
-    <div id="curveData" data-chart="{{ json }}"></div>
-    <div id="textOutput">{{ text_output }}</div>
 {% endblock %}

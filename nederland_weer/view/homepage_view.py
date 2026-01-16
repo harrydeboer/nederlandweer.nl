@@ -23,13 +23,14 @@ class HomepageView:
         load_dotenv()
         begin_year = int(os.getenv('BEGIN_YEAR'))
         end_year = int(os.getenv('END_YEAR'))
+        begin_year_rain_perc = int(os.getenv('BEGIN_YEAR_RAIN_PERCENTAGE'))
         form = DashboardForm(request.GET, begin_year=begin_year, end_year=end_year)
         json_data = {}
         text_output = ''
         title = ''
         vertical = ''
         horizontal = ''
-        if form.is_valid():
+        if form.is_valid() and self._validate(form, begin_year, end_year, begin_year_rain_perc):
             type_graph = form['type'].value()
             begin_year = int(form['begin_year'].value())
             end_year = int(form['end_year'].value())
@@ -138,3 +139,22 @@ class HomepageView:
             'horizontal': horizontal,
             'text_output': text_output,
         })
+
+    def _validate(self, form: DashboardForm, min_year: int, max_year: int, min_year_rain_perc: int) -> bool:
+        type_graph = form['type'].value()
+        first_year = int(form['begin_year'].value())
+        last_year = int(form['end_year'].value())
+        error_message = ''
+        if last_year < first_year:
+            error_message = 'Het laatste jaar kan niet eerder zijn dan het eerste jaar.'
+        elif first_year < min_year or last_year > max_year:
+            error_message = 'Jaren buiten het bereik ' + str(min_year) + '-' + str(max_year) + '.'
+        elif type_graph == 'regen-percentage' and first_year < min_year_rain_perc:
+            error_message = 'Begin jaar kan niet voor ' + str(min_year_rain_perc) + ' zijn.'
+        elif type_graph == 'temperatuur-jaar' and last_year - first_year + 1 < 9:
+            error_message = 'Bereik moet ten minste 9 jaar zijn als er een jaar grafiek gemaakt wordt.'
+        if error_message:
+            form.add_error('begin_year', error_message)
+            return False
+
+        return True

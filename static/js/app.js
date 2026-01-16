@@ -5,38 +5,25 @@ if (url[4] !== undefined ) {
     $('#lastYear').val(url[5])
 }
 
-$('.button').on('click', function (event) {
-
-    let minYear = $('#minYear').val();
-    let maxYear = $('#maxYear').val();
-    let firstYear = $('#firstYear').val();
-    let lastYear = $('#lastYear').val();
-    let errorMessage = $('#error-message')
-
-    if (lastYear < firstYear) {
-        errorMessage.html('Het laatste jaar kan niet eerder zijn dan het eerste jaar.');
-    } else if (firstYear < minYear || lastYear > maxYear) {
-        errorMessage.html('Jaren buiten het bereik ' + minYear + '-' + maxYear + '.');
-    } else if ($(this).data('url') === 'regen-percentage' && firstYear < 1930) {
-        errorMessage.html('Begin jaar kan niet voor 1930 zijn.');
-    } else if ($(this).data('url') === 'temperatuur-jaar' && lastYear - firstYear + 1 < 9 ) {
-        errorMessage.html('Bereik moet ten minste 9 jaar zijn als er een jaar grafiek gemaakt wordt.');
-    } else {
-        window.location.href = '/' + $(this).data('url') + '/' + firstYear + '/' + lastYear;
-    }
-
-    event.preventDefault();
-});
-
 function graph(title, vertical, horizontal) {
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(function(){ drawChart(title, vertical, horizontal) });
 }
 
 function drawChart(title, vertical, horizontal) {
-    let data = google.visualization.arrayToDataTable(
-        [['x', 'y', 'ysmooth']].concat($('#curveData').data('chart'))
-    );
+    let jsonData = $('#curveData').data('chart');
+    if (Object.keys(jsonData).length === 0) {
+        jsonData = [1906, 0, 0]
+    }
+
+    let data = new google.visualization.DataTable();
+        data.addColumn('number', 'x');
+        data.addColumn('number', 'ysmooth');
+        data.addColumn('number', 'y');
+
+        jsonData.forEach(function(element, index) {
+            data.addRow([jsonData[index][0], jsonData[index][1], jsonData[index][2]])
+        })
 
     let options = {
         title: title,

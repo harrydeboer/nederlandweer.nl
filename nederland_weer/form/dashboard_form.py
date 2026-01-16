@@ -12,8 +12,10 @@ class DashboardForm(forms.Form):
             super().__init__(*args, **kwargs)
         else:
             super().__init__(**kwargs)
-        self.fields['begin_year'] = IntegerField(initial=begin_year)
-        self.fields['end_year'] = IntegerField(initial=end_year)
+        self.fields['begin_year'] = IntegerField(initial=begin_year,
+                                                 widget=forms.NumberInput(attrs={'class': 'form-control'}))
+        self.fields['end_year'] = IntegerField(initial=end_year,
+                                               widget=forms.NumberInput(attrs={'class': 'form-control'}))
 
     choices = [
         ("", "-"),
@@ -27,7 +29,7 @@ class DashboardForm(forms.Form):
         ('tropical', 'Tropische dagen'),
         ('extreme', 'Extreem'),
     ]
-    type = ChoiceField(choices=choices, required=False,
+    type = ChoiceField(choices=choices, required=True,
                 widget=forms.Select(attrs={'class': 'form-select'}))
 
     begin_year = forms.IntegerField()
