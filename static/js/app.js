@@ -18,8 +18,8 @@ function drawChart(title, vertical, horizontal) {
 
     let data = new google.visualization.DataTable();
         data.addColumn('number', 'x');
-        data.addColumn('number', 'ysmooth');
         data.addColumn('number', 'y');
+        data.addColumn('number', 'ysmooth');
 
         jsonData.forEach(function(element, index) {
             data.addRow([jsonData[index][0], jsonData[index][1], jsonData[index][2]])
