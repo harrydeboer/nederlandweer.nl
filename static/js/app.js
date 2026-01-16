@@ -33,9 +33,13 @@ function drawChart(title, vertical, horizontal) {
         title: title,
         curveType: 'function',
         vAxis: { title: vertical },
-        hAxis: { title: horizontal, format: 'MMM-dd' },
         legend: { position: 'bottom' }
     };
+    if (jsonData.length === 365) {
+        options['hAxis'] = { title: horizontal, format: 'MMM-dd' };
+    } else {
+        options['hAxis'] = { title: horizontal };
+    }
 
     let chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
 
