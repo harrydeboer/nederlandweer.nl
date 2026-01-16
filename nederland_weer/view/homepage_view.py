@@ -50,31 +50,31 @@ class HomepageView:
                 title = 'Temperatuur'
                 vertical = 'temperatuur °C'
                 horizontal = 'jaar'
-            elif type_graph == 'amount_rain':
+            elif type_graph == 'amount-rain':
                 curve = curve_service.get_curve('amount_rain', 1, begin_year, end_year)
                 json_data = curve_service.curve_to_json(curve)
                 title = 'Regen hoeveelheid'
                 vertical = 'regen hoeveelheid mm'
                 horizontal = 'dag'
-            elif type_graph == 'perc_rain':
+            elif type_graph == 'perc-rain':
                 curve = curve_service.get_curve('perc_rain', 1, begin_year, end_year)
                 json_data = curve_service.curve_to_json(curve)
                 title = 'Regen percentage'
                 vertical = 'regen percentage'
                 horizontal = 'dag'
-            elif type_graph == 'perc_sunshine':
+            elif type_graph == 'perc-sunshine':
                 curve = curve_service.get_curve('perc_sunshine', 1, begin_year, end_year)
                 json_data = curve_service.curve_to_json(curve)
                 title = 'Zonneschijn'
                 vertical = 'percentage zon'
                 horizontal = 'dag'
-            elif type_graph == 'wind_speed':
+            elif type_graph == 'wind-speed':
                 curve = curve_service.get_curve('wind_speed', 1, begin_year, end_year)
                 json_data = curve_service.curve_to_json(curve)
                 title = 'Wind snelheid'
                 vertical = 'snelheid m/s'
                 horizontal = 'dag'
-            elif type_graph == 'wind_speed_va':
+            elif type_graph == 'wind-speed-va':
                 # The vector average speed and direction are retrieved as a 2-dimensional day year array.
                 speed_2d = self.knmi_data_repository.get(knmi_data.array, begin_year,
                                                          end_year, 'wind_speed_va')
@@ -149,9 +149,9 @@ class HomepageView:
             error_message = 'Het laatste jaar kan niet eerder zijn dan het eerste jaar.'
         elif first_year < min_year or last_year > max_year:
             error_message = 'Jaren buiten het bereik ' + str(min_year) + '-' + str(max_year) + '.'
-        elif type_graph == 'regen-percentage' and first_year < min_year_rain_perc:
+        elif type_graph == 'perc-rain' and first_year < min_year_rain_perc:
             error_message = 'Begin jaar kan niet voor ' + str(min_year_rain_perc) + ' zijn.'
-        elif type_graph == 'temperatuur-jaar' and last_year - first_year + 1 < 9:
+        elif type_graph == 'temperature-year' and last_year - first_year + 1 < 9:
             error_message = 'Bereik moet ten minste 9 jaar zijn als er een jaar grafiek gemaakt wordt.'
         if error_message:
             form.add_error('begin_year', error_message)
