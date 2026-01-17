@@ -3,8 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from nederland_weer.form.dashboard_form import DashboardForm
 from nederland_weer.service.curve_service import CurveService
-from nederland_weer.model.knmi_data import KNMIData
-from nederland_weer.repository.knmi_data_repository import KNMIDataRepository
+from nederland_weer.repository.measurement_repository import MeasurementRepository
 from nederland_weer.model.curve import Curve
 from dotenv import load_dotenv
 import locale
@@ -15,27 +14,27 @@ import numpy as np
 class HomepageView:
 
     def __init__(self):
-        self.knmi_data_repository = KNMIDataRepository()
+        self.measurement_repository = MeasurementRepository()
 
     def index(self, request: WSGIRequest) -> HttpResponse:
         load_dotenv()
-        begin_year = int(os.getenv('BEGIN_YEAR'))
-        end_year = int(os.getenv('END_YEAR'))
+        min_year = int(os.getenv('BEGIN_YEAR'))
+        max_year = int(os.getenv('END_YEAR'))
         begin_year_rain_perc = int(os.getenv('BEGIN_YEAR_RAIN_PERCENTAGE'))
-        form = DashboardForm(request.GET, begin_year=begin_year, end_year=end_year)
+        form = DashboardForm(request.GET, begin_year=min_year, end_year=max_year)
         json_data = {}
         text_output = ''
         title = ''
         vertical = ''
         horizontal = ''
-        if form.is_valid() and self._validate(form, begin_year, end_year, begin_year_rain_perc):
-            knmi_data = KNMIData()
-            curve_service = CurveService(knmi_data)
+        if form.is_valid() and self._validate(form, min_year, max_year, begin_year_rain_perc):
+            curve_service = CurveService()
+            measurements = self.measurement_repository.find_all()
             type_graph = form['type'].value()
             begin_year = int(form['begin_year'].value())
             end_year = int(form['end_year'].value())
             if type_graph == 'temperature-day':
-                curve = curve_service.get_curve('mean_temp', 1, begin_year, end_year)
+                curve = curve_service.get_curve(measurements, 'mean_temp', 1, begin_year, end_year)
                 locale.setlocale(locale.LC_TIME, "nl_NL.utf8")
                 json_data = curve_service.curve_to_json(curve)
                 text_output = 'Eerste zomer dag: ' + curve.get_first_date_summer().strftime("%d %B") + '.'
@@ -43,7 +42,7 @@ class HomepageView:
                 vertical = 'temperatuur °C'
                 horizontal = 'dag'
             elif type_graph == 'temperature-year':
-                curve = curve_service.get_curve('mean_temp', 0, begin_year, end_year)
+                curve = curve_service.get_curve(measurements, 'mean_temp', 0, begin_year, end_year)
                 json_data = curve_service.curve_to_json(curve)
                 text_output = 'Temperatuur stijging: ' + str(
                     int((curve.y_smooth[-1] - curve.y_smooth[0]) * 10) / 10) + "°."
@@ -51,34 +50,34 @@ class HomepageView:
                 vertical = 'temperatuur °C'
                 horizontal = 'jaar'
             elif type_graph == 'amount-rain':
-                curve = curve_service.get_curve('amount_rain', 1, begin_year, end_year)
+                curve = curve_service.get_curve(measurements, 'amount_rain', 1, begin_year, end_year)
                 json_data = curve_service.curve_to_json(curve)
                 title = 'Regen hoeveelheid'
                 vertical = 'regen hoeveelheid mm'
                 horizontal = 'dag'
             elif type_graph == 'perc-rain':
-                curve = curve_service.get_curve('perc_rain', 1, begin_year, end_year)
+                curve = curve_service.get_curve(measurements, 'perc_rain', 1, begin_year, end_year)
                 json_data = curve_service.curve_to_json(curve)
                 title = 'Regen percentage'
                 vertical = 'regen percentage'
                 horizontal = 'dag'
             elif type_graph == 'perc-sunshine':
-                curve = curve_service.get_curve('perc_sunshine', 1, begin_year, end_year)
+                curve = curve_service.get_curve(measurements, 'perc_sunshine', 1, begin_year, end_year)
                 json_data = curve_service.curve_to_json(curve)
                 title = 'Zonneschijn'
                 vertical = 'percentage zon'
                 horizontal = 'dag'
             elif type_graph == 'wind-speed':
-                curve = curve_service.get_curve('wind_speed', 1, begin_year, end_year)
+                curve = curve_service.get_curve(measurements, 'wind_speed', 1, begin_year, end_year)
                 json_data = curve_service.curve_to_json(curve)
                 title = 'Wind snelheid'
                 vertical = 'snelheid m/s'
                 horizontal = 'dag'
             elif type_graph == 'wind-speed-va':
                 # The vector average speed and direction are retrieved as a 2-dimensional day year array.
-                speed_2d = self.knmi_data_repository.get(knmi_data.array, begin_year,
+                speed_2d = self.measurement_repository.get(measurements, begin_year,
                                                          end_year, 'wind_speed_va')
-                angle_2d = self.knmi_data_repository.get(knmi_data.array,
+                angle_2d = self.measurement_repository.get(measurements,
                                                          begin_year, end_year, 'wind_direction')
 
                 # The 2-dimensional angle and speed are averaged over the years.
@@ -90,7 +89,7 @@ class HomepageView:
                 vertical = 'hoek'
                 horizontal = 'dag'
             elif type_graph == 'tropical':
-                temperatures = self.knmi_data_repository.get(knmi_data.array, begin_year, end_year, 'max_temp')
+                temperatures = self.measurement_repository.get(measurements, begin_year, end_year, 'max_temp')
                 data_temp = np.zeros(temperatures.shape[1])
                 index_year = 0
                 for year in np.transpose(temperatures):
@@ -103,8 +102,8 @@ class HomepageView:
                 vertical = 'aantal'
                 horizontal = 'jaar'
             elif type_graph == 'extreme':
-                rain_amounts = self.knmi_data_repository.get(knmi_data.array, 1930,
-                                                             knmi_data.maxYearFile, 'amount_rain')
+                rain_amounts = self.measurement_repository.get(measurements, begin_year_rain_perc,
+                                                             max_year, 'amount_rain')
                 data_temp = np.zeros(rain_amounts.shape[1])
                 index_year = 0
                 rain_amount_average = 0
@@ -124,7 +123,7 @@ class HomepageView:
                     data_temp[index_year] = np.max(deficit_days)
                     index_year += 1
                 json_data = curve_service.curve_to_json(
-                    Curve(data_temp, False, 1930, knmi_data.maxYearFile))
+                    Curve(data_temp, False, begin_year_rain_perc, max_year))
                 title = 'Maximaal neerslag tekort'
                 vertical = 'tekort'
                 horizontal = 'jaar'
@@ -132,8 +131,8 @@ class HomepageView:
         return render(request, 'homepage/index.html', {
             'form': form,
             'json': json_data,
-            'minYear': begin_year,
-            'maxYear': end_year,
+            'minYear': min_year,
+            'maxYear': max_year,
             'title': title,
             'vertical': vertical,
             'horizontal': horizontal,

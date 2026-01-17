@@ -1,17 +1,15 @@
 from nederland_weer.model.curve import Curve
-from nederland_weer.model.knmi_data import KNMIData
-from nederland_weer.repository.knmi_data_repository import KNMIDataRepository
+from nederland_weer.repository.measurement_repository import MeasurementRepository
 import numpy as np
 import json
 
 class CurveService:
 
-    def __init__(self, knmi_data:KNMIData):
-        self.knmi_repository = KNMIDataRepository()
-        self.knmiData = knmi_data
+    def __init__(self):
+        self.measurement_repository = MeasurementRepository()
 
-    def get_curve(self, column_name: str, axis: int, first_year: int, last_year: int) -> Curve:
-        array = self.knmi_repository.get(self.knmiData.array, first_year, last_year, column_name)
+    def get_curve(self, measurements: np.ndarray, column_name: str, axis: int, first_year: int, last_year: int) -> Curve:
+        array = self.measurement_repository.get(measurements, first_year, last_year, column_name)
         y = array.mean(axis=axis)
         return Curve(y, bool(axis), first_year, last_year)
 
