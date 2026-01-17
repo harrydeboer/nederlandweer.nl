@@ -83,7 +83,7 @@ class Curve:
         subtract = np.subtract(self.y_smooth[92:], self.y_smooth[:365 - 92])
         first_day_of_summer = int(np.where(np.absolute(subtract) == np.min(np.absolute(subtract)))[0][0])
 
-        return dt.datetime(2019, 1, 1) + dt.timedelta(first_day_of_summer)
+        return dt.datetime(2025, 1, 1) + dt.timedelta(first_day_of_summer)
 
     @staticmethod
     def mean_of_angle(speed_2d: np.ndarray, angle_2d: np.ndarray) -> np.ndarray:

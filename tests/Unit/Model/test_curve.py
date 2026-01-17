@@ -4,14 +4,17 @@ import datetime as datetime
 from nederland_weer.service.curve_service import CurveService
 from nederland_weer.repository.measurement_repository import MeasurementRepository
 from nederland_weer.model.curve import Curve
+from dotenv import load_dotenv
+import os
 
 
 class TestCurve(unittest.TestCase):
 
     def setUp(self) -> None:
 
-        self.first_year = 1906
-        self.last_year = 2019
+        load_dotenv()
+        self.first_year = int(os.getenv('BEGIN_YEAR'))
+        self.last_year = int(os.getenv('END_YEAR'))
         measurements = MeasurementRepository().find_all()
         temp_array = CurveService().make_array(measurements,
                                               self.first_year, self.last_year, 'mean_temp')
@@ -35,14 +38,14 @@ class TestCurve(unittest.TestCase):
     def testCalcMonthMean(self) -> None:
 
         y_smooth = np.ones(365)
-        mean = Curve.get_month_mean(y_smooth, 1, 2019)
+        mean = Curve.get_month_mean(y_smooth, 1, self.last_year)
 
         self.assertEqual(mean, 1)
 
     def testMeanOfAngle(self) -> None:
 
-        first_year = 1906
-        last_year = 2019
+        first_year = self.first_year
+        last_year = self.last_year
         speed_2d = CurveService().make_array(MeasurementRepository().find_all(), first_year,
                                                        last_year, 'wind_speed_va')
         angle_2d = CurveService().make_array(MeasurementRepository().find_all(), first_year,
