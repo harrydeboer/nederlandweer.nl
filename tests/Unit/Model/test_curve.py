@@ -1,8 +1,8 @@
 import unittest
 import numpy as np
 import datetime as datetime
-from nederland_weer.repository.knmi_data_repository import KNMIDataRepository
-from nederland_weer.model.knmi_data import KNMIData
+from nederland_weer.service.curve_service import CurveService
+from nederland_weer.repository.measurement_repository import MeasurementRepository
 from nederland_weer.model.curve import Curve
 
 
@@ -12,9 +12,9 @@ class TestCurve(unittest.TestCase):
 
         self.first_year = 1906
         self.last_year = 2019
-        self.knmi_data = KNMIData()
-        temp_array = KNMIDataRepository().get(self.knmi_data.array,
-                                                         self.first_year, self.last_year, 'mean_temp')
+        measurements = MeasurementRepository().find_all()
+        temp_array = CurveService().make_array(measurements,
+                                              self.first_year, self.last_year, 'mean_temp')
         self.curve = Curve(temp_array.mean(axis=1), True, self.first_year, self.last_year)
         self.curve_lin_extrapolate = Curve(temp_array.mean(axis=0), False, self.first_year, self.last_year)
 
@@ -43,9 +43,9 @@ class TestCurve(unittest.TestCase):
 
         first_year = 1906
         last_year = 2019
-        speed_2d = KNMIDataRepository().get(self.knmi_data.array, first_year,
+        speed_2d = CurveService().make_array(MeasurementRepository().find_all(), first_year,
                                                        last_year, 'wind_speed_va')
-        angle_2d = KNMIDataRepository().get(self.knmi_data.array, first_year,
+        angle_2d = CurveService().make_array(MeasurementRepository().find_all(), first_year,
                                                        last_year, 'wind_direction')
         angle = self.curve.mean_of_angle(speed_2d, angle_2d)
 
