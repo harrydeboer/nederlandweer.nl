@@ -3,7 +3,6 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from nederland_weer.form.dashboard_form import DashboardForm
 from nederland_weer.service.curve_service import CurveService
-from nederland_weer.repository.measurement_repository import MeasurementRepository
 from dotenv import load_dotenv
 import os
 
@@ -12,7 +11,6 @@ class HomepageView:
 
     def __init__(self):
         self.curve_service = CurveService()
-        self.measurement_repository = MeasurementRepository()
 
     def index(self, request: WSGIRequest) -> HttpResponse:
         load_dotenv()
