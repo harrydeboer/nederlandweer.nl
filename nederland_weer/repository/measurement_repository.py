@@ -27,6 +27,7 @@ class MeasurementRepository:
                     new_list[1] = row[1]
                     txt_list.append(new_list)
                 else:
+                    last_good_row = None
                     txt_list.append(row)
 
         measurements = np.asarray(txt_list)
