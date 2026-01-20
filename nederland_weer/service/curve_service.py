@@ -28,7 +28,7 @@ class CurveService:
             curve = self._get_curve(measurements, 'mean_temp', 0, begin_year, end_year)
             json_data = self._curve_to_json(curve)
             text_output = 'Temperatuur stijging: ' + str(
-                int((curve.y_smooth[-1] - curve.y_smooth[0]) * 10) / 10) + "°."
+                int((curve.y_smooth[-1] - curve.y_smooth[0]) * 10) / 10).replace('.', ',') + "°."
             title = 'Temperatuur'
             vertical = 'temperatuur °C'
             horizontal = 'jaar'

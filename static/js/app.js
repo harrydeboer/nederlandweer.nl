@@ -1,5 +1,5 @@
 function graph(title, vertical, horizontal) {
-    google.charts.load('current', {'packages':['corechart']});
+    google.charts.load('current', {'packages':['corechart'], 'language': 'nl'});
     google.charts.setOnLoadCallback(function(){ drawChart(title, vertical, horizontal) });
 }
 
