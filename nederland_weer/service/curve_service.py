@@ -14,7 +14,7 @@ class CurveService:
 
     def make_curve(self, type_graph: str, begin_year: int, end_year: int,
                    max_year: int, begin_year_rain_perc: int) -> tuple:
-        measurements = self.measurement_repository.find_all()
+        measurements = self.measurement_repository.find_all(260)
         text_output = ''
         if type_graph == 'temperature-day':
             curve = self._get_curve(measurements, 'mean_temp', 1, begin_year, end_year)

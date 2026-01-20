@@ -4,14 +4,20 @@ import csv
 
 class MeasurementRepository:
 
-    def find_all(self) -> np.ndarray:
+    def find_all(self, station_id: int) -> np.ndarray:
 
         # Read txt file as list.
         txt_list = []
-        with open('data/knmi.txt', newline='') as input_file:
+        with open('data/etmgeg_' + str(station_id) + '.txt', newline='') as input_file:
             reader = csv.reader(input_file)
             last_good_row = None
             for row in reader:
+
+                if not row:
+                    continue
+
+                if row[0] != '  ' + str(station_id):
+                    continue
 
                 # During april 1945 a lot of data is not available. 31 March 1945 data is put over all days of april.
                 if len(row) > 10 and row[4] == '     ' and row[1][:6] == '194504':
