@@ -12,9 +12,9 @@ class CurveService:
     def __init__(self):
         self.measurement_repository = MeasurementRepository()
 
-    def make_curve(self, type_graph: str, begin_year: int, end_year: int,
+    def make_curve(self, station_id: int, type_graph: str, begin_year: int, end_year: int,
                    max_year: int, begin_year_rain_perc: int) -> tuple:
-        measurements = self.measurement_repository.find_all(260)
+        measurements = self.measurement_repository.find_all(station_id)
         text_output = ''
         if type_graph == 'temperature-day':
             curve = self._get_curve(measurements, 'mean_temp', 1, begin_year, end_year)
@@ -157,6 +157,10 @@ class CurveService:
             if year % 4 == 0 and days_in_the_year > 59:
                 days_in_the_year -= 1
 
-            day_year_array[days_in_the_year, year - first_year] = float(column[index]) * factor
+            try:
+                day_year_array[days_in_the_year, year - first_year] = float(column[index]) * factor
+            except ValueError:
+                test = 1
+
 
         return day_year_array

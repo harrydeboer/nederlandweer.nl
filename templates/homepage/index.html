@@ -20,6 +20,12 @@
                 <input type="hidden" value="{{ title }}" id="graph-title">
                 <input type="hidden" value="{{ vertical }}" id="graph-vertical">
                 <input type="hidden" value="{{ horizontal }}" id="graph-horizontal">
+                <div class="row">
+                    <div class="col-md-2">{{ form.station.label_tag }}</div>
+                    <div class="col-md-1">
+                        {{ form.station }}
+                    </div>
+                </div>
                 <div class="col col-lg-2"><label for="firstYear">Begin jaar: </label>
                     {{ form.begin_year }}</div>
                 <div class="col col-lg-2"><label for="lastYear">Eind jaar: </label>

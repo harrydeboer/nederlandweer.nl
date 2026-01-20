@@ -6,7 +6,7 @@ from nederland_weer.repository.measurement_repository import MeasurementReposito
 class TestMeasurementRepository(unittest.TestCase):
 
     def testFindAll(self) -> None:
-        temp_array = MeasurementRepository().find_all()
+        temp_array = MeasurementRepository().find_all(260)
 
         self.assertIsInstance(temp_array, np.ndarray)
 #

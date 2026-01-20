@@ -4,18 +4,24 @@ import datetime as datetime
 from nederland_weer.service.curve_service import CurveService
 from nederland_weer.repository.measurement_repository import MeasurementRepository
 from nederland_weer.model.curve import Curve
-from dotenv import load_dotenv
-import os
+import csv
 
 
 class TestCurve(unittest.TestCase):
 
     def setUp(self) -> None:
 
-        load_dotenv()
-        self.first_year = int(os.getenv('BEGIN_YEAR'))
-        self.last_year = int(os.getenv('END_YEAR'))
-        measurements = MeasurementRepository().find_all()
+        stations = []
+        station_de_bilt = []
+        with open('data/station.csv', newline='') as input_file:
+            reader = csv.reader(input_file)
+            for row in reader:
+                stations.append(row)
+                if row[0] == '260':
+                    station_de_bilt = row
+        self.first_year = int(station_de_bilt[2])
+        self.last_year = int(station_de_bilt[3])
+        measurements = MeasurementRepository().find_all(260)
         temp_array = CurveService().make_array(measurements,
                                               self.first_year, self.last_year, 'mean_temp')
         self.curve = Curve(temp_array.mean(axis=1), True, self.first_year, self.last_year)
@@ -46,9 +52,9 @@ class TestCurve(unittest.TestCase):
 
         first_year = self.first_year
         last_year = self.last_year
-        speed_2d = CurveService().make_array(MeasurementRepository().find_all(), first_year,
+        speed_2d = CurveService().make_array(MeasurementRepository().find_all(260), first_year,
                                                        last_year, 'wind_speed_va')
-        angle_2d = CurveService().make_array(MeasurementRepository().find_all(), first_year,
+        angle_2d = CurveService().make_array(MeasurementRepository().find_all(260), first_year,
                                                        last_year, 'wind_direction')
         angle = self.curve.mean_of_angle(speed_2d, angle_2d)
 

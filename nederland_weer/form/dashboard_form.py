@@ -6,15 +6,22 @@ from django.forms.fields import IntegerField
 class DashboardForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
-        begin_year = kwargs.pop('begin_year')
-        end_year = kwargs.pop('end_year')
+        stations = kwargs.pop('stations')
         if len(args[0]) > 0:
             super().__init__(*args, **kwargs)
         else:
             super().__init__(**kwargs)
-        self.fields['begin_year'] = IntegerField(initial=begin_year,
+        choices = []
+        station_de_bilt = []
+        for station in stations:
+            choices.append((station[0], station[1]))
+            if station[0] == '260':
+                station_de_bilt = station
+        self.fields['station'] = ChoiceField(initial='260', choices=choices, required=True,
+                                             widget=forms.Select(attrs={'class': 'form-select'}))
+        self.fields['begin_year'] = IntegerField(initial=station_de_bilt[2],
                                                  widget=forms.NumberInput(attrs={'class': 'form-control'}))
-        self.fields['end_year'] = IntegerField(initial=end_year,
+        self.fields['end_year'] = IntegerField(initial=station_de_bilt[3],
                                                widget=forms.NumberInput(attrs={'class': 'form-control'}))
 
     choices = [
@@ -31,6 +38,8 @@ class DashboardForm(forms.Form):
     ]
     type = ChoiceField(choices=choices, required=True,
                 widget=forms.Select(attrs={'class': 'form-select'}))
+
+    station = forms.ChoiceField()
 
     begin_year = forms.IntegerField()
 

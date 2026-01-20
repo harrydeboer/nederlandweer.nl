@@ -19,14 +19,13 @@ class MeasurementRepository:
                 if row[0] != '  ' + str(station_id):
                     continue
 
-                # During april 1945 a lot of data is not available. 31 March 1945 data is put over all days of april.
-                if len(row) > 10 and row[4] == '     ' and row[1][:6] == '194504':
+                # During the war a lot of data is not available. The gaps are filled with the last good row.
+                if len(row) > 10 and row[11] == '     ':
                     if last_good_row is None:
                         last_good_row = txt_list[-1:][0]
                     new_list = last_good_row
                     new_list[1] = row[1]
                     txt_list.append(new_list)
-
                 else:
                     txt_list.append(row)
 
