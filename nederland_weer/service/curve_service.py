@@ -4,6 +4,7 @@ import numpy as np
 import json
 import locale
 import datetime as dt
+import math
 from nederland_weer.model.measurement import Measurement
 
 
@@ -13,14 +14,14 @@ class CurveService:
         self.measurement_repository = MeasurementRepository()
 
     def make_curve(self, station_id: int, type_graph: str, begin_year: int, end_year: int,
-                   max_year: int, begin_year_rain_perc: int) -> tuple:
+                   max_year: int) -> tuple:
         measurements = self.measurement_repository.find_all(station_id)
         text_output = ''
         if type_graph == 'temperature-day':
             curve = self._get_curve(measurements, 'mean_temp', 1, begin_year, end_year)
             locale.setlocale(locale.LC_TIME, "nl_NL.utf8")
             json_data = self._curve_to_json(curve)
-            text_output = 'Eerste zomer dag: ' + curve.get_first_date_summer().strftime("%d %B") + '.'
+            text_output = 'Eerste zomerdag: ' + curve.get_first_date_summer().strftime("%d %B") + '.'
             title = 'Temperatuur'
             vertical = 'temperatuur °C'
             horizontal = 'dag'
@@ -85,7 +86,7 @@ class CurveService:
             vertical = 'aantal'
             horizontal = 'jaar'
         elif type_graph == 'extreme':
-            rain_amounts = self.make_array(measurements, begin_year_rain_perc,
+            rain_amounts = self.make_array(measurements, begin_year,
                                                            max_year, 'amount_rain')
             data_temp = np.zeros(rain_amounts.shape[1])
             index_year = 0
@@ -106,7 +107,7 @@ class CurveService:
                 data_temp[index_year] = np.max(deficit_days)
                 index_year += 1
             json_data = self._curve_to_json(
-                Curve(data_temp, False, begin_year_rain_perc, max_year))
+                Curve(data_temp, False, begin_year, max_year))
             title = 'Maximaal neerslag tekort'
             vertical = 'tekort'
             horizontal = 'jaar'
@@ -120,6 +121,10 @@ class CurveService:
             -> Curve:
         array = self.make_array(measurements, first_year, last_year, column_name)
         y = array.mean(axis=axis)
+        if 'perc_sunshine':
+            daylight = [8,9,11,13,15,16.5,16.5,14.5,13.5,12,10,8]
+            for index, day in enumerate(y):
+                y[index] = y[index] / 2.4 * 24 / daylight[math.floor(index / 31)]
         return Curve(y, bool(axis), first_year, last_year)
 
     def _curve_to_json(self, curve: Curve) -> str:
@@ -138,6 +143,7 @@ class CurveService:
         day_year_array = np.zeros([365, last_year - first_year + 1])
 
         # Looping through all dates and placing the values in the dayYearArray.
+        last_good_value = None
         for index, date in enumerate(dates):
 
             # The KNMI txt file has dateformat YYYYMMDD and this is split into a year, month and day.
@@ -157,10 +163,11 @@ class CurveService:
             if year % 4 == 0 and days_in_the_year > 59:
                 days_in_the_year -= 1
 
-            try:
+            if column[index] == '     ':
+                if last_good_value is None:
+                    last_good_value = column[index - 1]
+                day_year_array[days_in_the_year, year - first_year] = float(last_good_value) * factor
+            else:
                 day_year_array[days_in_the_year, year - first_year] = float(column[index]) * factor
-            except ValueError:
-                test = 1
-
 
         return day_year_array

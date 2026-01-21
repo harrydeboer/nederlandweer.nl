@@ -10,3 +10,9 @@ class HomepageTest(unittest.TestCase):
         response = self.client.get("/")
 
         self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(
+            "/?station=260&begin_year=1906&end_year=2025&type=temperature-day",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.content.decode("utf-8").find('zomerdag'), -1)

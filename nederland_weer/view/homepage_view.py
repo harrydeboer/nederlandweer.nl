@@ -34,10 +34,11 @@ class HomepageView:
                     break
             if self._validate(form, station):
                 (json_data, title,
-                 vertical, horizontal, text_output) = self.curve_service.make_curve(int(station_id), form['type'].value(),
-                                                                                    int(form['begin_year'].value()),
-                                                                                    int(form['end_year'].value()),
-                                                                                    int(station[3]), int(station[4]))
+                 vertical, horizontal, text_output) = (
+                    self.curve_service.make_curve(int(station_id), form['type'].value(),
+                                                  int(form['begin_year'].value()),
+                                                  int(form['end_year'].value()),
+                                                  int(station[3])))
 
         return render(request, 'homepage/index.html', {
             'form': form,
@@ -61,6 +62,8 @@ class HomepageView:
             error_message = 'Jaren buiten het bereik ' + station[2] + '-' + station[3] + '.'
         elif type_graph == 'perc-rain' and first_year < int(station[4]):
             error_message = 'Begin jaar kan niet voor ' + station[4] + ' zijn.'
+        elif type_graph == 'amount-rain' and first_year < int(station[5]):
+            error_message = 'Begin jaar kan niet voor ' + station[5] + ' zijn.'
         elif type_graph == 'temperature-year' and last_year - first_year + 1 < 9:
             error_message = 'Bereik moet ten minste 9 jaar zijn als er een jaar grafiek gemaakt wordt.'
         if error_message:
