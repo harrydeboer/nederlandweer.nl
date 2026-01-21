@@ -4,7 +4,7 @@ import numpy as np
 import json
 import locale
 import datetime as dt
-import math
+import csv
 from nederland_weer.model.measurement import Measurement
 
 
@@ -121,10 +121,16 @@ class CurveService:
             -> Curve:
         array = self.make_array(measurements, first_year, last_year, column_name)
         y = array.mean(axis=axis)
-        if 'perc_sunshine':
-            daylight = [8,9,11,13,15,16.5,16.5,14.5,13.5,12,10,8]
+        if column_name == 'perc_sunshine':
+            daylight = []
+            with open('data/daylight.csv', newline='') as input_file:
+                reader = csv.reader(input_file)
+                for row in reader:
+                    dawn = int(row[1][-2:]) / 60 + int(row[1][:-2])
+                    sunset = int(row[2][-2:]) / 60 + int(row[2][:-2])
+                    daylight.append([dawn, sunset])
             for index, day in enumerate(y):
-                y[index] = y[index] / 2.4 * 24 / daylight[math.floor(index / 31)]
+                y[index] = y[index] / 2.4 * 24 / (daylight[index][1] - daylight[index][0])
         return Curve(y, bool(axis), first_year, last_year)
 
     def _curve_to_json(self, curve: Curve) -> str:

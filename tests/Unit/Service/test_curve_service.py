@@ -17,7 +17,7 @@ class TestCurveService(unittest.TestCase):
         (json_data, title,
          vertical, horizontal, text_output) = CurveService().make_curve(
             260, 'temperature-day', int(station_de_bilt[2]), int(station_de_bilt[3]),
-            int(station_de_bilt[3]), int(station_de_bilt[4]))
+            int(station_de_bilt[3]))
         self.assertIsInstance(json_data, str)
         self.assertIsInstance(title, str)
         self.assertIsInstance(vertical, str)
