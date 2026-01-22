@@ -24,7 +24,7 @@ class HomepageView:
         horizontal = ''
         station = station_de_bilt
         if form.is_valid():
-            station_id = form['station'].value()
+            station_id = int(form['station'].value())
             for index, station in stations.items():
                 if station.station_id == station_id:
                     break
@@ -54,14 +54,16 @@ class HomepageView:
         error_message = ''
         if last_year < first_year:
             error_message = 'Het laatste jaar kan niet eerder zijn dan het eerste jaar.'
-        elif first_year < int(station.begin_year) or last_year > int(station.end_year):
-            error_message = 'Jaren buiten het bereik ' + station.begin_year + '-' + station.end_year + '.'
-        elif type_graph == 'perc-rain' and first_year < int(station.begin_year_perc_rain):
-            error_message = 'Begin jaar kan niet voor ' + station.begin_year_perc_rain + ' zijn.'
-        elif type_graph == 'amount-rain' and first_year < int(station.begin_year_amount_rain):
-            error_message = 'Begin jaar kan niet voor ' + station.begin_year_amount_rain + ' zijn.'
+        elif first_year < station.begin_year or last_year > station.end_year:
+            error_message = 'Jaren buiten het bereik ' + str(station.begin_year) + '-' + str(station.end_year) + '.'
+        elif type_graph == 'perc-rain' and first_year < station.begin_year_perc_rain:
+            error_message = 'Begin jaar kan niet voor ' + str(station.begin_year_perc_rain) + ' zijn.'
+        elif type_graph == 'amount-rain' and first_year < station.begin_year_amount_rain:
+            error_message = 'Begin jaar kan niet voor ' + str(station.begin_year_amount_rain) + ' zijn.'
         elif type_graph == 'temperature-year' and last_year - first_year + 1 < 9:
             error_message = 'Bereik moet ten minste 9 jaar zijn als er een jaar grafiek gemaakt wordt.'
+        elif type_graph == 'extreme' and first_year < station.begin_year_amount_rain:
+            error_message = 'Begin jaar kan niet voor ' + str(station.begin_year_amount_rain) + ' zijn.'
         if error_message:
             form.add_error('begin_year', error_message)
             return False
