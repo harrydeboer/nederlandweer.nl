@@ -17,7 +17,7 @@ function drawChart(title, vertical, horizontal) {
     }
 
     data.addColumn('number', 'y');
-    data.addColumn('number', 'ysmooth');
+    data.addColumn('number', 'y glad');
 
     jsonData.forEach(function(element, index) {
         if (jsonData.length === 365) {

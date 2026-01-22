@@ -31,10 +31,9 @@ class HomepageView:
             if self._validate(form, station):
                 (json_data, title,
                  vertical, horizontal, text_output) = (
-                    self.curve_service.make_curve(int(station_id), form['type'].value(),
+                    self.curve_service.make_curves(int(station_id), form['type'].value(),
                                                   int(form['begin_year'].value()),
-                                                  int(form['end_year'].value()),
-                                                  int(station.end_year)))
+                                                  int(form['end_year'].value())))
 
         return render(request, 'homepage/index.html', {
             'form': form,
