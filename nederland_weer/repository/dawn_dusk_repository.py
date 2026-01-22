@@ -9,10 +9,10 @@ class DawnDuskRepository:
         dawn_dusks = []
         with open('data/dawn_dusk.csv', newline='') as input_file:
             reader = csv.reader(input_file)
-            for row in reader:
+            for index, row in enumerate(reader):
                 dawn = int(row[1][-2:]) / 60 + int(row[1][:-2])
                 sunset = int(row[2][-2:]) / 60 + int(row[2][:-2])
-                if row[0] == 'ï»¿1':
+                if index == 0:
                     row[0] = '1'
                 dawn_dusks.append(DawnDusk(int(row[0]), dawn, sunset))
         return dawn_dusks
