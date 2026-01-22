@@ -12,7 +12,5 @@ class DawnDuskRepository:
             for index, row in enumerate(reader):
                 dawn = int(row[1][-2:]) / 60 + int(row[1][:-2])
                 sunset = int(row[2][-2:]) / 60 + int(row[2][:-2])
-                if index == 0:
-                    row[0] = '1'
                 dawn_dusks.append(DawnDusk(int(row[0]), dawn, sunset))
         return dawn_dusks
