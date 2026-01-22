@@ -1,21 +1,18 @@
 from django.core.management.base import BaseCommand
 from nederland_weer.repository.measurement_repository import MeasurementRepository
+from nederland_weer.repository.station_repository import StationRepository
 import urllib.request
 import zipfile
 import os
 import pathlib
-import csv
 
 
 class Command(BaseCommand):
     help = "Updates the dataset"
 
     def handle(self, *args, **options):
-        stations = []
-        with open('data/station.csv', newline='') as input_file:
-            reader = csv.reader(input_file)
-            for row in reader:
-                stations.append(row)
+        station_repository = StationRepository()
+        stations = station_repository.find_all()
         path_project = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
         for index, station in enumerate(stations):
@@ -28,6 +25,4 @@ class Command(BaseCommand):
             stations[index][2] = measurements[0][1][:4]
             stations[index][3] = measurements[-1][1][:4]
 
-        file = open(path_project + "/data/station.csv", "w", newline='')
-        csv.writer(file).writerows(stations)
-        file.close()
+        station_repository.write(path_project, stations)
