@@ -7,3 +7,8 @@ class Station:
         self.end_year = int(row[3])
         self.begin_year_perc_rain = int(row[4])
         self.begin_year_amount_rain = int(row[5])
+
+    def to_list(self) -> list:
+        row = [self.station_id, self.name, self.begin_year, self.end_year,
+               self.begin_year_perc_rain, self.begin_year_amount_rain]
+        return row

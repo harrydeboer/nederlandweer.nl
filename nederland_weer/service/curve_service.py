@@ -12,48 +12,45 @@ class CurveService:
 
     def __init__(self):
         self.measurement_repository = MeasurementRepository()
+        self.dawn_dusk_repository = DawnDuskRepository()
 
     def make_curve(self, station_id: int, type_graph: str, begin_year: int, end_year: int,
-                   max_year: int) -> tuple:
+                   max_year: int) -> Tuple[str, str, str, str, str]:
         measurements = self.measurement_repository.find_all(station_id)
         text_output = ''
         if type_graph == 'temperature-day':
             locale.setlocale(locale.LC_TIME, "nl_NL.utf8")
             x, y, y_smooth = self._get_curve(measurements, 'mean_temp', 1, begin_year, end_year)
-            json_data = self._curve_to_json(x, y, y_smooth)
+            json_data = self._curve_to_json((x, y, y_smooth))
             text_output = 'Eerste zomerdag: ' + self._get_first_date_summer(y_smooth).strftime("%d %B") + '.'
             title = 'Temperatuur'
             vertical = 'temperatuur °C'
             horizontal = 'dag'
         elif type_graph == 'temperature-year':
             x, y, y_smooth = self._get_curve(measurements, 'mean_temp', 0, begin_year, end_year)
-            json_data = self._curve_to_json(x, y, y_smooth)
+            json_data = self._curve_to_json((x, y, y_smooth))
             text_output = 'Temperatuur stijging: ' + str(
                 int((y_smooth[-1] - y_smooth[0]) * 10) / 10).replace('.', ',') + "°."
             title = 'Temperatuur'
             vertical = 'temperatuur °C'
             horizontal = 'jaar'
         elif type_graph == 'amount-rain':
-            x, y, y_smooth = self._get_curve(measurements, 'amount_rain', 1, begin_year, end_year)
-            json_data = self._curve_to_json(x, y, y_smooth)
+            json_data = self._curve_to_json(self._get_curve(measurements, 'amount_rain', 1, begin_year, end_year))
             title = 'Regen hoeveelheid'
             vertical = 'regen hoeveelheid mm'
             horizontal = 'dag'
         elif type_graph == 'perc-rain':
-            x, y, y_smooth = self._get_curve(measurements, 'perc_rain', 1, begin_year, end_year)
-            json_data = self._curve_to_json(x, y, y_smooth)
+            json_data = self._curve_to_json(self._get_curve(measurements, 'perc_rain', 1, begin_year, end_year))
             title = 'Regen percentage'
             vertical = 'regen percentage'
             horizontal = 'dag'
         elif type_graph == 'perc-sunshine':
-            x, y, y_smooth = self._get_curve(measurements, 'perc_sunshine',1, begin_year, end_year)
-            json_data = self._curve_to_json(x, y, y_smooth)
+            json_data = self._curve_to_json(self._get_curve(measurements, 'perc_sunshine',1, begin_year, end_year))
             title = 'Zonneschijn'
             vertical = 'percentage zon'
             horizontal = 'dag'
         elif type_graph == 'wind-speed':
-            x, y, y_smooth = self._get_curve(measurements, 'wind_speed', 1, begin_year, end_year)
-            json_data = self._curve_to_json(x, y, y_smooth)
+            json_data = self._curve_to_json(self._get_curve(measurements, 'wind_speed', 1, begin_year, end_year))
             title = 'Wind snelheid'
             vertical = 'snelheid m/s'
             horizontal = 'dag'
@@ -67,8 +64,7 @@ class CurveService:
             # The 2-dimensional angle and speed are averaged over the years.
             angle = self._mean_of_angle(speed_2d, angle_2d)
 
-            x, y, y_smooth = self._get_curve(measurements, 'wind_speed', 1, begin_year, end_year, angle)
-            json_data = self._curve_to_json(x, y, y_smooth)
+            json_data = self._curve_to_json(self._make_curve_data(angle, 1, begin_year, end_year))
             title = 'Wind richting'
             vertical = 'hoek'
             horizontal = 'dag'
@@ -81,16 +77,15 @@ class CurveService:
                     if temp >= 30:
                         data_temp[index_year] += 1
                 index_year += 1
-            x, y, y_smooth = self._get_curve(measurements, 'max_temp',
-                                             0, begin_year, end_year, data_temp)
-            json_data = self._curve_to_json(x, y, y_smooth)
+            json_data = self._curve_to_json(self._make_curve_data(data_temp, 0,
+                                             begin_year, end_year))
             title = 'Tropische dagen'
             vertical = 'aantal'
             horizontal = 'jaar'
         elif type_graph == 'extreme':
             rain_amounts = self.make_array(measurements, begin_year,
                                            max_year, 'amount_rain')
-            data_temp = np.zeros(rain_amounts.shape[1])
+            data_rain = np.zeros(rain_amounts.shape[1])
             index_year = 0
             rain_amount_average = 0
             for year in np.transpose(rain_amounts):
@@ -106,10 +101,9 @@ class CurveService:
                     rain_amount_realized += amount
                     deficit_days[index_day] = rain_amount_realized - rain_amount_average_day
                     index_day += 1
-                data_temp[index_year] = np.max(deficit_days)
+                data_rain[index_year] = np.max(deficit_days)
                 index_year += 1
-            x, y, y_smooth = self._get_curve(measurements, 'amount_rain', 0, begin_year, max_year, data_temp)
-            json_data = self._curve_to_json(x, y, y_smooth)
+            json_data = self._curve_to_json(self._make_curve_data(data_rain, 0, begin_year, max_year))
             title = 'Maximaal neerslag tekort'
             vertical = 'tekort'
             horizontal = 'jaar'
@@ -120,17 +114,21 @@ class CurveService:
         return json_data, title, vertical, horizontal, text_output
 
     def _get_curve(self, measurements: np.ndarray, column_name: str, axis: int,
-                   first_year: int, last_year: int, y = None) -> tuple:
-        if y is None:
-            array = self.make_array(measurements, first_year, last_year, column_name)
-            y = array.mean(axis=axis)
+                   first_year: int, last_year: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+
+        array = self.make_array(measurements, first_year, last_year, column_name)
+        y = array.mean(axis=axis)
 
         if column_name == 'perc_sunshine':
-            dawn_dusk_repository = DawnDuskRepository()
-            dawn_dusks = dawn_dusk_repository.find_all()
+            dawn_dusks = self.dawn_dusk_repository.find_all()
             for index, day in enumerate(y):
                 y[index] = y[index] / 2.4 * 24 / (dawn_dusks[index - 1].dusk - dawn_dusks[index - 1].dawn)
 
+        return self._make_curve_data(y, axis, first_year, last_year)
+
+
+    def _make_curve_data(self, y: np.ndarray, axis, first_year: int, last_year: int) \
+            -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         if bool(axis):
             x = np.arange(1, 366)
             box_points = 30
@@ -152,8 +150,8 @@ class CurveService:
 
         return x, y, y_smooth
 
-    def _curve_to_json(self, x, y, y_smooth):
-        data_array = np.array([x, y, y_smooth])
+    def _curve_to_json(self, curves: Tuple[np.ndarray, np.ndarray, np.ndarray]):
+        data_array = np.array(curves)
         return json.dumps(np.transpose(data_array).tolist())
 
         # Make a numpy array of weather values per day and per year.

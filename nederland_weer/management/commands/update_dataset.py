@@ -15,14 +15,14 @@ class Command(BaseCommand):
         stations = station_repository.find_all()
         path_project = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-        for index, station in enumerate(stations):
+        for name, station in stations.items():
             urllib.request.urlretrieve("https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_"
-                                       + station[0] + ".zip", 'data/test.zip')
+                                       + str(station.station_id) + ".zip", 'data/test.zip')
             with zipfile.ZipFile(path_project + '/data/test.zip', 'r') as zip_ref:
                 zip_ref.extractall(path_project + '/data')
             pathlib.Path.unlink(path_project + '/data/test.zip')
-            measurements = MeasurementRepository().find_all(int(station[0]))
-            stations[index][2] = measurements[0][1][:4]
-            stations[index][3] = measurements[-1][1][:4]
+            measurements = MeasurementRepository().find_all(station.station_id)
+            stations[name].begin_year = measurements[0][1][:4]
+            stations[name].end_year = measurements[-1][1][:4]
 
         station_repository.write(path_project, stations)
