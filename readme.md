@@ -10,5 +10,6 @@ link the SCSS File Watcher and the UglifyJS File Watcher to the node_modules/.bi
 The files in static/scss must compile to minimized files in static/css 
 and the scope of SCSS must be the scss folder. The files in static/js must compile to minimized files in static/dist 
 and the scope of UglifyJS must be the js folder.</li>
+<li>Run sudo locale-gen nl_NL.UTF-8</li>
 <li>Run run-tests.sh to test.</li>
 </ol>
