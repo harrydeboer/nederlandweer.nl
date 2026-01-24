@@ -49,3 +49,9 @@ function drawChart(title, vertical, horizontal) {
 if ($('#curve_chart').length > 0) {
     graph($('#graph-title').val(), $('#graph-vertical').val(), $('#graph-horizontal').val());
 }
+
+if ($('#id_type').val() !== '') {
+    $([document.documentElement, document.body]).animate({
+        scrollTop: $("#textOutput").offset().top
+    }, 2000);
+}
