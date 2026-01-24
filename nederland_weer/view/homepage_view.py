@@ -31,7 +31,7 @@ class HomepageView:
             if self._validate(form, station):
                 (json_data, title,
                  vertical, horizontal, text_output) = (
-                    self.curve_service.make_curves(int(station_id), form['type'].value(),
+                    self.curve_service.make_curves(int(station_id), form['component'].value(),
                                                   int(form['begin_year'].value()),
                                                   int(form['end_year'].value())))
 
@@ -47,7 +47,7 @@ class HomepageView:
         })
 
     def _validate(self, form: DashboardForm, station: Station) -> bool:
-        type_graph = form['type'].value()
+        component = form['component'].value()
         first_year = int(form['begin_year'].value())
         last_year = int(form['end_year'].value())
         error_message = ''
@@ -55,13 +55,13 @@ class HomepageView:
             error_message = 'Het laatste jaar kan niet eerder zijn dan het eerste jaar.'
         elif first_year < station.begin_year or last_year > station.end_year:
             error_message = 'Jaren buiten het bereik ' + str(station.begin_year) + '-' + str(station.end_year) + '.'
-        elif type_graph == 'perc-rain' and first_year < station.begin_year_perc_rain:
+        elif component == 'perc-rain' and first_year < station.begin_year_perc_rain:
             error_message = 'Begin jaar kan niet voor ' + str(station.begin_year_perc_rain) + ' zijn.'
-        elif type_graph == 'amount-rain' and first_year < station.begin_year_amount_rain:
+        elif component == 'amount-rain' and first_year < station.begin_year_amount_rain:
             error_message = 'Begin jaar kan niet voor ' + str(station.begin_year_amount_rain) + ' zijn.'
-        elif type_graph == 'temperature-year' and last_year - first_year + 1 < 9:
+        elif component == 'temperature-year' and last_year - first_year + 1 < 9:
             error_message = 'Bereik moet ten minste 9 jaar zijn als er een jaar grafiek gemaakt wordt.'
-        elif type_graph == 'extreme' and first_year < station.begin_year_amount_rain:
+        elif component == 'extreme' and first_year < station.begin_year_amount_rain:
             error_message = 'Begin jaar kan niet voor ' + str(station.begin_year_amount_rain) + ' zijn.'
         if error_message:
             form.add_error('begin_year', error_message)

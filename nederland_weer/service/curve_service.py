@@ -18,47 +18,47 @@ class CurveService:
         self.last_year = None
         self.y_smooth = None
 
-    def make_curves(self, station_id: int, type_graph: str, begin_year: int, end_year: int)\
+    def make_curves(self, station_id: int, component: str, begin_year: int, end_year: int)\
             -> Tuple[str, str, str, str, str]:
         self.measurements = self.measurement_repository.find_all(station_id)
         self.first_year = begin_year
         self.last_year = end_year
         text_output = ''
-        if type_graph == 'temperature-day':
+        if component == 'temperature-day':
             locale.setlocale(locale.LC_TIME, "nl_NL.utf8")
             json_data = self._curve_to_json(self._make_array('mean_temp').mean(axis=1), True)
             text_output = 'Eerste zomerdag: ' + self._get_first_date_summer(self.y_smooth).strftime("%d %B") + '.'
             title = 'Temperatuur'
             vertical = 'temperatuur °C'
             horizontal = 'dag'
-        elif type_graph == 'temperature-year':
+        elif component == 'temperature-year':
             json_data = self._curve_to_json(self._make_array('mean_temp').mean(axis=0), False)
             text_output = 'Temperatuur stijging: ' + str(
                 int((self.y_smooth[-1] - self.y_smooth[0]) * 10) / 10).replace('.', ',') + "°."
             title = 'Temperatuur'
             vertical = 'temperatuur °C'
             horizontal = 'jaar'
-        elif type_graph == 'amount-rain':
+        elif component == 'amount-rain':
             json_data = self._curve_to_json(self._make_array('amount_rain').mean(axis=1), True)
             title = 'Regen hoeveelheid'
             vertical = 'regen hoeveelheid mm'
             horizontal = 'dag'
-        elif type_graph == 'perc-rain':
+        elif component == 'perc-rain':
             json_data = self._curve_to_json(self._make_array('perc_rain').mean(axis=1), True)
             title = 'Regen percentage'
             vertical = 'regen percentage'
             horizontal = 'dag'
-        elif type_graph == 'perc-sunshine':
+        elif component == 'perc-sunshine':
             json_data = self._curve_to_json(self._make_array('perc_sunshine').mean(axis=1), True, 'perc_sunshine')
             title = 'Zonneschijn'
             vertical = 'percentage zon'
             horizontal = 'dag'
-        elif type_graph == 'wind-speed':
+        elif component == 'wind-speed':
             json_data = self._curve_to_json(self._make_array('wind_speed').mean(axis=1), True)
             title = 'Wind snelheid'
             vertical = 'snelheid m/s'
             horizontal = 'dag'
-        elif type_graph == 'wind-speed-va':
+        elif component == 'wind-speed-va':
             # The vector average speed and direction are retrieved as a 2-dimensional day year array.
             speed_2d = self._make_array('wind_speed_va')
             angle_2d = self._make_array('wind_direction')
@@ -70,7 +70,7 @@ class CurveService:
             title = 'Wind richting'
             vertical = 'hoek'
             horizontal = 'dag'
-        elif type_graph == 'tropical':
+        elif component == 'tropical':
             temperatures = self._make_array('max_temp')
             data_temp = np.zeros(temperatures.shape[1])
             index_year = 0
@@ -83,7 +83,7 @@ class CurveService:
             title = 'Tropische dagen'
             vertical = 'aantal'
             horizontal = 'jaar'
-        elif type_graph == 'extreme':
+        elif component == 'extreme':
             rain_amounts = self._make_array('amount_rain')
             data_rain = np.zeros(rain_amounts.shape[1])
             index_year = 0
@@ -109,7 +109,7 @@ class CurveService:
             horizontal = 'jaar'
 
         else:
-            raise Exception('No valid type.')
+            raise Exception('No valid component.')
 
         return json_data, title, vertical, horizontal, text_output
 

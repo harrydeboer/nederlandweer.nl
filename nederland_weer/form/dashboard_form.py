@@ -33,7 +33,7 @@ class DashboardForm(forms.Form):
         ('tropical', 'Tropische dagen'),
         ('extreme', 'Extreem'),
     ]
-    type = ChoiceField(choices=choices, required=True,
+    component = ChoiceField(choices=choices, required=True,
                 widget=forms.Select(attrs={'class': 'form-select'}))
 
     station = forms.ChoiceField()
