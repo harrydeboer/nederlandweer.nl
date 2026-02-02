@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from nederland_weer.form.dashboard_form import DashboardForm
 from nederland_weer.service.curve_service import CurveService
-from nederland_weer.model.station import Station
+from nederland_weer.models import Station
 from nederland_weer.repository.station_repository import StationRepository
 
 
@@ -26,7 +26,7 @@ class HomepageView:
         if form.is_valid():
             station_id = int(form['station'].value())
             for index, station in stations.items():
-                if station.station_id == station_id:
+                if station.id == station_id:
                     break
             if self._validate(form, station):
                 (json_data, title,

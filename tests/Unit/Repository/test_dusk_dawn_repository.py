@@ -1,6 +1,6 @@
 import unittest
 from nederland_weer.repository.dawn_dusk_repository import DawnDuskRepository
-from nederland_weer.model.dawn_dusk import DawnDusk
+from nederland_weer.models import DawnDusk
 
 
 class TestDawnDuskRepository(unittest.TestCase):

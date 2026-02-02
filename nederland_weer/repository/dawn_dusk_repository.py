@@ -1,5 +1,5 @@
 import csv
-from nederland_weer.model.dawn_dusk import DawnDusk
+from nederland_weer.models import DawnDusk
 from typing import List
 
 

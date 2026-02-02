@@ -1,6 +1,6 @@
 import unittest
 from nederland_weer.repository.station_repository import StationRepository
-from nederland_weer.model.station import Station
+from nederland_weer.models import Station
 
 
 class TestMeasurementRepository(unittest.TestCase):

@@ -4,7 +4,7 @@ import numpy as np
 import json
 import locale
 import datetime as dt
-from nederland_weer.model.measurement import Measurement
+from nederland_weer.models import Measurement
 from typing import Tuple
 
 
