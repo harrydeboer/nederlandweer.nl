@@ -15,8 +15,12 @@ Including another URLconf
 """
 from django.urls import path
 from nederland_weer.view.homepage_view import HomepageView
+from nederland_weer.view.security_view import SecurityView
 
 
 urlpatterns = [
     path('', HomepageView().index, name='home'),
+    path("inloggen", SecurityView().login, name='login'),
+    path("registreren", SecurityView().registrate, name='register'),
+    path("uitloggen", SecurityView().logout, name='logout'),
 ]

@@ -146,6 +146,8 @@ if os.getenv('DEBUG') == '1':
 else:
     SESSION_COOKIE_SECURE = True
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
