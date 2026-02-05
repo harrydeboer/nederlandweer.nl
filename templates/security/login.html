@@ -9,7 +9,7 @@
     </div>
 
     {% if not user.is_anonymous %}
-        Welcome {{ user.username }}!<br>
+        Welkom {{ user.username }}!<br>
         Klik hier <a href="{% url 'logout' %}">hier</a> om uit te loggen.<br>
         Klik hier <a href="{% url 'change_password' %}">hier</a> om je wachtwoord te veranderen.
     {% else %}
