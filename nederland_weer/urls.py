@@ -22,5 +22,6 @@ urlpatterns = [
     path('', HomepageView().index, name='home'),
     path("inloggen", SecurityView().login, name='login'),
     path("registreren", SecurityView().registrate, name='register'),
+    path("verander-wachtwoord", SecurityView().change_password, name='change_password'),
     path("uitloggen", SecurityView().logout, name='logout'),
 ]

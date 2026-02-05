@@ -3,6 +3,8 @@ from django.shortcuts import redirect
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
 from django.shortcuts import render
+
+from nederland_weer.form.change_password_form import ChangePasswordForm
 from nederland_weer.form.login_form import LoginForm
 from nederland_weer.form.registration_form import RegistrationForm
 from django.contrib.auth.models import User
@@ -20,6 +22,7 @@ class SecurityView:
                 return redirect('home')
             else:
                 form.add_error('password', 'Ongeldige inlog.')
+                user = request.user
         else:
             user = request.user
 
@@ -33,10 +36,25 @@ class SecurityView:
                                                 form['email'].value(),
                                                 form['password'].value())
                 user.save()
+                login(request, user)
+                return redirect('home')
             else:
                 form.add_error('password', 'Wachtwoorden zijn niet hetzelfde.')
 
         return render(request, 'security/registration.html', {'form': form})
+
+    def change_password(self, request: WSGIRequest) -> HttpResponse:
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            if form['password'].value() == form['password_repeat'].value():
+                user = request.user
+                user.set_password(form['password'].value())
+                user.save()
+                login(request, user)
+                return redirect('home')
+            else:
+                form.add_error('password', 'Wachtwoorden zijn niet hetzelfde.')
+        return render(request, 'security/change_password.html', {'form': form})
 
     def logout(self, request: WSGIRequest) -> HttpResponse:
         logout(request)

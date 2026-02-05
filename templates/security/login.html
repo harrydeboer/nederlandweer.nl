@@ -10,17 +10,18 @@
 
     {% if not user.is_anonymous %}
         Welcome {{ user.username }}!<br>
-        Klik hier <a href="{% url 'logout' %}">hier</a> om uit te loggen.
+        Klik hier <a href="{% url 'logout' %}">hier</a> om uit te loggen.<br>
+        Klik hier <a href="{% url 'change_password' %}">hier</a> om je wachtwoord te veranderen.
     {% else %}
         <form method="post" action="">
             {% csrf_token %}
             <table>
                 <tr>
-                    <td>{{ form.username.label_tag }}</td>
+                    <td>Gebruikersnaam</td>
                     <td>{{ form.username }}</td>
                 </tr>
                 <tr>
-                    <td>{{ form.password.label_tag }}</td>
+                    <td>Wachtwoord</td>
                     <td>{{ form.password }}</td>
                 </tr>
             </table>
