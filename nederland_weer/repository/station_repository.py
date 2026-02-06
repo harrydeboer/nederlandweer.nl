@@ -11,6 +11,17 @@ class StationRepository:
 
         return stations
 
+    def create(self, params: Dict) -> Station:
+        station = Station()
+        station.id = params['id']
+        station.name = params['name']
+        station.begin_year = params['begin_year']
+        station.end_year = params['end_year']
+        station.begin_year_perc_rain = params['begin_year_perc_rain']
+        station.begin_year_amount_rain = params['begin_year_amount_rain']
+        station.save()
+        return station
+
     def write(self, stations: Dict[str, Station]):
         for index, station in stations.items():
             station.save()
