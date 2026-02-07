@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.test import Client
-from nederland_weer.repository.station_repository import StationRepository
 
 
 class SecurityTest(TestCase):

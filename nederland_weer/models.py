@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Station(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=255, unique=True)
     begin_year = models.IntegerField()
     end_year = models.IntegerField()
     begin_year_perc_rain = models.IntegerField()

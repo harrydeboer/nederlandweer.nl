@@ -25,4 +25,5 @@ class Command(BaseCommand):
             stations[name].begin_year = measurements[0][1][:4]
             stations[name].end_year = measurements[-1][1][:4]
 
-        station_repository.write(stations)
+        for index, station in stations.items():
+            station_repository.update(station)

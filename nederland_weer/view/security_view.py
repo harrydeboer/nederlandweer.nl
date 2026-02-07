@@ -3,14 +3,19 @@ from django.shortcuts import redirect
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
 from django.shortcuts import render
-
 from nederland_weer.form.change_password_form import ChangePasswordForm
 from nederland_weer.form.login_form import LoginForm
 from nederland_weer.form.registration_form import RegistrationForm
+from nederland_weer.repository.user_repository import UserRepository
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 
 class SecurityView:
+
+    def __init__(self):
+        self.user_repository = UserRepository()
 
     def login(self, request: WSGIRequest) -> HttpResponse:
         form = LoginForm(request.POST)
@@ -32,24 +37,30 @@ class SecurityView:
         form = RegistrationForm(request.POST)
         if form.is_valid():
             if form['password'].value() == form['password_repeat'].value():
-                user = User.objects.create_user(form['username'].value(),
-                                                form['email'].value(),
-                                                form['password'].value())
-                user.save()
-                login(request, user)
-                return redirect('home')
+                user = User()
+                user.username = form['username'].value()
+                user.email = form['email'].value()
+                user.password = form['password'].value()
+                if self.user_repository.find_by_username(user.username):
+                    form.add_error('username', 'Gebruikersnaam bestaat al.')
+                if self.user_repository.find_by_email(user.email):
+                    form.add_error('email', 'Email bestaat al.')
+                if not form.errors:
+                    self.user_repository.create(user, form['password'].value())
+                    login(request, user)
+                    return redirect('home')
             else:
                 form.add_error('password', 'Wachtwoorden zijn niet hetzelfde.')
 
         return render(request, 'security/registration.html', {'form': form})
 
+    @method_decorator(login_required, name='dispatch')
     def change_password(self, request: WSGIRequest) -> HttpResponse:
         form = ChangePasswordForm(request.POST)
         if form.is_valid():
             if form['password'].value() == form['password_repeat'].value():
                 user = request.user
-                user.set_password(form['password'].value())
-                user.save()
+                self.user_repository.update(user, form['password'].value())
                 login(request, user)
                 return redirect('home')
             else:
