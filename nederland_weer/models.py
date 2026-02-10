@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 
 
@@ -26,3 +27,10 @@ class Measurement:
     perc_sunshine = (19, 1)
     perc_rain = (21, 0.416666666666)
     amount_rain = (22, 0.1)
+
+class Page:
+    title ='Nederland Weer'
+    lastedit_date = datetime.datetime.strptime('2025-02-02', '%Y-%m-%d')
+
+    def get_absolute_url(self):
+        return ""
