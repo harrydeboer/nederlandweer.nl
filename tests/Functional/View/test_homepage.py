@@ -1,8 +1,8 @@
-import unittest
+from django.test import TestCase
 from django.test import Client
 
 
-class HomepageTest(unittest.TestCase):
+class HomepageTest(TestCase):
     def setUp(self):
         self.client = Client()
 

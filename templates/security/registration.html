@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div id="error-message">
+        {% for key, error in form.errors.items %}
+            {{ error }}
+        {% endfor %}
+    </div>
+
+    <form method="post" action="">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <td>Gebruikersnaam</td>
+                <td>{{ form.username }}</td>
+            </tr>
+            <tr>
+                <td>Email</td>
+                <td>{{ form.email }}</td>
+            </tr>
+            <tr>
+                <td>Wachtwoord</td>
+                <td>{{ form.password }}</td>
+            </tr>
+            <tr>
+                <td>Herhaal wachtwoord</td>
+                <td>{{ form.password_repeat }}</td>
+            </tr>
+        </table>
+
+        <input type="submit" value="Registreer">
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+{% endblock %}
