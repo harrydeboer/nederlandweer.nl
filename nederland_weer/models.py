@@ -30,7 +30,7 @@ class Measurement:
 
 class Page:
     title ='Nederland Weer'
-    lastedit_date = datetime.datetime.strptime('2025-02-02', '%Y-%m-%d')
+    lastedit_date = datetime.datetime.strptime('2026-02-02', '%Y-%m-%d')
 
     def get_absolute_url(self):
         return ""

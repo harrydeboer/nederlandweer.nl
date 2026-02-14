@@ -18,6 +18,7 @@ from nederland_weer.view.homepage_view import HomepageView
 from nederland_weer.view.security_view import SecurityView
 from django.contrib.sitemaps.views import sitemap
 from nederland_weer.page_sitemap import PageSitemap
+from django.views.decorators.cache import cache_page
 
 
 urlpatterns = [
@@ -28,7 +29,7 @@ urlpatterns = [
     path("uitloggen", SecurityView().logout, name='logout'),
     path(
         "sitemap.xml",
-        sitemap,
+        cache_page(3600)(sitemap),
         {"sitemaps": {'page' : PageSitemap}},
         name="django.contrib.sitemaps.views.sitemap",
     ),
