@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Dataset genereren
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12 col-md-6">
+            <div id="map" class="map">
+                <div id="popup"></div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    {{ error }}
+                {% endfor %}
+            {% endfor %}
+            <form action="" method="get" id="dashboard-form">
+                {{ form.start.label_tag }}{{ form.start }}{{ form.end.label_tag }}{{ form.end }}
+                <input type="submit" value="Genereer" class="btn btn-success">
+            </form>
+        </div>
+    </div>
+{% endblock %}

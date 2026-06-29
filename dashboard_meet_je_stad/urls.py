@@ -16,11 +16,13 @@ Including another URLconf
 """
 from django.urls import path
 from dashboard_meet_je_stad.view.homepage_view import HomepageView
+from dashboard_meet_je_stad.view.dataset_view import DatasetView
 from dashboard_meet_je_stad.view.security_view import SecurityView
 
 
 urlpatterns = [
     path('', HomepageView().index, name='home'),
+    path('dataset', DatasetView().index, name='dataset'),
     path("inloggen", SecurityView().login, name='login'),
     path("registreren", SecurityView().registrate, name='register'),
     path("verander-wachtwoord", SecurityView().change_password, name='change_password'),

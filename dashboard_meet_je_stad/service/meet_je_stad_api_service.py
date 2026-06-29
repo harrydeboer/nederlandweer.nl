@@ -91,10 +91,7 @@ class MeetJeStadAPIService:
         if format_output == 'csv':
             path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             parent_path = os.path.dirname(path)
-            grandparent_path = os.path.dirname(parent_path)
-            if parent_path.endswith('vendor'):
-                path = grandparent_path
-            file = open(path + "/output/meet_je_stad/out.csv", "w", newline='')
+            file = open(parent_path + "/data/tmp/dataset.csv", "w", newline='')
             csv.writer(file).writerows(results)
             file.close()
 
