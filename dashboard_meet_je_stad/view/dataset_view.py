@@ -22,17 +22,29 @@ class DatasetView:
             end = form['end'].value()
             try:
                 datetime.datetime.strptime(start, "%Y-%m-%d,%H:%M:%S")
-                datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
+            except ValueError:
+                form.add_error('start', 'Voer een waarde in met formaat yyyy-mm-dd,HH:mm:ss')
 
+                return render(request, 'dataset/index.html', {'form': form})
+            try:
+                datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
+            except ValueError:
+                form.add_error('end', 'Voer een waarde in met formaat yyyy-mm-dd,HH:mm:ss')
+
+                return render(request, 'dataset/index.html', {'form': form})
+            try:
+                if form['ids'].value() == '':
+                    ids = 'Utrecht'
+                else:
+                    ids = form['ids'].value()
                 self.service.get_data(start, end, 'sensors',
-                                      'csv', 'Utrecht')
+                                      'csv', ids)
                 path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                 parent_path = os.path.dirname(path)
                 file = open(parent_path + '/data/tmp/dataset.csv', "rb")
 
                 return FileResponse(file, content_type='text/csv', filename='dataset.csv')
-            except ValueError:
-                form.add_error('start', 'Voer een waarde in met formaat yyyy-mm-dd,HH:mm:ss')
+
             except Exception as e:
                 form.add_error('start', str(e))
 

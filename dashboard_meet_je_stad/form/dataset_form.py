@@ -13,3 +13,4 @@ class DatasetForm(forms.Form):
                                 input_formats = ['Y-d-m,HH:mm:ss'], label='Begin')
     end = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'placeholder': 'yyyy-mm-dd,HH:mm:ss'}),
                               input_formats = ['Y-d-m,HH:mm:ss'], label='Eind')
+    ids = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'ids'}))

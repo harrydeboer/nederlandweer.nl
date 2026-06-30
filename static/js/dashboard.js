@@ -2,7 +2,12 @@ class Dashboard {
 
     constructor(form) {
         this.form = form;
-        this.sensors = $('#sensors').data('sensors');
+        let sensors = $('#sensors');
+        if (sensors.length > 0) {
+            this.sensors = sensors.data('sensors');
+        } else {
+            return;
+        }
         this.sensor = $('#id_sensor');
         this.type = $('input[name=type]');
         this.features = this.makeFeatures();

@@ -6,20 +6,28 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-xs-12 col-md-6">
-            <div id="map" class="map">
-                <div id="popup"></div>
-            </div>
-        </div>
-        <div class="col-xs-12 col-md-6">
+        <div class="col form-errors">
             {% for field, errors in form.errors.items %}
                 {% for error in errors %}
                     {{ error }}
                 {% endfor %}
             {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
             <form action="" method="get" id="dashboard-form">
-                {{ form.start.label_tag }}{{ form.start }}{{ form.end.label_tag }}{{ form.end }}
-                <input type="submit" value="Genereer" class="btn btn-success">
+                <div class="row">
+                    <div class="col">{{ form.start.label_tag }}</div><div class="col">{{ form.start }}</div>
+                    <div class="col">{{ form.end.label_tag }}</div><div class="col">{{ form.end }}</div>
+                </div>
+                <div class="row">
+                    <div class="col">{{ form.ids.label_tag }}</div><div class="col">{{ form.ids }}</div>
+                    <div class="col">Als dit veld leeg is worden alle ids van Utrecht geselecteerd.</div>
+                </div>
+                <div class="row">
+                    <div class="col"><input type="submit" value="Download" class="btn btn-success"></div>
+                </div>
             </form>
         </div>
     </div>
