@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core.handlers.wsgi import WSGIRequest
 from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
 from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
@@ -13,6 +13,8 @@ class HomepageView:
         self.sensor_repository = SensorRepository()
 
     def index(self, request: WSGIRequest) -> HttpResponse:
+        if not request.user.is_authenticated or not request.user.is_superuser:
+            return HttpResponseRedirect('inloggen')
         pm = False
         inactive = False
         interval = '24hour'

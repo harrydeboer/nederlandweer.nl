@@ -14,11 +14,11 @@ class SecurityTest(TestCase):
         response = self.client.post('/registreren', {'username': 'Test','email': 'test@test.nl',
                                          'password': 'secret','password_repeat':'secret'})
 
-        self.assertRedirects(response, '/')
+        self.assertEqual(response.status_code, 302)
 
         response = self.client.get('/uitloggen')
 
-        self.assertRedirects(response, '/')
+        self.assertEqual(response.status_code, 302)
 
         response = self.client.post('/inloggen')
 
@@ -26,7 +26,7 @@ class SecurityTest(TestCase):
 
         response = self.client.post('/inloggen', {'username': 'Test', 'password': 'secret'})
 
-        self.assertRedirects(response, '/')
+        self.assertEqual(response.status_code, 302)
 
         response = self.client.get('/verander-wachtwoord')
 
@@ -34,4 +34,4 @@ class SecurityTest(TestCase):
 
         response = self.client.post('/verander-wachtwoord', {'password': 'secret', 'password_repeat': 'secret'})
 
-        self.assertRedirects(response, '/')
+        self.assertEqual(response.status_code, 302)

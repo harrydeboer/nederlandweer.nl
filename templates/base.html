@@ -32,9 +32,11 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li><a href="{% url 'home' %}" class="pageLink">Home</a></li>
                     <li><a href="{% url 'login' %}" class="pageLink"><img src="{% mtime 'img/person-blue.png' %}"
-                                                               alt="person" class="user-logo"
-                                                               width="22"></a></li>
-                    <li><a href="{% url 'dataset' %}" class="pageLink">Dataset</a></li>
+                                                                          alt="person" class="user-logo"
+                                                                          width="22"></a></li>
+                    {% if user.is_superuser %}
+                        <li><a href="{% url 'dataset' %}" class="pageLink">Dataset</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

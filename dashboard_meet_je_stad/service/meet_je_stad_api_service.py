@@ -22,7 +22,7 @@ class MeetJeStadAPIService:
         date_begin = datetime.datetime.strptime(begin, "%Y-%m-%d,%H:%M:%S")
         date_end = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
         if date_end < date_begin:
-            raise Exception('t1 must be later than t0.')
+            raise Exception('Eindtijd moet later zijn dan begintijd.')
 
         if type_api not in ['sensors', 'flora', 'stories']:
             raise Exception('type must be sensors, flora or stories.')
@@ -92,6 +92,7 @@ class MeetJeStadAPIService:
             path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             parent_path = os.path.dirname(path)
             file = open(parent_path + "/data/tmp/dataset.csv", "w", newline='')
+            results = [Measurement.properties] + results
             csv.writer(file).writerows(results)
             file.close()
 

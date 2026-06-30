@@ -7,6 +7,6 @@ class HomepageTest(TestCase):
         self.client = Client()
 
     def test_details(self):
-        response = self.client.get("/")
+        response = self.client.get("/dataset")
 
         self.assertEqual(response.status_code, 302)
