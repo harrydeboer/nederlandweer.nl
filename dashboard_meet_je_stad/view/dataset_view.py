@@ -35,8 +35,8 @@ class DatasetView:
                 else:
                     ids = form['ids'].value()
                 cleanup = {'cutoff_temp': form['cutoff_temp'].value(),
-                          'cutoff_pm25': form['cutoff_temp'].value(),
-                          'cutoff_pm10': form['cutoff_temp'].value()}
+                          'cutoff_pm25': form['cutoff_pm25'].value(),
+                          'cutoff_pm10': form['cutoff_pm10'].value()}
                 self.service.get_data(form['start'].value(), form['end'].value(), 'sensors',
                                       'csv', ids, form['particulate_matter_only'].value(),
                                       2 * (delta.days + 1) * 24 * 4 * last_sensor_id,

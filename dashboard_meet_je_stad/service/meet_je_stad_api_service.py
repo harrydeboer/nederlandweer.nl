@@ -58,6 +58,11 @@ class MeetJeStadAPIService:
         if response.status_code != 200:
             raise Exception(response.reason)
 
+        try:
+            response.json()
+        except Exception:
+            raise Exception(response.content.decode("utf-8"))
+
         # read from JSON
         results = []
         for row in response.json():

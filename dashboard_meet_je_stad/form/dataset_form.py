@@ -21,8 +21,8 @@ class DatasetForm(forms.Form):
 
     active_only = forms.BooleanField(initial=False, required=False, label='Alleen actieve sensors')
 
-    cutoff_temp = forms.BooleanField(initial=True, label='Afkap temperatuur')
+    cutoff_temp = forms.BooleanField(initial=True, required=False, label='Afkap temperatuur')
 
-    cutoff_pm25 = forms.BooleanField(initial=True, label='Afkap fijnstof 2.5')
+    cutoff_pm25 = forms.BooleanField(initial=True, required=False, label='Afkap fijnstof 2.5')
 
-    cutoff_pm10 = forms.BooleanField(initial=True, label='Afkap fijnstof 10')
+    cutoff_pm10 = forms.BooleanField(initial=True, required=False, label='Afkap fijnstof 10')
