@@ -18,22 +18,13 @@ class DatasetView:
             return HttpResponseRedirect('inloggen')
         form = DatasetForm(request.GET)
 
-        if form.is_valid():
-            start = form['start'].value()
-            end = form['end'].value()
+        if form.is_valid() and self.validate(form):
+
             try:
+                start = form['start'].value()
+                end = form['end'].value()
                 start_date = datetime.datetime.strptime(start, "%Y-%m-%d,%H:%M:%S")
-            except ValueError:
-                form.add_error('start', 'Voer een waarde in met formaat yyyy-mm-dd,HH:mm:ss')
-
-                return render(request, 'dataset/index.html', {'form': form})
-            try:
                 end_date = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
-            except ValueError:
-                form.add_error('end', 'Voer een waarde in met formaat yyyy-mm-dd,HH:mm:ss')
-
-                return render(request, 'dataset/index.html', {'form': form})
-            try:
                 last_sensor_id = int(os.getenv('LAST_SENSOR_ID'))
                 end_date = end_date.replace(tzinfo=datetime.timezone.utc)
                 end_date += datetime.timedelta(seconds=1)
@@ -46,7 +37,7 @@ class DatasetView:
                 cleanup = {'cutoff_temp': form['cutoff_temp'].value(),
                           'cutoff_pm25': form['cutoff_temp'].value(),
                           'cutoff_pm10': form['cutoff_temp'].value()}
-                self.service.get_data(start, end, 'sensors',
+                self.service.get_data(form['start'].value(), form['end'].value(), 'sensors',
                                       'csv', ids, form['particulate_matter_only'].value(),
                                       2 * (delta.days + 1) * 24 * 4 * last_sensor_id,
                                       form['active_only'].value(), cleanup)
@@ -60,3 +51,36 @@ class DatasetView:
                 form.add_error('start', str(e))
 
         return render(request, 'dataset/index.html', {'form': form})
+
+    def validate(self, form: DatasetForm) -> bool:
+        validated = True
+        try:
+            datetime.datetime.strptime(form['start'].value(), "%Y-%m-%d,%H:%M:%S")
+        except ValueError:
+            form.add_error('start', 'Voer een waarde in met formaat yyyy-mm-dd,HH:mm:ss')
+
+            return False
+        try:
+            datetime.datetime.strptime(form['end'].value(), "%Y-%m-%d,%H:%M:%S")
+        except ValueError:
+            form.add_error('end', 'Voer een waarde in met formaat yyyy-mm-dd,HH:mm:ss')
+
+            return False
+
+        exception_message = 'Ongeldige ids. Alleen cijfers, komma\'s en streepjes toegestaan.'
+        ids = form['ids'].value()
+        if ids != '':
+            for id_sensor in ids.split(','):
+                if len(id_sensor.split('-')) > 1:
+                    for id_underscore in id_sensor.split('-'):
+                        if not id_underscore.isdigit():
+                            form.add_error('ids', exception_message)
+
+                            return False
+                else:
+                    if not id_sensor.isdigit():
+                        form.add_error('ids', exception_message)
+
+                        return False
+
+        return validated

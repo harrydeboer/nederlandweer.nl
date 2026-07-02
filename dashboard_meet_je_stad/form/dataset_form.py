@@ -17,9 +17,9 @@ class DatasetForm(forms.Form):
                               input_formats = ['Y-d-m,HH:mm:ss'], label='Eind')
     ids = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'ids'}))
 
-    particulate_matter_only = forms.BooleanField(initial=False, label='Alleen fijnstof sensors')
+    particulate_matter_only = forms.BooleanField(initial=False, required=False, label='Alleen fijnstof sensors')
 
-    active_only = forms.BooleanField(initial=False, label='Alleen actieve sensors')
+    active_only = forms.BooleanField(initial=False, required=False, label='Alleen actieve sensors')
 
     cutoff_temp = forms.BooleanField(initial=True, label='Afkap temperatuur')
 

@@ -50,16 +50,6 @@ class MeetJeStadAPIService:
                     continue
                 ids += str(index) + ','
             ids = ids[:-1]
-        else:
-            exception_message = 'Ongeldige ids. Alleen cijfers, komma\'s en streepjes toegestaan.'
-            for id_sensor in ids.split(','):
-                if len(id_sensor.split('-')) > 1:
-                    for id_underscore in id_sensor.split('-'):
-                        if not id_underscore.isdigit():
-                            raise Exception(exception_message)
-                else:
-                    if not id_sensor.isdigit():
-                        raise Exception(exception_message)
 
         uri = 'https://meetjestad.net/data/?type='
         uri += (type_api + '&ids=' + ids + '&begin=' + date_begin.strftime('%Y-%m-%d,%H:%M:%S') + '&end=' +
