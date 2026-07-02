@@ -15,7 +15,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-6">
+        <div class="col">
             <form action="" method="get" id="dashboard-form">
                 <div class="row">
                     <div class="col">{{ form.start.label_tag }}</div><div class="col">{{ form.start }}</div>
@@ -24,6 +24,18 @@
                 <div class="row">
                     <div class="col">{{ form.ids.label_tag }}</div><div class="col">{{ form.ids }}</div>
                     <div class="col">Als dit veld leeg is worden alle ids van Utrecht geselecteerd.</div>
+                    <div class="col"></div>
+                </div>
+                <div class="row">
+                    <div class="col">{{ form.particulate_matter_only.label_tag }}</div>
+                    <div class="col">{{ form.particulate_matter_only }}</div>
+                    <div class="col">{{ form.active_only.label_tag }}</div>
+                    <div class="col">{{ form.active_only }}</div>
+                </div>
+                <div class="row">
+                    <div class="col">{{ form.cutoff_temp.label_tag }}</div><div class="col">{{ form.cutoff_temp }}</div>
+                    <div class="col">{{ form.cutoff_pm25.label_tag }}</div><div class="col">{{ form.cutoff_pm25 }}</div>
+                    <div class="col">{{ form.cutoff_pm10.label_tag }}</div><div class="col">{{ form.cutoff_pm10 }}</div>
                 </div>
                 <div class="row">
                     <div class="col"><input type="submit" value="Download" class="btn btn-success"></div>

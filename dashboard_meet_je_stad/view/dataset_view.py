@@ -5,6 +5,7 @@ from django.core.handlers.wsgi import WSGIRequest
 import datetime
 from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
 from dashboard_meet_je_stad.form.dataset_form import DatasetForm
+import os
 
 
 class DatasetView:
@@ -21,24 +22,34 @@ class DatasetView:
             start = form['start'].value()
             end = form['end'].value()
             try:
-                datetime.datetime.strptime(start, "%Y-%m-%d,%H:%M:%S")
+                start_date = datetime.datetime.strptime(start, "%Y-%m-%d,%H:%M:%S")
             except ValueError:
                 form.add_error('start', 'Voer een waarde in met formaat yyyy-mm-dd,HH:mm:ss')
 
                 return render(request, 'dataset/index.html', {'form': form})
             try:
-                datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
+                end_date = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
             except ValueError:
                 form.add_error('end', 'Voer een waarde in met formaat yyyy-mm-dd,HH:mm:ss')
 
                 return render(request, 'dataset/index.html', {'form': form})
             try:
+                last_sensor_id = int(os.getenv('LAST_SENSOR_ID'))
+                end_date = end_date.replace(tzinfo=datetime.timezone.utc)
+                end_date += datetime.timedelta(seconds=1)
+                start_date = start_date.replace(tzinfo=datetime.timezone.utc)
+                delta = end_date - start_date
                 if form['ids'].value() == '':
                     ids = 'Utrecht'
                 else:
                     ids = form['ids'].value()
+                cleanup = {'cutoff_temp': form['cutoff_temp'].value(),
+                          'cutoff_pm25': form['cutoff_temp'].value(),
+                          'cutoff_pm10': form['cutoff_temp'].value()}
                 self.service.get_data(start, end, 'sensors',
-                                      'csv', ids)
+                                      'csv', ids, form['particulate_matter_only'].value(),
+                                      2 * (delta.days + 1) * 24 * 4 * last_sensor_id,
+                                      form['active_only'].value(), cleanup)
                 path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                 parent_path = os.path.dirname(path)
                 file = open(parent_path + '/data/tmp/dataset.csv', "rb")

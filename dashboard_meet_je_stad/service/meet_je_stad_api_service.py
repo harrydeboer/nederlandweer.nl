@@ -17,8 +17,11 @@ class MeetJeStadAPIService:
                  ids: str = 'Utrecht',
                  is_particulate_matter_only: bool = False,
                  limit: int = 100,
-                 is_active_only: bool = False) -> list:
+                 is_active_only: bool = False,
+                 cleanup=None) -> list:
 
+        if cleanup is None:
+            cleanup = {}
         date_begin = datetime.datetime.strptime(begin, "%Y-%m-%d,%H:%M:%S")
         date_end = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
         if date_end < date_begin:
@@ -87,7 +90,7 @@ class MeetJeStadAPIService:
             row_keys_flipped[value] = key
         results.sort(key=lambda x: x[row_keys_flipped['id']])
 
-        results = self._sanitize(results, row_keys_flipped)
+        results = self._sanitize(results, row_keys_flipped, cleanup)
 
         if format_output == 'csv':
             path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -101,20 +104,23 @@ class MeetJeStadAPIService:
         else:
             return results
 
-    def _sanitize(self, raw_results: list, row_keys_flipped: dict) -> list:
+    def _sanitize(self, raw_results: list, row_keys_flipped: dict, cleanup: dict) -> list:
 
         results = []
         for raw_row in raw_results:
             row = list(raw_row)
-            if raw_row[row_keys_flipped['temperature']] is not None:
-                if raw_row[row_keys_flipped['temperature']] < -25 or raw_row[row_keys_flipped['temperature']] > 70:
-                    row[row_keys_flipped['temperature']] = None
-            if raw_row[row_keys_flipped['pm2.5']] is not None:
-                if raw_row[row_keys_flipped['pm2.5']] < 0 or raw_row[row_keys_flipped['pm2.5']] > 250:
-                    row[row_keys_flipped['pm2.5']] = None
-            if raw_row[row_keys_flipped['pm10']] is not None:
-                if raw_row[row_keys_flipped['pm10']] < 0 or raw_row[row_keys_flipped['pm10']] > 250:
-                    row[row_keys_flipped['pm10']] = None
+            if cleanup['cutoff_temp']:
+                if raw_row[row_keys_flipped['temperature']] is not None:
+                    if raw_row[row_keys_flipped['temperature']] < -25 or raw_row[row_keys_flipped['temperature']] > 70:
+                        row[row_keys_flipped['temperature']] = None
+            if cleanup['cutoff_pm25']:
+                if raw_row[row_keys_flipped['pm2.5']] is not None:
+                    if raw_row[row_keys_flipped['pm2.5']] < 0 or raw_row[row_keys_flipped['pm2.5']] > 250:
+                        row[row_keys_flipped['pm2.5']] = None
+            if cleanup['cutoff_pm10']:
+                if raw_row[row_keys_flipped['pm10']] is not None:
+                    if raw_row[row_keys_flipped['pm10']] < 0 or raw_row[row_keys_flipped['pm10']] > 250:
+                        row[row_keys_flipped['pm10']] = None
             results += [row]
 
         return results
