@@ -35,8 +35,8 @@ class DatasetView:
                 else:
                     ids = form['ids'].value()
                 cleanup = {'cutoff_temp': form['cutoff_temp'].value(),
-                          'cutoff_pm25': form['cutoff_pm25'].value(),
-                          'cutoff_pm10': form['cutoff_pm10'].value()}
+                           'cutoff_pm25': form['cutoff_pm25'].value(),
+                           'cutoff_pm10': form['cutoff_pm10'].value()}
                 self.service.get_data(form['start'].value(), form['end'].value(), 'sensors',
                                       'csv', ids, form['particulate_matter_only'].value(),
                                       2 * (delta.days + 1) * 24 * 4 * last_sensor_id,
@@ -54,37 +54,32 @@ class DatasetView:
 
     def validate(self, form: DatasetForm) -> bool:
         validated = True
+        start_date = datetime.datetime.strptime('2000-01-01,00:00:00', "%Y-%m-%d,%H:%M:%S")
+        end_date = datetime.datetime.strptime('2000-01-02,00:00:00', "%Y-%m-%d,%H:%M:%S")
         try:
             start_date = datetime.datetime.strptime(form['start'].value(), "%Y-%m-%d,%H:%M:%S")
         except ValueError:
             form.add_error('start', 'Voer een waarde in met formaat yyyy-mm-dd,HH:mm:ss')
 
-            return False
+            validated = False
         try:
             end_date = datetime.datetime.strptime(form['end'].value(), "%Y-%m-%d,%H:%M:%S")
         except ValueError:
             form.add_error('end', 'Voer een waarde in met formaat yyyy-mm-dd,HH:mm:ss')
 
-            return False
+            validated = False
 
         if start_date > end_date:
             form.add_error('start', 'Eindtijd moet later zijn dan begintijd.')
 
-            return False
-        exception_message = 'Ongeldige ids. Alleen cijfers, komma\'s en streepjes toegestaan.'
+            validated = False
         ids = form['ids'].value()
         if ids != '':
             for id_sensor in ids.split(','):
-                if len(id_sensor.split('-')) > 1:
-                    for id_underscore in id_sensor.split('-'):
-                        if not id_underscore.isdigit():
-                            form.add_error('ids', exception_message)
+                for id_underscore in id_sensor.split('-'):
+                    if not id_underscore.isdigit():
+                        form.add_error('ids', 'Ongeldige ids. Alleen cijfers, komma\'s en streepjes toegestaan.')
 
-                            return False
-                else:
-                    if not id_sensor.isdigit():
-                        form.add_error('ids', exception_message)
-
-                        return False
+                        validated = False
 
         return validated
