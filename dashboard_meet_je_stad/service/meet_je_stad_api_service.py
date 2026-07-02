@@ -109,15 +109,15 @@ class MeetJeStadAPIService:
         results = []
         for raw_row in raw_results:
             row = list(raw_row)
-            if cleanup['cutoff_temp']:
+            if 'cutoff_temp' in cleanup and cleanup['cutoff_temp']:
                 if raw_row[row_keys_flipped['temperature']] is not None:
                     if raw_row[row_keys_flipped['temperature']] < -25 or raw_row[row_keys_flipped['temperature']] > 70:
                         row[row_keys_flipped['temperature']] = None
-            if cleanup['cutoff_pm25']:
+            if 'cutoff_pm25' in cleanup and cleanup['cutoff_pm25']:
                 if raw_row[row_keys_flipped['pm2.5']] is not None:
                     if raw_row[row_keys_flipped['pm2.5']] < 0 or raw_row[row_keys_flipped['pm2.5']] > 250:
                         row[row_keys_flipped['pm2.5']] = None
-            if cleanup['cutoff_pm10']:
+            if 'cutoff_pm10' in cleanup and cleanup['cutoff_pm10']:
                 if raw_row[row_keys_flipped['pm10']] is not None:
                     if raw_row[row_keys_flipped['pm10']] < 0 or raw_row[row_keys_flipped['pm10']] > 250:
                         row[row_keys_flipped['pm10']] = None
