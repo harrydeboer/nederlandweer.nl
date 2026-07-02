@@ -24,8 +24,6 @@ class MeetJeStadAPIService:
             cleanup = {}
         date_begin = datetime.datetime.strptime(begin, "%Y-%m-%d,%H:%M:%S")
         date_end = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
-        if date_end < date_begin:
-            raise Exception('Eindtijd moet later zijn dan begintijd.')
 
         if type_api not in ['sensors', 'flora', 'stories']:
             raise Exception('type must be sensors, flora or stories.')

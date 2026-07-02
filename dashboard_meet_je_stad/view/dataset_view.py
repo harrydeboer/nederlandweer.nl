@@ -48,25 +48,29 @@ class DatasetView:
                 return FileResponse(file, content_type='text/csv', filename='dataset.csv')
 
             except Exception as e:
-                form.add_error('start', str(e))
+                form.add_error(None, str(e))
 
         return render(request, 'dataset/index.html', {'form': form})
 
     def validate(self, form: DatasetForm) -> bool:
         validated = True
         try:
-            datetime.datetime.strptime(form['start'].value(), "%Y-%m-%d,%H:%M:%S")
+            start_date = datetime.datetime.strptime(form['start'].value(), "%Y-%m-%d,%H:%M:%S")
         except ValueError:
             form.add_error('start', 'Voer een waarde in met formaat yyyy-mm-dd,HH:mm:ss')
 
             return False
         try:
-            datetime.datetime.strptime(form['end'].value(), "%Y-%m-%d,%H:%M:%S")
+            end_date = datetime.datetime.strptime(form['end'].value(), "%Y-%m-%d,%H:%M:%S")
         except ValueError:
             form.add_error('end', 'Voer een waarde in met formaat yyyy-mm-dd,HH:mm:ss')
 
             return False
 
+        if start_date > end_date:
+            form.add_error('start', 'Eindtijd moet later zijn dan begintijd.')
+
+            return False
         exception_message = 'Ongeldige ids. Alleen cijfers, komma\'s en streepjes toegestaan.'
         ids = form['ids'].value()
         if ids != '':
