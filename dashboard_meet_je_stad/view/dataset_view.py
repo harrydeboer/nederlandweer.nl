@@ -34,9 +34,15 @@ class DatasetView:
                     ids = 'Utrecht'
                 else:
                     ids = form['ids'].value()
-                cleanup = {'cutoff_temp': form['cutoff_temp'].value(),
-                           'cutoff_pm25': form['cutoff_pm25'].value(),
-                           'cutoff_pm10': form['cutoff_pm10'].value()}
+                cleanup = {'cutoff_temp': [form['cutoff_temp'].value(),
+                                           form['cutoff_temp_min'].value(),
+                                           form['cutoff_temp_max'].value()],
+                           'cutoff_pm25': [form['cutoff_pm25'].value(),
+                                           form['cutoff_pm25_min'].value(),
+                                           form['cutoff_pm25_max'].value()],
+                           'cutoff_pm10': [form['cutoff_pm10'].value(),
+                                           form['cutoff_pm10_min'].value(),
+                                           form['cutoff_pm10_max'].value()]}
                 self.service.get_data(form['start'].value(), form['end'].value(), 'sensors',
                                       'csv', ids, form['particulate_matter_only'].value(),
                                       2 * (delta.days + 1) * 24 * 4 * last_sensor_id,
@@ -56,6 +62,15 @@ class DatasetView:
         validated = True
         start_date = datetime.datetime.strptime('2000-01-01,00:00:00', "%Y-%m-%d,%H:%M:%S")
         end_date = datetime.datetime.strptime('2000-01-02,00:00:00', "%Y-%m-%d,%H:%M:%S")
+        cutoff_temp = form['cutoff_temp'].value()
+        cutoff_temp_min = form['cutoff_temp_min'].value()
+        cutoff_temp_max = form['cutoff_temp_max'].value()
+        cutoff_pm25 = form['cutoff_pm25'].value()
+        cutoff_pm25_min = form['cutoff_pm25_min'].value()
+        cutoff_pm25_max = form['cutoff_pm25_max'].value()
+        cutoff_pm10 = form['cutoff_pm10'].value()
+        cutoff_pm10_min = form['cutoff_pm10_min'].value()
+        cutoff_pm10_max = form['cutoff_pm10_max'].value()
         try:
             start_date = datetime.datetime.strptime(form['start'].value(), "%Y-%m-%d,%H:%M:%S")
         except ValueError:
@@ -81,5 +96,41 @@ class DatasetView:
                         form.add_error('ids', 'Ongeldige ids. Alleen cijfers, komma\'s en streepjes toegestaan.')
 
                         validated = False
+
+        if cutoff_temp_max < cutoff_temp_min:
+            form.add_error('cutoff_temp_max', 'Afkap temperatuur max moet groter zijn dan min.')
+            validated = False
+
+        if cutoff_pm25_max < cutoff_pm25_min:
+            form.add_error('cutoff_pm25_max', 'Afkap fijnstof 2.5 max moet groter zijn dan min.')
+            validated = False
+
+        if cutoff_pm10_max < cutoff_pm10_min:
+            form.add_error('cutoff_pm10_max', 'Afkap fijnstof 10 max moet groter zijn dan min.')
+            validated = False
+
+        if cutoff_temp:
+            if cutoff_temp_min == '':
+                form.add_error('cutoff_temp_min', 'Afkap temperatuur min mag niet leeg zijn.')
+                validated = False
+            if cutoff_temp_max == '':
+                form.add_error('cutoff_temp_min', 'Afkap temperatuur max mag niet leeg zijn.')
+                validated = False
+
+        if cutoff_pm25:
+            if cutoff_pm25_min == '':
+                form.add_error('cutoff_pm25_min', 'Afkap fijnstof 2.5 min mag niet leeg zijn.')
+                validated = False
+            if cutoff_pm25_max == '':
+                form.add_error('cutoff_pm25_min', 'Afkap fijnstof 2.5 max mag niet leeg zijn.')
+                validated = False
+
+        if cutoff_pm10:
+            if cutoff_pm10_min == '':
+                form.add_error('cutoff_pm10_min', 'Afkap fijnstof 10 min mag niet leeg zijn.')
+                validated = False
+            if cutoff_pm10_max == '':
+                form.add_error('cutoff_pm10_min', 'Afkap fijnstof 10 max mag niet leeg zijn.')
+                validated = False
 
         return validated

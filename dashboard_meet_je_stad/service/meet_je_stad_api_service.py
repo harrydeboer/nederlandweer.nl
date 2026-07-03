@@ -102,17 +102,20 @@ class MeetJeStadAPIService:
         results = []
         for raw_row in raw_results:
             row = list(raw_row)
-            if 'cutoff_temp' in cleanup and cleanup['cutoff_temp']:
+            if 'cutoff_temp' in cleanup and cleanup['cutoff_temp'][0]:
                 if raw_row[row_keys_flipped['temperature']] is not None:
-                    if raw_row[row_keys_flipped['temperature']] < -25 or raw_row[row_keys_flipped['temperature']] > 70:
+                    if (raw_row[row_keys_flipped['temperature']] < float(cleanup['cutoff_temp'][1])
+                            or raw_row[row_keys_flipped['temperature']] > float(cleanup['cutoff_temp'][2])):
                         row[row_keys_flipped['temperature']] = None
-            if 'cutoff_pm25' in cleanup and cleanup['cutoff_pm25']:
+            if 'cutoff_pm25' in cleanup and cleanup['cutoff_pm25'][0]:
                 if raw_row[row_keys_flipped['pm2.5']] is not None:
-                    if raw_row[row_keys_flipped['pm2.5']] < 0 or raw_row[row_keys_flipped['pm2.5']] > 250:
+                    if (raw_row[row_keys_flipped['pm2.5']] < float(cleanup['cutoff_pm25'][1])
+                            or raw_row[row_keys_flipped['pm2.5']] > float(cleanup['cutoff_pm25'][2])):
                         row[row_keys_flipped['pm2.5']] = None
-            if 'cutoff_pm10' in cleanup and cleanup['cutoff_pm10']:
+            if 'cutoff_pm10' in cleanup and cleanup['cutoff_pm10'][0]:
                 if raw_row[row_keys_flipped['pm10']] is not None:
-                    if raw_row[row_keys_flipped['pm10']] < 0 or raw_row[row_keys_flipped['pm10']] > 250:
+                    if (raw_row[row_keys_flipped['pm10']] < float(cleanup['cutoff_pm10'][1])
+                            or raw_row[row_keys_flipped['pm10']] > float(cleanup['cutoff_pm10'][2])):
                         row[row_keys_flipped['pm10']] = None
             results += [row]
 
