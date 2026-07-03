@@ -3,10 +3,13 @@ from django.test import Client
 
 
 class HomepageTest(TestCase):
+    fixtures = ['fixture.json']
+
     def setUp(self):
         self.client = Client()
+        self.client.login(username="test", password="secret")
 
     def test_details(self):
         response = self.client.get("/")
 
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)

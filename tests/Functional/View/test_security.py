@@ -3,6 +3,8 @@ from django.test import Client
 
 
 class SecurityTest(TestCase):
+    fixtures = ['fixture.json']
+    
     def setUp(self):
         self.client = Client()
 
