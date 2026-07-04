@@ -1,0 +1,40 @@
+from django.db import models
+
+
+class Measurement(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    sensor_id = models.IntegerField()
+    timestamp = models.DateTimeField()
+    firmware_version = models.IntegerField(null=True)
+    longitude = models.FloatField(null=True)
+    latitude = models.FloatField(null=True)
+    temperature = models.FloatField()
+    humidity = models.FloatField()
+    lux = models.FloatField(null=True)
+    supply = models.FloatField()
+    battery = models.FloatField(null=True)
+    pm25 = models.FloatField(null=True)
+    pm10 = models.FloatField(null=True)
+    extra1 = models.FloatField(null=True)
+    extra2 = models.FloatField(null=True)
+    extra3 = models.FloatField(null=True)
+    extra4 = models.FloatField(null=True)
+    extra5 = models.FloatField(null=True)
+    extra6 = models.FloatField(null=True)
+    extra7 = models.FloatField(null=True)
+    extra8 = models.FloatField(null=True)
+    extra9 = models.FloatField(null=True)
+    extra10 = models.FloatField(null=True)
+    extra11 = models.FloatField(null=True)
+    extra12 = models.FloatField(null=True)
+    extra13 = models.FloatField(null=True)
+    extra14 = models.FloatField(null=True)
+
+class Sensor(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    is_particulate_matter = models.BooleanField()
+    last_measurement = models.OneToOneField(
+        Measurement,
+        on_delete=models.DO_NOTHING,
+        primary_key=False,
+    )
