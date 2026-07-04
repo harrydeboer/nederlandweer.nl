@@ -3,6 +3,8 @@ from django.db import models
 
 class Sensor(models.Model):
     is_particulate_matter = models.BooleanField()
+    is_lux = models.BooleanField()
+    first_measurement = models.IntegerField()
     last_measurement = models.IntegerField()
 
 class Measurement(models.Model):
