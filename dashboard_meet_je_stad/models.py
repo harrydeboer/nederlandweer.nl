@@ -1,9 +1,13 @@
 from django.db import models
 
 
+class Sensor(models.Model):
+    is_particulate_matter = models.BooleanField()
+    last_measurement = models.IntegerField()
+
 class Measurement(models.Model):
     id = models.BigAutoField(primary_key=True)
-    sensor_id = models.IntegerField()
+    sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
     timestamp = models.DateTimeField()
     firmware_version = models.IntegerField(null=True)
     longitude = models.FloatField(null=True)
@@ -29,12 +33,3 @@ class Measurement(models.Model):
     extra12 = models.FloatField(null=True)
     extra13 = models.FloatField(null=True)
     extra14 = models.FloatField(null=True)
-
-class Sensor(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    is_particulate_matter = models.BooleanField()
-    last_measurement = models.OneToOneField(
-        Measurement,
-        on_delete=models.DO_NOTHING,
-        primary_key=False,
-    )
