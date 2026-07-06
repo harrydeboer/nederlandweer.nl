@@ -1,8 +1,8 @@
 import datetime
 from django.db.models import QuerySet
 from dashboard_meet_je_stad.models import Measurement
-from dashboard_meet_je_stad.models import Sensor
 import json
+from typing import List
 
 
 class MeasurementRepository:
@@ -24,44 +24,9 @@ class MeasurementRepository:
     def create(self, measurement: Measurement):
         measurement.save()
 
-    def bulk_create(self, results: list, sensor_repository):
-        if len(results) == 0:
-            return
-        measurements = []
-        sensors = sensor_repository.find_all()
-        first_measurements = {}
-        last_measurements = {}
-        for row in results:
-            measurement = self.row_to_measurement(row)
-            if measurement.is_in_utrecht() and measurement.sensor_id not in sensors:
-                measurements.append(measurement)
-                sensor = Sensor()
-                if measurement.pm25 is not None or measurement.pm10 is not None:
-                    sensor.is_particulate_matter = True
-                else:
-                    sensor.is_particulate_matter = False
-                if measurement.lux is not None:
-                    sensor.is_lux = True
-                else:
-                    sensor.is_lux = False
-                sensor.id = measurement.sensor_id
-                sensor_repository.create(sensor)
-                first_measurements[measurement.sensor_id] = measurement
-                last_measurements[sensor.id] = measurement
-            elif measurement.is_in_utrecht() and measurement.sensor_id in sensors:
-                sensor = sensors[measurement.sensor.id]
-                measurements.append(measurement)
-                last_measurements[sensor.id] = measurement
+    def bulk_create(self, measurements: List[Measurement]):
+
         Measurement.objects.bulk_create(measurements)
-        sensors = sensor_repository.find_all()
-        for sensor_id, sensor in sensors.items():
-            if sensor_id in first_measurements:
-                sensor.first_measurement = self.get_by_sensor_and_timestamp(sensor_id,
-                                                                            first_measurements[sensor_id].timestamp).id
-            if sensor_id in last_measurements:
-                sensor.last_measurement = self.get_by_sensor_and_timestamp(sensor_id,
-                                                                            last_measurements[sensor_id].timestamp).id
-            sensor_repository.update(sensor)
 
     def row_to_measurement(self, row: list) -> Measurement:
         measurement = Measurement()

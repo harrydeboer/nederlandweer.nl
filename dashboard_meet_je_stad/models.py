@@ -10,6 +10,7 @@ class Sensor(models.Model):
     is_lux = models.BooleanField()
     first_measurement = models.IntegerField(null=True)
     last_measurement = models.IntegerField(null=True)
+    is_active = False
     measurements = []
 
     def add_measurement(self, measurement: Measurement):

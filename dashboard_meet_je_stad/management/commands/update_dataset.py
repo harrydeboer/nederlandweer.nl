@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 import os
 import datetime
 import dotenv
+from dashboard_meet_je_stad.models import Sensor
 
 
 class Command(BaseCommand):
@@ -14,6 +15,7 @@ class Command(BaseCommand):
         dotenv_file = dotenv.find_dotenv()
         dotenv.load_dotenv(dotenv_file)
         measurement_repository = MeasurementRepository()
+        sensor_repository = SensorRepository()
         sensor_step = 50
         last_sensor_id = int(os.getenv('LAST_SENSOR_ID'))
         if os.getenv('END_DATE') == '':
@@ -36,7 +38,45 @@ class Command(BaseCommand):
         False,
                 2 * (delta.days + 1) * 24 * 4 * sensor_step,
         False)
-            measurement_repository.bulk_create(results, SensorRepository())
+            if len(results) == 0:
+                continue
+            measurements = []
+            sensors = sensor_repository.find_all()
+            first_measurements = {}
+            last_measurements = {}
+            for row in results:
+                measurement = measurement_repository.row_to_measurement(row)
+                if measurement.is_in_utrecht() and measurement.sensor_id not in sensors:
+                    measurements.append(measurement)
+                    sensor = Sensor()
+                    if measurement.pm25 is not None or measurement.pm10 is not None:
+                        sensor.is_particulate_matter = True
+                    else:
+                        sensor.is_particulate_matter = False
+                    if measurement.lux is not None:
+                        sensor.is_lux = True
+                    else:
+                        sensor.is_lux = False
+                    sensor.id = measurement.sensor_id
+                    sensor_repository.create(sensor)
+                    first_measurements[measurement.sensor_id] = measurement
+                    last_measurements[sensor.id] = measurement
+                elif measurement.is_in_utrecht() and measurement.sensor_id in sensors:
+                    sensor = sensors[measurement.sensor.id]
+                    measurements.append(measurement)
+                    last_measurements[sensor.id] = measurement
+            measurement_repository.bulk_create(measurements)
+            sensors = sensor_repository.find_all()
+            for sensor_id, sensor in sensors.items():
+                if sensor_id in first_measurements:
+                    sensor.first_measurement = measurement_repository.get_by_sensor_and_timestamp(sensor_id,
+                                                                                first_measurements[
+                                                                                    sensor_id].timestamp).id
+                if sensor_id in last_measurements:
+                    sensor.last_measurement = measurement_repository.get_by_sensor_and_timestamp(sensor_id,
+                                                                               last_measurements[
+                                                                                   sensor_id].timestamp).id
+                sensor_repository.update(sensor)
 
         dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')
         dotenv.set_key(dotenv_file, "END_DATE", date_now.strftime('%Y-%m-%d,%H:%M:%S'), quote_mode='never')
