@@ -11,8 +11,6 @@ class Sensor(models.Model):
     first_measurement = models.IntegerField(null=True)
     last_measurement = models.IntegerField(null=True)
     measurements = []
-    first_measurement_object = None
-    last_measurement_object = None
 
     def add_measurement(self, measurement: Measurement):
         self.measurements.append(measurement)

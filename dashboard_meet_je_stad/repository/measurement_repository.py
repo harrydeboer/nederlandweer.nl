@@ -1,7 +1,7 @@
 import datetime
+from django.db.models import QuerySet
 from dashboard_meet_je_stad.models import Measurement
 from dashboard_meet_je_stad.models import Sensor
-from typing import List
 import json
 from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 
@@ -11,17 +11,19 @@ class MeasurementRepository:
     def __init__(self):
         self.sensor_repository = SensorRepository()
 
-    def get(self, id_sensor: int) -> List[Measurement]:
-        measurements = []
+    def get(self, measurement_id: int) -> Measurement:
 
-        return measurements
+        return Measurement.objects.get(pk=measurement_id)
 
-    def get_days(self, id_sensor: int, days:float) -> List[Measurement]:
-        measurements = []
-        date = datetime.datetime.now(datetime.timezone.utc)
-        date -= datetime.timedelta(days=days)
+    def get_by_sensor_and_timestamp(self, sensor_id: int, timestamp: datetime.datetime) -> Measurement:
 
-        return measurements
+        return Measurement.objects.filter(sensor_id=sensor_id, timestamp=timestamp).get()
+
+    def get_days(self, id_sensor: int, days:float) -> QuerySet[Measurement]:
+        date_now = datetime.datetime.now(datetime.timezone.utc)
+        date_begin = date_now - datetime.timedelta(days=days)
+
+        return Measurement.objects.filter(sensor_id=id_sensor, timestamp__range=(date_begin, date_now))
 
     def create(self, measurement: Measurement):
         measurement.save()
@@ -31,9 +33,12 @@ class MeasurementRepository:
             return
         measurements = []
         sensors = self.sensor_repository.find_all()
+        first_measurements = {}
+        last_measurements = {}
         for row in results:
             measurement = self.row_to_measurement(row)
-            if measurement.sensor_id not in sensors:
+            if measurement.is_in_utrecht() and measurement.sensor_id not in sensors:
+                measurements.append(measurement)
                 sensor = Sensor()
                 if measurement.pm25 is not None or measurement.pm10 is not None:
                     sensor.is_particulate_matter = True
@@ -45,18 +50,21 @@ class MeasurementRepository:
                     sensor.is_lux = False
                 sensor.id = measurement.sensor_id
                 self.sensor_repository.create(sensor)
-                sensor.first_measurement_object = measurement
-            else:
-                sensor = sensors[measurement.sensor_id]
-            sensor.last_measurement_object = measurement
-            if measurement.is_in_utrecht():
+                first_measurements[measurement.sensor_id] = measurement
+                last_measurements[sensor.id] = measurement
+            elif measurement.is_in_utrecht() and measurement.sensor_id in sensors:
+                sensor = sensors[measurement.sensor.id]
                 measurements.append(measurement)
+                last_measurements[sensor.id] = measurement
         Measurement.objects.bulk_create(measurements)
+        sensors = self.sensor_repository.find_all()
         for sensor_id, sensor in sensors.items():
-            if sensor.first_measurement_object:
-                sensor.first_measurement = sensor.first_measurement_object.id
-            if sensor.last_measurement_object:
-                sensor.last_measurement = sensor.last_measurement_object.id
+            if sensor_id in first_measurements:
+                sensor.first_measurement = self.get_by_sensor_and_timestamp(sensor_id,
+                                                                            first_measurements[sensor_id].timestamp).id
+            if sensor_id in last_measurements:
+                sensor.last_measurement = self.get_by_sensor_and_timestamp(sensor_id,
+                                                                            last_measurements[sensor_id].timestamp).id
             self.sensor_repository.update(sensor)
 
     def row_to_measurement(self, row: list) -> Measurement:
