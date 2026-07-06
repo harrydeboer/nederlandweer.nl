@@ -36,7 +36,7 @@ class Command(BaseCommand):
         False,
                 2 * (delta.days + 1) * 24 * 4 * sensor_step,
         False)
-            measurement_repository.bulk_create(results)
+            measurement_repository.bulk_create(results, SensorRepository())
 
         dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')
         dotenv.set_key(dotenv_file, "END_DATE", date_now.strftime('%Y-%m-%d,%H:%M:%S'), quote_mode='never')

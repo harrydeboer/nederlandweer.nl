@@ -1,8 +1,12 @@
 from dashboard_meet_je_stad.models import Sensor
+from dashboard_meet_je_stad.repository.measurement_repository import MeasurementRepository
 from typing import Dict
 
 
 class SensorRepository:
+
+    def __init__(self):
+        self.measurement_repository = MeasurementRepository()
 
     def create(self, sensor: Sensor):
         sensor.save()

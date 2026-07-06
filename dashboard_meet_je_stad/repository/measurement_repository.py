@@ -3,13 +3,9 @@ from django.db.models import QuerySet
 from dashboard_meet_je_stad.models import Measurement
 from dashboard_meet_je_stad.models import Sensor
 import json
-from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 
 
 class MeasurementRepository:
-
-    def __init__(self):
-        self.sensor_repository = SensorRepository()
 
     def get(self, measurement_id: int) -> Measurement:
 
@@ -28,11 +24,11 @@ class MeasurementRepository:
     def create(self, measurement: Measurement):
         measurement.save()
 
-    def bulk_create(self, results: list):
+    def bulk_create(self, results: list, sensor_repository):
         if len(results) == 0:
             return
         measurements = []
-        sensors = self.sensor_repository.find_all()
+        sensors = sensor_repository.find_all()
         first_measurements = {}
         last_measurements = {}
         for row in results:
@@ -49,7 +45,7 @@ class MeasurementRepository:
                 else:
                     sensor.is_lux = False
                 sensor.id = measurement.sensor_id
-                self.sensor_repository.create(sensor)
+                sensor_repository.create(sensor)
                 first_measurements[measurement.sensor_id] = measurement
                 last_measurements[sensor.id] = measurement
             elif measurement.is_in_utrecht() and measurement.sensor_id in sensors:
@@ -57,7 +53,7 @@ class MeasurementRepository:
                 measurements.append(measurement)
                 last_measurements[sensor.id] = measurement
         Measurement.objects.bulk_create(measurements)
-        sensors = self.sensor_repository.find_all()
+        sensors = sensor_repository.find_all()
         for sensor_id, sensor in sensors.items():
             if sensor_id in first_measurements:
                 sensor.first_measurement = self.get_by_sensor_and_timestamp(sensor_id,
@@ -65,7 +61,7 @@ class MeasurementRepository:
             if sensor_id in last_measurements:
                 sensor.last_measurement = self.get_by_sensor_and_timestamp(sensor_id,
                                                                             last_measurements[sensor_id].timestamp).id
-            self.sensor_repository.update(sensor)
+            sensor_repository.update(sensor)
 
     def row_to_measurement(self, row: list) -> Measurement:
         measurement = Measurement()
