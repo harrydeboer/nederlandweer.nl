@@ -3,7 +3,7 @@ import requests
 from typing import Literal
 import datetime
 import csv
-from dashboard_meet_je_stad.model.measurement import Measurement
+from dashboard_meet_je_stad.models import Measurement
 from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 
 
@@ -33,7 +33,7 @@ class MeetJeStadAPIService:
 
         if ids == 'Utrecht':
             keys = {}
-            for index, key in enumerate(Measurement.properties):
+            for index, key in enumerate(Measurement._meta.fields):
                 keys[key] = index
             ids = ''
             sensors = SensorRepository().find_all()
@@ -65,12 +65,20 @@ class MeetJeStadAPIService:
 
         # read from JSON
         results = []
+        keys = []
+        for field in Measurement._meta.fields:
+            if field.attname == 'pm25':
+                keys.append('pm2.5')
+            elif field.attname == 'sensor_id':
+                keys.append('id')
+            else:
+                keys.append(field.attname)
         for row in response.json():
             result = []
             for key in row:
-                if key not in Measurement.properties and key != 'row':
+                if key not in keys and key != 'row':
                     print('Invalid key ' + key + ' in row.')
-            for key in Measurement.properties:
+            for key in keys:
                 if key in row:
                     result.append(row[key])
                 else:
@@ -79,8 +87,8 @@ class MeetJeStadAPIService:
 
         results.reverse()
         row_keys_flipped = {}
-        for key, value in enumerate(Measurement.properties):
-            row_keys_flipped[value] = key
+        for key, field in enumerate(Measurement._meta.fields):
+            row_keys_flipped[field.attname] = key
         results.sort(key=lambda x: x[row_keys_flipped['id']])
 
         results = self._sanitize(results, row_keys_flipped, cleanup)
@@ -89,7 +97,7 @@ class MeetJeStadAPIService:
             path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             parent_path = os.path.dirname(path)
             file = open(parent_path + "/data/tmp/dataset.csv", "w", newline='')
-            results = [Measurement.properties] + results
+            results = [Measurement._meta.fields] + results
             csv.writer(file).writerows(results)
             file.close()
 

@@ -1,64 +1,25 @@
-import os
-import csv
-from dashboard_meet_je_stad.model.sensor import Sensor
-from dashboard_meet_je_stad.repository.measurement_repository import MeasurementRepository
-from dashboard_meet_je_stad.service.make_grid_service import MakeGridService
-import math
-import datetime
-import sys
+from dashboard_meet_je_stad.models import Sensor
 from typing import Dict
 
 
 class SensorRepository:
 
-    def __init__(self):
-        self.path_data = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        if sys.argv[1:2] == ['test']:
-            self.path_data += '/tests/data/'
-        else:
-            self.path_data += '/data/'
-        self.utrecht_center_lat_degrees = 52.085 * math.pi / 180
-        self.utrecht_center_long_degrees = 5.085 * math.pi / 180
-        self.radius = 9.46
-        self.measurement_repository = MeasurementRepository()
-        self.make_grid_service = MakeGridService()
+    def create(self, sensor: Sensor):
+        sensor.save()
 
-    def write(self, sensors: dict):
-        file = open(self.path_data + "sensor.csv", "w", newline='')
-        rows_out = []
-        for index, sensor in sensors.items():
-            row = sensor.measurements[-1].to_list()
-            for key in Sensor.properties:
-                if key == 'is_active':
-                    continue
-                if key == 'is_particulate_matter':
-                    if sensor.__getattribute__(key):
-                        row.append('1')
-                    else:
-                        row.append('0')
-                else:
-                    if isinstance(sensor.__getattribute__(key), datetime.datetime):
-                        if key == 'start_date':
-                            row.append(sensor.__getattribute__(key).strftime('%Y-%m-%d %H:%M:%S'))
-                        else:
-                            row.append(sensor.__getattribute__(key).strftime('%Y-%m-%d'))
-                    else:
-                        row.append(sensor.__getattribute__(key))
-            rows_out.append(row)
-        csv.writer(file).writerows(rows_out)
-        file.close()
+    def update(self, sensor: Sensor):
+        sensor.save()
 
     def find_all(self, pm:bool = False) -> Dict[int, Sensor]:
-        sensors = {}
-        with open(self.path_data + 'sensor.csv') as csvfile:
-            reader = csv.reader(csvfile)
-            for row in reader:
-                sensor = Sensor(row)
-                if pm and sensor.is_particulate_matter:
-                    sensors[int(row[1])] = sensor
-                elif not pm:
-                    sensors[int(row[1])] = sensor
-        return sensors
+        sensors = Sensor.objects.all()
+        sensors_return = {}
+        for sensor in sensors:
+            if pm and sensor.is_particulate_matter:
+                sensors_return[sensor.id] = sensor
+            elif not pm:
+                sensors_return[sensor.id] = sensor
+
+        return sensors_return
 
     def get(self, id_sensor: int) -> Sensor:
         sensor = self.find_all()[id_sensor]
@@ -89,7 +50,7 @@ class SensorRepository:
 
         return dict(sorted(sensors.items()))
 
-    def update(self, measurements: dict) -> dict:
+    def update_old(self, measurements: dict) -> dict:
         sensors = self.find_all()
 
         # Loop over all sensors
@@ -165,21 +126,7 @@ class SensorRepository:
             # Determine if coordinates are in Utrecht and update start_date and set utrecht_city to true or false
             for date, latitude in latitudes.items():
                 longitude = longitudes[date]
-                degrees_lat = math.pi / 180 * latitude
-                degrees_lon = math.pi / 180 * longitude
-                if longitude > 180 or longitude < -180 or latitude > 90 or latitude < -90:
-                    continue
-                distance = 2 * math.asin(math.sqrt(((1 - math.cos(degrees_lat - self.utrecht_center_lat_degrees)) +
-                                                    math.cos(degrees_lat) * math.cos(self.utrecht_center_lat_degrees) *
-                                                    (1 - math.cos(
-                                                        degrees_lon - self.utrecht_center_long_degrees))) / 2)) * 6371
-                if distance < self.radius:
-                    if not utrecht_city and start_date_utrecht == '':
-                        start_date_utrecht = date
-                    end_date_utrecht = date
-                    utrecht_city = True
-                else:
-                    utrecht_city = False
+
 
             # Write row to rows_utrecht
             if utrecht_city or (start_date_utrecht != '' and start_date_utrecht is not None):

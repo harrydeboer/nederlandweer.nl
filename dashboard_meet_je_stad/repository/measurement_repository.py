@@ -1,33 +1,18 @@
-import os
-import csv
 import datetime
-from dashboard_meet_je_stad.model.measurement import Measurement
-from dashboard_meet_je_stad.model.sensor import Sensor
-import sys
-from typing import List, Dict
+from dashboard_meet_je_stad.models import Measurement
+from dashboard_meet_je_stad.models import Sensor
+from typing import List
+import json
+from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 
 
 class MeasurementRepository:
 
     def __init__(self):
-        self.path_data = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        if  sys.argv[1:2] == ['test']:
-            self.path_data += '/tests/data/'
-        else:
-            self.path_data += '/data/'
-
-    def add_to_full(self, id_sensor: int, rows: list):
-        os.makedirs(self.path_data + "ids/" + str(id_sensor), exist_ok=True)
-        file = open(self.path_data + "ids/" + str(id_sensor) + "/out.csv", "a", newline='')
-        csv.writer(file).writerows(rows)
-        file.close()
+        self.sensor_repository = SensorRepository()
 
     def get(self, id_sensor: int) -> List[Measurement]:
         measurements = []
-        with open(self.path_data + "ids/" + str(id_sensor) + "/out.csv") as csvfile:
-            reader = csv.reader(csvfile)
-            for index, row in enumerate(reader):
-                measurements.append(Measurement(row))
 
         return measurements
 
@@ -35,59 +20,60 @@ class MeasurementRepository:
         measurements = []
         date = datetime.datetime.now(datetime.timezone.utc)
         date -= datetime.timedelta(days=days)
-        with open(self.path_data + "ids/" + str(id_sensor) + "/out.csv") as csvfile:
-            reader = csv.reader(csvfile)
-            for index, row in enumerate(reader):
-                measurement = Measurement(row)
-                if measurement.timestamp > date:
-                    measurements.append(measurement)
+
         return measurements
 
-    def get_small_last_24(self, date_now: datetime.datetime) -> Dict[int, List[Measurement]]:
-        measurements = {}
-        with open(self.path_data + "dataset_small.csv") as csvfile:
-            reader = csv.reader(csvfile)
-            for index, row in enumerate(reader):
-                date_row = datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S").replace(tzinfo=datetime.timezone.utc)
-                if date_now - date_row < datetime.timedelta(hours=24):
-                    if int(row[1]) in measurements:
-                        measurements[int(row[1])].append(Measurement(row))
-                    else:
-                        measurements[int(row[1])] = [Measurement(row)]
-        return measurements
+    def create(self, measurement: Measurement):
+        measurement.save()
 
-    def get_small_utrecht(self, sensors: Dict[int, Sensor]) -> Dict[int, List[Measurement]]:
-        measurements = {}
-        with open(self.path_data + 'dataset_small_utrecht.csv') as csvfile:
-            reader = csv.reader(csvfile)
-            for row in reader:
-                if int(row[1]) not in sensors:
-                    continue
-                if int(row[1]) in measurements:
-                    measurements[int(row[1])].append(Measurement(row))
+    def bulk_create(self, results: list):
+        if len(results) == 0:
+            return
+        measurements = []
+        sensors = self.sensor_repository.find_all()
+        for row in results:
+            measurement = self.row_to_measurement(row)
+            if measurement.sensor_id not in sensors:
+                sensor = Sensor()
+                if measurement.pm25 is not None or measurement.pm10 is not None:
+                    sensor.is_particulate_matter = True
                 else:
-                    measurements[int(row[1])] = [Measurement(row)]
-        return measurements
+                    sensor.is_particulate_matter = False
+                if measurement.lux is not None:
+                    sensor.is_lux = True
+                else:
+                    sensor.is_lux = False
+                sensor.id = measurement.sensor_id
+                self.sensor_repository.create(sensor)
+                sensor.first_measurement_object = measurement
+            else:
+                sensor = sensors[measurement.sensor_id]
+            sensor.last_measurement_object = measurement
+            if measurement.is_in_utrecht():
+                measurements.append(measurement)
+        Measurement.objects.bulk_create(measurements)
+        for sensor_id, sensor in sensors.items():
+            if sensor.first_measurement_object:
+                sensor.first_measurement = sensor.first_measurement_object.id
+            if sensor.last_measurement_object:
+                sensor.last_measurement = sensor.last_measurement_object.id
+            self.sensor_repository.update(sensor)
 
-    def add_to_small(self, rows: list):
-        file = open(self.path_data + "dataset_small.csv", "a", newline='')
-        csv.writer(file).writerows(rows)
-        file.close()
+    def row_to_measurement(self, row: list) -> Measurement:
+        measurement = Measurement()
+        measurement.timestamp = (datetime.datetime.strptime(row[2], "%Y-%m-%d %H:%M:%S")
+                                 .astimezone(datetime.timezone.utc))
+        measurement.sensor_id = row[0]
+        measurement.firmware_version = row[3]
+        measurement.longitude = row[4]
+        measurement.latitude = row[5]
+        measurement.temperature = row[6]
+        measurement.humidity = row[7]
+        measurement.lux = row[8]
+        measurement.supply = row[9]
+        measurement.battery = row[10]
+        measurement.pm25 = row[11]
+        measurement.pm10 = row[12]
+        measurement.extra = json.dumps(row[13])
 
-    def write_to_small(self, measurements_dict: dict):
-        rows = []
-        for index, measurements in measurements_dict.items():
-            for measurement in measurements:
-                rows.append(measurement.to_list())
-        file = open(self.path_data + "dataset_small.csv", "w", newline='')
-        csv.writer(file).writerows(rows)
-        file.close()
-
-    def write_to_small_utrecht(self, measurements_dict: dict):
-        rows = []
-        for index, measurements in measurements_dict.items():
-            for measurement in measurements:
-                rows.append(measurement.to_list())
-        file = open(self.path_data + "/dataset_small_utrecht.csv", "w", newline='')
-        csv.writer(file).writerows(rows)
-        file.close()
+        return measurement
