@@ -62,7 +62,7 @@ class Command(BaseCommand):
                     sensor_repository.create(sensor)
                     first_measurements[measurement.sensor_id] = measurement
                     last_measurements[sensor.id] = measurement
-                elif measurement.is_in_utrecht() and measurement.sensor_id in sensors:
+                elif measurement.sensor_id in sensors:
                     sensor = sensors[measurement.sensor.id]
                     measurements.append(measurement)
                     last_measurements[sensor.id] = measurement
