@@ -38,8 +38,9 @@ class SensorRepository:
         sensor.set_measurements(self.measurement_repository.get_days(id_sensor, days))
         return sensor
 
-    def get_small(self, sensors:Dict[int, Sensor], interval: str, inactive: bool,
+    def get_with_measurements_cached(self, pm: bool, interval: str, inactive: bool,
                   id_sensor: int|None) -> Dict[int, Sensor]:
+        sensors = self.find_all(pm=pm)
         measurements = self.measurement_repository.get_small()
         earlier_day = datetime.datetime.now().replace(tzinfo=datetime.timezone.utc) - datetime.timedelta(days=1)
         for index, rows in measurements.items():

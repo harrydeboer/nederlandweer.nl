@@ -58,14 +58,19 @@ class Dashboard {
 
     makeFeatures() {
         let features = []
-        Object.keys(this.sensors).forEach((index) => {
-            let sensor = this.sensors[index]
-            let date = sensor.timestamp.slice(-1)[0] ;
+        Object.keys(this.sensors).forEach((indexFeature) => {
+            let sensor = this.sensors[indexFeature];
+            for (var index = sensor['temperature'].length - 1; index >= 0; index--) {
+                if (sensor['temperature'][index] !== null) {
+                    break;
+                }
+            }
+            let date = sensor.timestamp[index];
             date = new Date(date + ' UTC').toLocaleString();
-            let temperature = sensor['temperature'].slice(-1)[0];
-            let humidity = sensor['humidity'].slice(-1)[0];
-            let pm25 = sensor['pm25'].slice(-1)[0];
-            let pm10 = sensor['pm10'].slice(-1)[0];
+            let temperature = sensor['temperature'][index];
+            let humidity = sensor['humidity'][index];
+            let pm25 = sensor['pm25'][index];
+            let pm10 = sensor['pm10'][index];
             let sourceImage;
             if ($('#id_pm:checked').length === 1 &&
                 sensor['is_particulate_matter'] === false) {
@@ -101,10 +106,10 @@ class Dashboard {
             mean_latitude = mean_latitude / (sensor.latitude.length - null_count);
             let feature = new ol.Feature({
                 geometry: new ol.geom.Point(ol.proj.fromLonLat([mean_longitude, mean_latitude])),
-                id: index,
+                id: indexFeature,
                 longitude: mean_longitude,
                 latitude: mean_latitude,
-                name: '<p class="sensor-title">Sensor ' + index + '</p>' +
+                name: '<p class="sensor-title">Sensor ' + indexFeature + '</p>' +
                     '<p>' + date + '</p>' +
                     '<p>Temperatuur: ' + this.displayFloat(temperature) + ' °C</p>' +
                     '<p>Luchtvochtigheid: ' + this.displayFloat(humidity) + ' RV %</p>' +
