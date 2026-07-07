@@ -18,8 +18,7 @@ class MeasurementRepository:
 
         return Measurement.objects.filter(sensor_id=sensor_id, timestamp=timestamp).get()
 
-    def get_small_utrecht(self) -> Dict[int, List[Measurement]]:
-        Measurement.objects.all()
+    def get_small(self) -> Dict[int, List[Measurement]]:
         measurements = {}
         for measurement in Measurement.objects.all():
             if measurement.sensor_id not in measurements:

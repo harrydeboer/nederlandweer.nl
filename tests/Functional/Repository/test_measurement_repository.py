@@ -8,5 +8,5 @@ class TestMeasurementRepository(TestCase):
     def test_get_data(self) -> None:
         repository = MeasurementRepository()
 
-        result = repository.get_small_utrecht()
+        result = repository.get_small()
         self.assertEqual(len(result), 1)

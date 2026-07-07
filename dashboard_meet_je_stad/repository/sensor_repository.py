@@ -1,3 +1,4 @@
+import datetime
 from dashboard_meet_je_stad.models import Sensor
 from dashboard_meet_je_stad.repository.measurement_repository import MeasurementRepository
 from typing import Dict
@@ -37,10 +38,19 @@ class SensorRepository:
         sensor.set_measurements(self.measurement_repository.get_days(id_sensor, days))
         return sensor
 
-    def get_small_utrecht(self, sensors:Dict[int, Sensor], interval: str, id_sensor: int) -> Dict[int, Sensor]:
-        measurements = self.measurement_repository.get_small_utrecht()
+    def get_small(self, sensors:Dict[int, Sensor], interval: str, inactive: bool,
+                  id_sensor: int|None) -> Dict[int, Sensor]:
+        measurements = self.measurement_repository.get_small()
+        earlier_day = datetime.datetime.now().replace(tzinfo=datetime.timezone.utc) - datetime.timedelta(days=1)
         for index, rows in measurements.items():
-            sensors[index].set_measurements(rows)
+            if not inactive and len(rows) == 1 and rows[0].timestamp < earlier_day:
+                continue
+            else:
+                rows_new = []
+                for row in rows:
+                    if row.timestamp > earlier_day:
+                        rows_new.append(row)
+            sensors[index].set_measurements(rows_new)
             sensors[index].is_active = True
 
         sensors = self.make_grid_service.make_grid(sensors, 1)
