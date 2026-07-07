@@ -69,7 +69,7 @@ class Command(BaseCommand):
                     measurements.append(measurement)
                     last_measurements[sensor.id] = measurement
             measurement_repository.bulk_create(measurements)
-
+        sensors = sensor_repository.find_all()
         for sensor_id, sensor in sensors.items():
             if sensor_id in first_measurements:
                 sensor.first_measurement = (measurement_repository.

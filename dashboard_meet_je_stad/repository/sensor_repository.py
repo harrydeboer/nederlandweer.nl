@@ -46,14 +46,18 @@ class SensorRepository:
             if not inactive and len(rows) == 1 and rows[0].timestamp < earlier_day:
                 continue
             else:
+                if rows[-1].timestamp > earlier_day:
+                    sensors[index].is_active = True
                 rows_new = []
                 for row in rows:
                     if row.timestamp > earlier_day:
                         rows_new.append(row)
             sensors[index].set_measurements(rows_new)
-            sensors[index].is_active = True
 
         sensors = self.make_grid_service.make_grid(sensors, 1)
+        for index, sensor in sensors.items():
+            if not sensor.is_active:
+                sensors[index].set_measurements([self.measurement_repository.get(sensor.last_measurement)])
 
         if id_sensor is not None and interval == '3month':
             is_active = False

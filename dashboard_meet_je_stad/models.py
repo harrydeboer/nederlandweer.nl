@@ -40,6 +40,7 @@ class Sensor(models.Model):
                 properties[prop] = value.strftime('%Y-%m-%d %H:%M:%S')
             else:
                 properties[prop] = value
+        properties['is_active'] = self.is_active
         return properties
 
 class Measurement(models.Model):
