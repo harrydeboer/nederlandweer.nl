@@ -31,8 +31,8 @@ class Command(BaseCommand):
         sensors = sensor_repository.find_all()
         first_measurements = {}
         last_measurements = {}
-        for sensor_id_50 in range(0, int(last_sensor_id / sensor_step) + 2):
-            ids_range = str(sensor_id_50 * sensor_step + 1) + '-' + str((sensor_id_50 + 1) * sensor_step)
+        for sensor_id_step in range(0, int(last_sensor_id / sensor_step) + 2):
+            ids_range = str(sensor_id_step * sensor_step + 1) + '-' + str((sensor_id_step + 1) * sensor_step)
             results = MeetJeStadAPIService().get_data(
                 end_date.strftime('%Y-%m-%d,%H:%M:%S'),
                 date_now.strftime('%Y-%m-%d,%H:%M:%S'),
@@ -47,6 +47,8 @@ class Command(BaseCommand):
             measurements = []
             for row in results:
                 measurement = measurement_repository.row_to_measurement(row)
+                if measurement.sensor_id > last_sensor_id:
+                    last_sensor_id = measurement.sensor_id
                 if measurement.is_in_utrecht() and measurement.sensor_id not in sensors:
                     measurements.append(measurement)
                     sensor = Sensor()

@@ -79,8 +79,26 @@ class Dashboard {
             } else {
                 sourceImage = '/static/img/sensor-green.png'
             }
-            let mean_longitude = sensor['mean_longitude'];
-            let mean_latitude = sensor['mean_latitude'];
+            let mean_longitude = 0;
+            let null_count = 0;
+            for (let index = 0; index < sensor.longitude.length; index++) {
+                if (sensor.longitude[index] === null) {
+                    null_count++;
+                } else {
+                    mean_longitude += sensor.longitude[index];
+                }
+            }
+            mean_longitude = mean_longitude / (sensor.longitude.length - null_count);
+            let mean_latitude = 0;
+            null_count = 0;
+            for (let index = 0; index < sensor.latitude.length; index++) {
+                if (sensor.latitude[index] === null) {
+                    null_count++;
+                } else {
+                    mean_latitude += sensor.latitude[index];
+                }
+            }
+            mean_latitude = mean_latitude / (sensor.latitude.length - null_count);
             let feature = new ol.Feature({
                 geometry: new ol.geom.Point(ol.proj.fromLonLat([mean_longitude, mean_latitude])),
                 id: index,

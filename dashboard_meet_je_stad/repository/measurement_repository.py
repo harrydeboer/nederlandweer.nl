@@ -1,8 +1,7 @@
 import datetime
-from django.db.models import QuerySet
 from dashboard_meet_je_stad.models import Measurement
 import json
-from typing import List
+from typing import List, Dict
 
 
 class MeasurementRepository:
@@ -11,15 +10,30 @@ class MeasurementRepository:
 
         return Measurement.objects.get(pk=measurement_id)
 
+    def get_from_sensor(self, sensor_id: int) -> List[Measurement]:
+
+        return list(Measurement.objects.filter(sensor_id=sensor_id))
+
     def get_by_sensor_and_timestamp(self, sensor_id: int, timestamp: datetime.datetime) -> Measurement:
 
         return Measurement.objects.filter(sensor_id=sensor_id, timestamp=timestamp).get()
 
-    def get_days(self, id_sensor: int, days:float) -> QuerySet[Measurement]:
+    def get_small_utrecht(self) -> Dict[int, List[Measurement]]:
+        Measurement.objects.all()
+        measurements = {}
+        for measurement in Measurement.objects.all():
+            if measurement.sensor_id not in measurements:
+                measurements[measurement.sensor_id] = [measurement]
+            else:
+                measurements[measurement.sensor_id].append(measurement)
+
+        return measurements
+
+    def get_days(self, id_sensor: int, days:float) -> List[Measurement]:
         date_now = datetime.datetime.now(datetime.timezone.utc)
         date_begin = date_now - datetime.timedelta(days=days)
 
-        return Measurement.objects.filter(sensor_id=id_sensor, timestamp__range=(date_begin, date_now))
+        return list(Measurement.objects.filter(sensor_id=id_sensor, timestamp__range=(date_begin, date_now)))
 
     def create(self, measurement: Measurement):
         measurement.save()

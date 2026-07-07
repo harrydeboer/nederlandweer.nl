@@ -7,7 +7,7 @@ class HomepageTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.client.login(username="test", password="secret")
+        self.client.login(username="superuser", password="secret")
 
     def test_details(self):
         response = self.client.get("/dataset")

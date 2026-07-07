@@ -30,6 +30,7 @@ class HomepageView:
             else:
                 id_sensor = int(id_sensor)
         sensors = self.sensor_repository.find_all(pm=pm)
+        sensors = self.sensor_repository.get_small_utrecht(sensors, interval, id_sensor)
         form = DashboardForm(request.GET, inactive=inactive, sensors=sensors)
 
         return render(request, 'homepage/index.html',{'form': form, 'sensors': sensors})

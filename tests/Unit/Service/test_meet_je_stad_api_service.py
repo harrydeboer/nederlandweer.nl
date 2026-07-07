@@ -1,6 +1,6 @@
 import unittest
 from dashboard_meet_je_stad.service import meet_je_stad_api_service
-from dashboard_meet_je_stad.model.measurement import Measurement
+from dashboard_meet_je_stad.models import Measurement
 
 
 class TestMeetJeStadAPIService(unittest.TestCase):
@@ -13,10 +13,10 @@ class TestMeetJeStadAPIService(unittest.TestCase):
                                   'sensors',
                                   'json',
                                   '1085')
-        self.assertEqual(len(result[0]), len(Measurement.properties))
+        self.assertEqual(len(result[0]), len(Measurement._meta.fields))
 
         result = service.get_data('2017-11-16,0:00:00',
                                   '2025-11-16,23:59:00',
                                   'sensors',
                                   'json')
-        self.assertEqual(len(result[0]), len(Measurement.properties))
+        self.assertEqual(len(result[0]), len(Measurement._meta.fields))

@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
 import math
+import datetime
 
 
 class Sensor(models.Model):
@@ -18,6 +19,28 @@ class Sensor(models.Model):
 
     def set_measurements(self, measurements: list):
         self.measurements = measurements
+
+    def to_dict(self):
+        properties = {}
+        for field in Measurement._meta.fields:
+            prop = field.attname
+            if prop == 'id':
+                continue
+            properties[prop] = []
+            for measurement in self.measurements:
+                value = measurement.__getattribute__(prop)
+                if isinstance(value, datetime.datetime):
+                    properties[prop].append(value.strftime('%Y-%m-%d %H:%M:%S'))
+                else:
+                    properties[prop].append(value)
+        for field in Sensor._meta.fields:
+            prop = field.attname
+            value = self.__getattribute__(prop)
+            if isinstance(value, datetime.datetime):
+                properties[prop] = value.strftime('%Y-%m-%d %H:%M:%S')
+            else:
+                properties[prop] = value
+        return properties
 
 class Measurement(models.Model):
     id = models.BigAutoField(primary_key=True)

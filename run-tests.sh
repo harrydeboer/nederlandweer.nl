@@ -6,4 +6,4 @@ else
   source .venv/bin/activate
 fi
 
-python manage.py test tests/Functional/View/ tests/Unit/Service/ tests/Unit/Repository
+python manage.py test tests/Functional/View/ tests/Unit/Service/ tests/Functional/Repository

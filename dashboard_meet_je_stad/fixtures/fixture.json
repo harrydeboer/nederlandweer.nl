@@ -1,19 +1,64 @@
 [
-{
-    "model": "auth.user",
-    "pk": 1,
-    "fields": {
-        "password": "pbkdf2_sha256$1200000$lqG7kDopZkJLRA9reWnZgn$EIXWqZlFauvy1Xj57IrOMUVp+uM5TS6dYSpZkz3zbz4=",
-        "last_login": "2026-06-30T13:58:29.395Z",
-        "is_superuser": true,
-        "username": "test",
-        "first_name": "",
-        "last_name": "",
-        "email": "test@test.com",
-        "is_staff": true,
-        "is_active": true,
-        "date_joined": "2026-02-11T10:33:46.769Z",
-        "groups": [],
-        "user_permissions": []
-    }
-}]
+    {
+        "model": "auth.user",
+        "pk": 1,
+        "fields": {
+            "password": "pbkdf2_sha256$1200000$lqG7kDopZkJLRA9reWnZgn$EIXWqZlFauvy1Xj57IrOMUVp+uM5TS6dYSpZkz3zbz4=",
+            "last_login": "2026-06-30T13:58:29.395Z",
+            "is_superuser": true,
+            "username": "superuser",
+            "first_name": "",
+            "last_name": "",
+            "email": "superuser@test.com",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2026-02-11T10:33:46.769Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 2,
+        "fields": {
+            "password": "pbkdf2_sha256$1200000$lqG7kDopZkJLRA9reWnZgn$EIXWqZlFauvy1Xj57IrOMUVp+uM5TS6dYSpZkz3zbz4=",
+            "last_login": "2026-06-30T13:58:29.395Z",
+            "is_superuser": false,
+            "username": "test",
+            "first_name": "",
+            "last_name": "",
+            "email": "test@test.com",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2026-02-11T10:33:46.769Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "dashboard_meet_je_stad.sensor",
+        "pk": 1,
+        "fields": {
+            "is_particulate_matter": false,
+            "is_lux": false,
+            "first_measurement": null,
+            "last_measurement": null
+    }},
+    {
+        "model": "dashboard_meet_je_stad.measurement",
+        "pk": 1,
+        "fields": {
+            "sensor": 1,
+            "timestamp": "2026-07-07T04:31:07Z",
+            "firmware_version": 254,
+            "longitude": 5.11295,
+            "latitude": 52.0682,
+            "temperature": 20.1875,
+            "humidity": 23.25,
+            "lux": null,
+            "supply": 3.37,
+            "battery": null,
+            "pm25": null,
+            "pm10": null,
+            "extra": "null"}
+    }]
