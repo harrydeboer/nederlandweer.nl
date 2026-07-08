@@ -1,12 +1,10 @@
 from typing import Dict
-from dashboard_meet_je_stad.models import Sensor
-from dashboard_meet_je_stad.repository.measurement_repository import MeasurementRepository
+from dashboard_meet_je_stad.models import Sensor, Measurement
 import datetime
 
 
 class MakeGridService:
     def make_grid(self, sensors:Dict[int, Sensor], days:float)  -> Dict[int, Sensor]:
-        measurement_repository = MeasurementRepository()
         for id_sensor, sensor in sensors.items():
             measurements = []
             date_now = datetime.datetime.now(datetime.timezone.utc)
@@ -18,7 +16,7 @@ class MakeGridService:
             last_date -= datetime.timedelta(days=days)
             range_end = round(96 * days + 1)
             for index in range(0, range_end):
-                measurements.append(measurement_repository.row_to_measurement([None, id_sensor,
+                measurements.append(Measurement().dress([None, id_sensor,
                                                                                last_date.strftime('%Y-%m-%d %H:%M:%S'),
                                                  None, None, None, None, None,
                                                  None, None, None, None, None, None]))

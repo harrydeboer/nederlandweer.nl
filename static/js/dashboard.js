@@ -58,8 +58,8 @@ class Dashboard {
 
     makeFeatures() {
         let features = []
-        Object.keys(this.sensors).forEach((indexFeature) => {
-            let sensor = this.sensors[indexFeature];
+        Object.keys(this.sensors).forEach((sensor_id) => {
+            let sensor = this.sensors[sensor_id];
             for (var index = sensor['temperature'].length - 1; index >= 0; index--) {
                 if (sensor['temperature'][index] !== null) {
                     break;
@@ -106,10 +106,10 @@ class Dashboard {
             mean_latitude = mean_latitude / (sensor.latitude.length - null_count);
             let feature = new ol.Feature({
                 geometry: new ol.geom.Point(ol.proj.fromLonLat([mean_longitude, mean_latitude])),
-                id: indexFeature,
+                id: sensor_id,
                 longitude: mean_longitude,
                 latitude: mean_latitude,
-                name: '<p class="sensor-title">Sensor ' + indexFeature + '</p>' +
+                name: '<p class="sensor-title">Sensor ' + sensor_id + '</p>' +
                     '<p>' + date + '</p>' +
                     '<p>Temperatuur: ' + this.displayFloat(temperature) + ' °C</p>' +
                     '<p>Luchtvochtigheid: ' + this.displayFloat(humidity) + ' RV %</p>' +

@@ -83,13 +83,14 @@ class MeetJeStadAPIService:
                     result.append(row[key])
                 else:
                     result.append(None)
+            result[0] = None
             results.append(result)
 
         results.reverse()
         row_keys_flipped = {}
         for key, field in enumerate(Measurement._meta.fields):
             row_keys_flipped[field.attname] = key
-        results.sort(key=lambda x: x[row_keys_flipped['id']])
+        results.sort(key=lambda x: x[row_keys_flipped['sensor_id']])
 
         results = self._sanitize(results, row_keys_flipped, cleanup)
 

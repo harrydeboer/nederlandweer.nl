@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.constraints import UniqueConstraint
 import math
 import datetime
+import json
 
 
 class Sensor(models.Model):
@@ -66,6 +67,28 @@ class Measurement(models.Model):
             ),
         ]
 
+    def dress(self, row: list) -> Measurement:
+        self.id = row[0]
+        self.sensor_id = int(row[1])
+        self.timestamp = (datetime.datetime.strptime(row[2], "%Y-%m-%d %H:%M:%S")
+                          .astimezone(datetime.timezone.utc))
+        if row[3] == '' or row[3] is None:
+            self.firmware_version = None
+        else:
+            self.firmware_version = int(row[3])
+        self.longitude = self.set_float(row[4])
+        self.latitude = self.set_float(row[5])
+        self.temperature = self.set_float(row[6])
+        self.humidity = self.set_float(row[7])
+        self.lux = self.set_float(row[8])
+        self.supply = self.set_float(row[9])
+        self.battery = self.set_float(row[10])
+        self.pm25 = self.set_float(row[11])
+        self.pm10 = self.set_float(row[12])
+        self.extra = json.dumps(row[13])
+
+        return self
+
     def is_in_utrecht(self) -> bool:
         utrecht_center_lat_degrees = 52.085 * math.pi / 180
         utrecht_center_long_degrees = 5.085 * math.pi / 180
@@ -91,7 +114,8 @@ class Measurement(models.Model):
 
     def to_list(self):
         row = []
-        for prop, field in Measurement._meta.fields:
+        for field in Measurement._meta.fields:
+            prop = field.attname
             if prop == 'timestamp':
                 row.append(self.timestamp.strftime('%Y-%m-%d %H:%M:%S'))
             else:

@@ -1,6 +1,7 @@
 import datetime
 from dashboard_meet_je_stad.models import Sensor
 from dashboard_meet_je_stad.repository.measurement_repository import MeasurementRepository
+from dashboard_meet_je_stad.repository.measurement_cached_repository import MeasurementCachedRepository
 from typing import Dict
 from dashboard_meet_je_stad.service.make_grid_service import MakeGridService
 
@@ -9,6 +10,7 @@ class SensorRepository:
 
     def __init__(self):
         self.measurement_repository = MeasurementRepository()
+        self.measurement_cached_repository = MeasurementCachedRepository()
         self.make_grid_service = MakeGridService()
 
     def create(self, sensor: Sensor):
@@ -38,15 +40,16 @@ class SensorRepository:
         sensor.set_measurements(self.measurement_repository.get_days(id_sensor, days))
         return sensor
 
-    def get_with_measurements_cached(self, sensors: Dict[int, Sensor], pm: bool, interval: str, inactive: bool,
+    def dress_with_measurements(self, sensors: Dict[int, Sensor], pm: bool, interval: str, inactive: bool,
                   id_sensor: int|None) -> Dict[int, Sensor]:
-        measurements = self.measurement_repository.get_small()
+        measurements = self.measurement_cached_repository.find_all(sensors)
         earlier_day = datetime.datetime.now().replace(tzinfo=datetime.timezone.utc) - datetime.timedelta(days=1)
         for index, rows in measurements.items():
             if pm and not sensors[index].is_particulate_matter:
                 sensors.pop(index)
                 continue
             if not inactive and len(rows) == 1 and rows[0].timestamp < earlier_day:
+                sensors.pop(index)
                 continue
             else:
                 if rows[-1].timestamp > earlier_day:
@@ -58,9 +61,6 @@ class SensorRepository:
             sensors[index].set_measurements(rows_new)
 
         sensors = self.make_grid_service.make_grid(sensors, 1)
-        for index, sensor in sensors.items():
-            if not sensor.is_active:
-                sensors[index].set_measurements([self.measurement_repository.get(sensor.last_measurement)])
 
         if id_sensor is not None and interval == '3month':
             is_active = False
