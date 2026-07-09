@@ -1,5 +1,4 @@
 from django.shortcuts import render
-import os
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.core.handlers.wsgi import WSGIRequest
 import datetime

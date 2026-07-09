@@ -29,3 +29,6 @@ class MeasurementRepository:
     def bulk_create(self, measurements: List[Measurement]):
 
         Measurement.objects.bulk_create(measurements)
+
+    def delete(self, measurement: Measurement) -> None:
+        measurement.delete()

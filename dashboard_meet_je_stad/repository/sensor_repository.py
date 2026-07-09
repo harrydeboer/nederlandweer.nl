@@ -13,6 +13,10 @@ class SensorRepository:
         self.measurement_cached_repository = MeasurementCachedRepository()
         self.make_grid_service = MakeGridService()
 
+    def get(self, sensor_id: int) -> Sensor:
+
+        return Sensor.objects.get(pk=sensor_id)
+
     def create(self, sensor: Sensor):
         sensor.save()
 
@@ -34,7 +38,7 @@ class SensorRepository:
 
         return sensors_return
 
-    def get(self, id_sensor: int) -> Sensor:
+    def get_and_dress(self, id_sensor: int) -> Sensor:
         sensor = self.find_all()[id_sensor]
         sensor.set_measurements(self.measurement_repository.get_from_sensor(id_sensor))
         return sensor
@@ -72,3 +76,8 @@ class SensorRepository:
             sensors[id_sensor].is_active = is_active
 
         return dict(sorted(sensors.items()))
+
+    def delete(self, sensor: Sensor) -> None:
+        for measurement in sensor.measurements:
+            self.measurement_repository.delete(measurement)
+        sensor.delete()

@@ -39,6 +39,7 @@ class Command(BaseCommand):
         delta = date_now - end_date
         earlier_day = datetime.datetime.now().replace(tzinfo=datetime.timezone.utc) - datetime.timedelta(days=1)
         sensor_step = math.ceil(50 / (delta.days + 1) * 7)
+        measurements = []
         for sensor_id_step in range(0, int(last_sensor_id / sensor_step) + 2):
             ids_range = str(sensor_id_step * sensor_step + 1) + '-' + str((sensor_id_step + 1) * sensor_step)
             results = MeetJeStadAPIService().get_data(
@@ -52,7 +53,6 @@ class Command(BaseCommand):
         False)
             if len(results) == 0:
                 continue
-            measurements = []
             for row in results:
                 measurement = Measurement(row=row)
                 if measurement.sensor_id > last_sensor_id:
@@ -73,12 +73,16 @@ class Command(BaseCommand):
                     last_measurements[sensor.id] = measurement
                 elif measurement.sensor_id in sensors:
                     sensor = sensors[measurement.sensor.id]
+                    if measurement.pm25 is not None or measurement.pm10 is not None:
+                        sensor.is_particulate_matter = True
+                    if measurement.lux is not None:
+                        sensor.is_lux = True
                     measurements.append(measurement)
                     last_measurements[sensor.id] = measurement
-            measurement_repository.bulk_create(measurements)
-            for measurement in measurements:
-                if measurement.timestamp > earlier_day or measurement == last_measurements[measurement.sensor_id]:
-                    measurements_cached.append(measurement)
+        measurement_repository.bulk_create(measurements)
+        for measurement in measurements:
+            if measurement.timestamp > earlier_day or measurement == last_measurements[measurement.sensor_id]:
+                measurements_cached.append(measurement)
         sensor_repository.bulk_update(sensors)
         for measurement in measurements_cached:
             if measurement.timestamp < earlier_day and last_measurements[measurement.sensor.id].id != measurement.id:
