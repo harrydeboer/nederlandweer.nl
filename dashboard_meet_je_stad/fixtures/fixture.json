@@ -40,9 +40,7 @@
         "pk": 1195,
         "fields": {
             "is_particulate_matter": false,
-            "is_lux": false,
-            "first_measurement": null,
-            "last_measurement": null
+            "is_lux": false
     }},
     {
         "model": "dashboard_meet_je_stad.measurement",

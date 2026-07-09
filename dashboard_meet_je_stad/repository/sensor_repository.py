@@ -16,6 +16,10 @@ class SensorRepository:
     def create(self, sensor: Sensor):
         sensor.save()
 
+    def bulk_update(self, sensors: Dict[int, Sensor]):
+        for index, sensor in sensors.items():
+            sensor.save()
+
     def update(self, sensor: Sensor):
         sensor.save()
 
@@ -54,11 +58,7 @@ class SensorRepository:
             else:
                 if rows[-1].timestamp > earlier_day:
                     sensors[index].is_active = True
-                rows_new = []
-                for row in rows:
-                    if row.timestamp > earlier_day:
-                        rows_new.append(row)
-            sensors[index].set_measurements(rows_new)
+            sensors[index].set_measurements(rows)
 
         sensors = self.make_grid_service.make_grid(sensors, 1)
 

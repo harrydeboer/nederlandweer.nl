@@ -1,8 +1,10 @@
+from typing import Any
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
 import math
 import datetime
 import json
+from django.contrib.auth.models import User
 
 
 class Sensor(models.Model):
@@ -10,8 +12,6 @@ class Sensor(models.Model):
     id = models.AutoField(primary_key=True)
     is_particulate_matter = models.BooleanField()
     is_lux = models.BooleanField()
-    first_measurement = models.IntegerField(null=True)
-    last_measurement = models.IntegerField(null=True)
     is_active = False
     measurements = []
 
@@ -45,6 +45,7 @@ class Sensor(models.Model):
         return properties
 
 class Measurement(models.Model):
+
     id = models.BigAutoField(primary_key=True)
     sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
     timestamp = models.DateTimeField()
@@ -67,8 +68,19 @@ class Measurement(models.Model):
             ),
         ]
 
-    def dress(self, row: list) -> Measurement:
-        self.id = row[0]
+    def __init__(self, *args: Any, **kwargs: Any):
+        if 'row' in kwargs:
+            row = kwargs['row']
+            kwargs.pop('row')
+        else:
+            row = []
+        super().__init__(*args, **kwargs)
+        if len(row) == 0:
+            return
+        if row[0] == '' or row[0] is None:
+            self.id = None
+        else:
+            self.id = int(row[0])
         self.sensor_id = int(row[1])
         self.timestamp = (datetime.datetime.strptime(row[2], "%Y-%m-%d %H:%M:%S")
                           .astimezone(datetime.timezone.utc))
@@ -86,8 +98,6 @@ class Measurement(models.Model):
         self.pm25 = self.set_float(row[11])
         self.pm10 = self.set_float(row[12])
         self.extra = json.dumps(row[13])
-
-        return self
 
     def is_in_utrecht(self) -> bool:
         utrecht_center_lat_degrees = 52.085 * math.pi / 180
@@ -129,3 +139,7 @@ class Measurement(models.Model):
         if value == '' or value is None:
             return None
         return float(value)
+
+class DashboardUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE, null=True)

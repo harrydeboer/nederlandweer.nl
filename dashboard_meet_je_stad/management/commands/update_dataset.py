@@ -22,9 +22,11 @@ class Command(BaseCommand):
         sensors = sensor_repository.find_all()
         measurements_cached_dict = measurement_cached_repository.find_all(sensors)
         measurements_cached = []
+        last_measurements = {}
         for index, measurements in measurements_cached_dict.items():
             for measurement in measurements:
                 measurements_cached.append(measurement)
+                last_measurements[measurement.sensor_id] = measurement
         last_sensor_id = int(os.getenv('LAST_SENSOR_ID'))
         if os.getenv('END_DATE') == '':
             end_date = (datetime.datetime.strptime(os.getenv('START_DATE'), '%Y-%m-%d,%H:%M:%S')
@@ -37,8 +39,6 @@ class Command(BaseCommand):
         delta = date_now - end_date
         earlier_day = datetime.datetime.now().replace(tzinfo=datetime.timezone.utc) - datetime.timedelta(days=1)
         sensor_step = math.ceil(50 / (delta.days + 1) * 7)
-        first_measurements = {}
-        last_measurements = {}
         for sensor_id_step in range(0, int(last_sensor_id / sensor_step) + 2):
             ids_range = str(sensor_id_step * sensor_step + 1) + '-' + str((sensor_id_step + 1) * sensor_step)
             results = MeetJeStadAPIService().get_data(
@@ -54,7 +54,7 @@ class Command(BaseCommand):
                 continue
             measurements = []
             for row in results:
-                measurement = Measurement().dress(row)
+                measurement = Measurement(row=row)
                 if measurement.sensor_id > last_sensor_id:
                     last_sensor_id = measurement.sensor_id
                 if measurement.is_in_utrecht() and measurement.sensor_id not in sensors:
@@ -70,7 +70,6 @@ class Command(BaseCommand):
                         sensor.is_lux = False
                     sensor.id = measurement.sensor_id
                     sensor_repository.create(sensor)
-                    first_measurements[measurement.sensor_id] = measurement
                     last_measurements[sensor.id] = measurement
                 elif measurement.sensor_id in sensors:
                     sensor = sensors[measurement.sensor.id]
@@ -78,23 +77,11 @@ class Command(BaseCommand):
                     last_measurements[sensor.id] = measurement
             measurement_repository.bulk_create(measurements)
             for measurement in measurements:
-                if measurement.timestamp > earlier_day:
+                if measurement.timestamp > earlier_day or measurement == last_measurements[measurement.sensor_id]:
                     measurements_cached.append(measurement)
-        sensors = sensor_repository.find_all()
-        for sensor_id, sensor in sensors.items():
-            if sensor_id in first_measurements:
-                measurement = measurement_repository.get_by_sensor_and_timestamp(sensor_id,
-                                                                        first_measurements[sensor_id].timestamp)
-                sensor.first_measurement = measurement.id
-            if sensor_id in last_measurements:
-                measurement = measurement_repository.get_by_sensor_and_timestamp(sensor_id,
-                                                                                 last_measurements[
-                                                                                     sensor_id].timestamp)
-                sensor.last_measurement = measurement.id
-            sensor_repository.update(sensor)
+        sensor_repository.bulk_update(sensors)
         for measurement in measurements_cached:
-            if (measurement.timestamp < earlier_day
-                    and measurement.id != sensors[measurement.sensor_id].last_measurement):
+            if measurement.timestamp < earlier_day and last_measurements[measurement.sensor.id].id != measurement.id:
                 measurements_cached.remove(measurement)
         measurement_cached_repository.write(measurements_cached)
         dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')

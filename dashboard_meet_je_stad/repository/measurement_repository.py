@@ -1,6 +1,5 @@
 import datetime
 from dashboard_meet_je_stad.models import Measurement
-import json
 from typing import List
 
 

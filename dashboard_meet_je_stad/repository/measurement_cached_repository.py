@@ -18,16 +18,21 @@ class MeasurementCachedRepository:
 
     def find_all(self, sensors: Dict[int, Sensor]) -> Dict[int, List[Measurement]]:
         measurements = {}
-        with open(self.path_data + 'dataset_cached.csv') as csvfile:
-            reader = csv.reader(csvfile)
-            for row in reader:
-                if int(row[1]) not in sensors:
-                    continue
-                if int(row[1]) in measurements:
-                    measurements[int(row[1])].append(Measurement().dress(row))
-                else:
-                    measurements[int(row[1])] = [Measurement().dress(row)]
-        return measurements
+        try:
+            with open(self.path_data + 'dataset_cached.csv') as csvfile:
+                reader = csv.reader(csvfile)
+                for row in reader:
+                    if int(row[1]) not in sensors:
+                        continue
+                    if int(row[1]) in measurements:
+                        measurements[int(row[1])].append(Measurement(row=row))
+                    else:
+                        measurements[int(row[1])] = [Measurement(row=row)]
+
+                return measurements
+        except FileNotFoundError:
+
+            return {}
 
     def write(self, measurements: list):
         rows = []
