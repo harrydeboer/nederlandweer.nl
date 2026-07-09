@@ -71,8 +71,6 @@ class Command(BaseCommand):
         False,
                 (delta.days + 1) * 24 * 4 * sensor_range,
         False)
-            if len(results) == 0:
-                continue
             rows += results
 
         measurements = []
@@ -105,7 +103,8 @@ class Command(BaseCommand):
                 last_measurements[sensor.id] = measurement
 
         measurement_repository.bulk_create(measurements)
-        sensor_repository.bulk_update(sensors)
+        for index, sensor in sensors.items():
+            sensor_repository.update(sensor)
 
         for measurement in measurements:
             if measurement.timestamp > earlier_day or measurement == last_measurements[measurement.sensor_id]:

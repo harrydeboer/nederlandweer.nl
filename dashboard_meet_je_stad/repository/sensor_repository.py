@@ -20,10 +20,6 @@ class SensorRepository:
     def create(self, sensor: Sensor):
         sensor.save()
 
-    def bulk_update(self, sensors: Dict[int, Sensor]):
-        for index, sensor in sensors.items():
-            sensor.save()
-
     def update(self, sensor: Sensor):
         sensor.save()
 
@@ -37,11 +33,6 @@ class SensorRepository:
                 sensors_return[sensor.id] = sensor
 
         return sensors_return
-
-    def get_and_dress(self, id_sensor: int) -> Sensor:
-        sensor = self.find_all()[id_sensor]
-        sensor.set_measurements(self.measurement_repository.get_from_sensor(id_sensor))
-        return sensor
 
     def get_days(self, id_sensor: int, days:float) -> Sensor:
         sensor = self.find_all()[id_sensor]

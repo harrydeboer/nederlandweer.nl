@@ -7,6 +7,6 @@ class TestMeasurementRepository(TestCase):
 
     def test_get_data(self) -> None:
         repository = MeasurementRepository()
-
-        result = repository.get_from_sensor(1195)
-        self.assertEqual(len(result), 1)
+        measurement_id = 16683
+        measurement = repository.get(measurement_id)
+        self.assertEqual(measurement.id, measurement_id)

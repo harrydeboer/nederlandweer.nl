@@ -82,8 +82,7 @@ class Measurement(models.Model):
         else:
             self.id = int(row[0])
         self.sensor_id = int(row[1])
-        self.timestamp = (datetime.datetime.strptime(row[2], "%Y-%m-%d %H:%M:%S")
-                          .astimezone(datetime.timezone.utc))
+        self.timestamp = datetime.datetime.strptime(row[2], "%Y-%m-%d %H:%M:%S").replace(tzinfo=datetime.timezone.utc)
         if row[3] == '' or row[3] is None:
             self.firmware_version = None
         else:

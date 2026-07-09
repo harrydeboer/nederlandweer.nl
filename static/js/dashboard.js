@@ -66,7 +66,7 @@ class Dashboard {
                 }
             }
             let date = sensor.timestamp[index];
-            date = new Date(date + ' UTC').toLocaleString();
+            date = new Date(date + ' UTC').toLocaleString("nl-NL", {timeZone: "Europe/Amsterdam"});
             let temperature = sensor['temperature'][index];
             let humidity = sensor['humidity'][index];
             let pm25 = sensor['pm25'][index];
