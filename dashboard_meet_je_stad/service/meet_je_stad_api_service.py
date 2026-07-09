@@ -3,25 +3,30 @@ import requests
 from typing import Literal
 import datetime
 import csv
-from dashboard_meet_je_stad.models import Measurement
-from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
-
+from dashboard_meet_je_stad.models import Measurement, Sensor
+from typing import Dict
 
 class MeetJeStadAPIService:
+
+    cleanup = {'cutoff_temp': [True, -25, 70],
+               'cutoff_pm25': [True, 0, 250],
+               'cutoff_pm10': [True, 0, 250]}
 
     def get_data(self,
                  begin: str,
                  end: str,
                  type_api: Literal['sensors', 'flora', 'stories'],
                  format_output: Literal['csv', 'json'],
+                 sensors: Dict[int, Sensor],
                  ids: str = 'Utrecht',
                  is_particulate_matter_only: bool = False,
                  limit: int = 100,
                  is_active_only: bool = False,
-                 cleanup=None) -> list:
+                 cleanup=None,
+                 is_with_row = False) -> list:
 
         if cleanup is None:
-            cleanup = {}
+            cleanup = self.cleanup
         date_begin = datetime.datetime.strptime(begin, "%Y-%m-%d,%H:%M:%S")
         date_end = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
 
@@ -36,7 +41,6 @@ class MeetJeStadAPIService:
             for index, key in enumerate(Measurement._meta.fields):
                 keys[key] = index
             ids = ''
-            sensors = SensorRepository().find_all()
             for index, sensor in sensors.items():
                 last_measurement = datetime.datetime.strftime(sensor.measurements[0].timestamp, '%Y-%m-%d %H:%M:%S')
                 delta = date_end - datetime.datetime.strptime(last_measurement, "%Y-%m-%d %H:%M:%S")
@@ -66,6 +70,7 @@ class MeetJeStadAPIService:
         # read from JSON
         results = []
         keys = []
+
         for field in Measurement._meta.fields:
             if field.attname == 'pm25':
                 keys.append('pm2.5')
@@ -73,6 +78,8 @@ class MeetJeStadAPIService:
                 keys.append('id')
             else:
                 keys.append(field.attname)
+        if is_with_row:
+            keys[0] = 'row'
         for row in response.json():
             result = []
             for key in row:
@@ -83,7 +90,8 @@ class MeetJeStadAPIService:
                     result.append(row[key])
                 else:
                     result.append(None)
-            result[0] = None
+            if not is_with_row:
+                result[0] = None
             results.append(result)
 
         results.reverse()
@@ -117,10 +125,10 @@ class MeetJeStadAPIService:
                             or raw_row[row_keys_flipped['temperature']] > float(cleanup['cutoff_temp'][2])):
                         row[row_keys_flipped['temperature']] = None
             if 'cutoff_pm25' in cleanup and cleanup['cutoff_pm25'][0]:
-                if raw_row[row_keys_flipped['pm2.5']] is not None:
-                    if (raw_row[row_keys_flipped['pm2.5']] < float(cleanup['cutoff_pm25'][1])
-                            or raw_row[row_keys_flipped['pm2.5']] > float(cleanup['cutoff_pm25'][2])):
-                        row[row_keys_flipped['pm2.5']] = None
+                if raw_row[row_keys_flipped['pm25']] is not None:
+                    if (raw_row[row_keys_flipped['pm25']] < float(cleanup['cutoff_pm25'][1])
+                            or raw_row[row_keys_flipped['pm25']] > float(cleanup['cutoff_pm25'][2])):
+                        row[row_keys_flipped['pm25']] = None
             if 'cutoff_pm10' in cleanup and cleanup['cutoff_pm10'][0]:
                 if raw_row[row_keys_flipped['pm10']] is not None:
                     if (raw_row[row_keys_flipped['pm10']] < float(cleanup['cutoff_pm10'][1])

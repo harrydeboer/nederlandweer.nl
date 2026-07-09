@@ -67,6 +67,7 @@ class Command(BaseCommand):
                 date_now.strftime('%Y-%m-%d,%H:%M:%S'),
         'sensors',
         'json',
+                sensors,
                 ids_range,
         False,
                 (delta.days + 1) * 24 * 4 * sensor_range,

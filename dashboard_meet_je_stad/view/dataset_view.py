@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.core.handlers.wsgi import WSGIRequest
 import datetime
+
+from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
 from dashboard_meet_je_stad.form.dataset_form import DatasetForm
 import os
@@ -11,6 +13,7 @@ class DatasetView:
 
     def __init__(self):
         self.service = MeetJeStadAPIService()
+        self.sensor_repository = SensorRepository()
 
     def index(self, request: WSGIRequest) -> HttpResponse | FileResponse:
         if not request.user.is_authenticated or not request.user.is_superuser:
@@ -29,23 +32,26 @@ class DatasetView:
                 end_date += datetime.timedelta(seconds=1)
                 start_date = start_date.replace(tzinfo=datetime.timezone.utc)
                 delta = end_date - start_date
+                sensors = self.sensor_repository.find_all()
+                sensors = self.sensor_repository.dress_with_measurements(sensors, False,
+                                                                         '24hour', True, None)
                 if form['ids'].value() == '':
                     ids = 'Utrecht'
                 else:
                     ids = form['ids'].value()
                 cleanup = {'cutoff_temp': [form['cutoff_temp'].value(),
-                                           form['cutoff_temp_min'].value(),
-                                           form['cutoff_temp_max'].value()],
+                                           float(form['cutoff_temp_min'].value()),
+                                           float(form['cutoff_temp_max'].value())],
                            'cutoff_pm25': [form['cutoff_pm25'].value(),
-                                           form['cutoff_pm25_min'].value(),
-                                           form['cutoff_pm25_max'].value()],
+                                           float(form['cutoff_pm25_min'].value()),
+                                           float(form['cutoff_pm25_max'].value())],
                            'cutoff_pm10': [form['cutoff_pm10'].value(),
-                                           form['cutoff_pm10_min'].value(),
-                                           form['cutoff_pm10_max'].value()]}
+                                           float(form['cutoff_pm10_min'].value()),
+                                           float(form['cutoff_pm10_max'].value())]}
                 self.service.get_data(form['start'].value(), form['end'].value(), 'sensors',
-                                      'csv', ids, form['particulate_matter_only'].value(),
+                                      'csv', sensors, ids, form['particulate_matter_only'].value(),
                                       2 * (delta.days + 1) * 24 * 4 * last_sensor_id,
-                                      form['active_only'].value(), cleanup)
+                                      form['active_only'].value(), cleanup, True)
                 path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                 parent_path = os.path.dirname(path)
                 file = open(parent_path + '/data/tmp/dataset.csv', "rb")

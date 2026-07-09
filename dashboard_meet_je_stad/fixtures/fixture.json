@@ -37,24 +37,24 @@
     },
     {
         "model": "dashboard_meet_je_stad.sensor",
-        "pk": 1195,
+        "pk": 1196,
         "fields": {
             "is_particulate_matter": false,
             "is_lux": false
     }},
     {
         "model": "dashboard_meet_je_stad.measurement",
-        "pk": 16683,
+        "pk": 226785,
         "fields": {
-            "sensor": 1195,
-            "timestamp": "2026-07-08T09:57:21Z",
+            "sensor": 1196,
+            "timestamp": "2026-06-06T08:18:38Z",
             "firmware_version": 254,
-            "longitude": 5.11301,
-            "latitude": 52.0682,
-            "temperature": 20.25,
-            "humidity": 22.25,
+            "longitude": 5.09521,
+            "latitude": 52.094,
+            "temperature": 16.75,
+            "humidity": 81.75,
             "lux": null,
-            "supply": 3.37,
+            "supply": 3.35,
             "battery": null,
             "pm25": null,
             "pm10": null,
