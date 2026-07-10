@@ -58,13 +58,14 @@ class SensorRepository:
         sensors = self.make_grid_service.make_grid(sensors, 1)
 
         if id_sensor is not None and interval == '3month':
-            is_active = False
-            if sensors[id_sensor].is_active:
-                is_active = True
-            sensors[id_sensor] = self.get_days(id_sensor, 91)
-            sensors_3month = {id_sensor: sensors[id_sensor]}
-            sensors[id_sensor] = self.make_grid_service.make_grid(sensors_3month, 91)[id_sensor]
-            sensors[id_sensor].is_active = is_active
+            if id_sensor in sensors:
+                is_active = False
+                if sensors[id_sensor].is_active:
+                    is_active = True
+                sensors[id_sensor] = self.get_days(id_sensor, 91)
+                sensors_3month = {id_sensor: sensors[id_sensor]}
+                sensors[id_sensor] = self.make_grid_service.make_grid(sensors_3month, 91)[id_sensor]
+                sensors[id_sensor].is_active = is_active
 
         return dict(sorted(sensors.items()))
 
