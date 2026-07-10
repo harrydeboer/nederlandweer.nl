@@ -97,7 +97,8 @@ class MeetJeStadAPIService:
                 result[0] = None
             rows.append(result)
 
-        rows.reverse()
+        if not is_with_row:
+            rows.reverse()
         rows = self._sanitize(rows, row_cols, cleanup)
 
         if format_output == 'csv':
