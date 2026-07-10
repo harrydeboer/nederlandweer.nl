@@ -51,17 +51,20 @@ class DatasetForm(forms.Form):
     def get_requested_cleanup(self) -> dict:
 
         return {'cutoff_temp': {'is_on': self['cutoff_temp'].value(),
-                         'min': self.set_value(self['cutoff_temp_min'].value()),
-                         'max': self.set_value(self['cutoff_temp_max'].value())},
+                         'min': self.set_value_to_number(self['cutoff_temp_min'].value(), True),
+                         'max': self.set_value_to_number(self['cutoff_temp_max'].value(), True)},
          'cutoff_pm25': {'is_on': self['cutoff_pm25'].value(),
-                         'min': self.set_value(self['cutoff_pm25_min'].value()),
-                         'max': self.set_value(self['cutoff_pm25_max'].value())},
+                         'min': self.set_value_to_number(self['cutoff_pm25_min'].value(), True),
+                         'max': self.set_value_to_number(self['cutoff_pm25_max'].value(), True)},
          'cutoff_pm10': {'is_on': self['cutoff_pm10'].value(),
-                         'min': self.set_value(self['cutoff_pm10_min'].value()),
-                         'max': self.set_value(self['cutoff_pm10_max'].value())}}
+                         'min': self.set_value_to_number(self['cutoff_pm10_min'].value(), True),
+                         'max': self.set_value_to_number(self['cutoff_pm10_max'].value(), True)}}
 
-    def set_value(self, value: float|str) -> float| str:
+    def set_value_to_number(self, value: str, return_float: bool) -> float|int|None:
         if value == '':
-            return ''
+            return None
 
-        return float(value)
+        if return_float:
+            return float(value)
+
+        return int(value)
