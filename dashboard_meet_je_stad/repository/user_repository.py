@@ -14,7 +14,7 @@ class UserRepository:
         user.save()
         return user
 
-    def update(self, user: User, password: str = None) -> User:
+    def update(self, user: User, password: str | None = None) -> User:
         if password is not None:
             user.set_password(password)
         user.save()

@@ -4,16 +4,17 @@ import os
 from dashboard_meet_je_stad.models import Sensor, Measurement
 from dashboard_meet_je_stad.repository.measurement_repository import MeasurementRepository
 from typing import List, Dict
+from django.apps import apps
 
 
 class MeasurementCachedRepository:
 
     def __init__(self):
-        self.path_data = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        path = os.path.dirname(apps.get_app_config('dashboard_meet_je_stad').path)
         if sys.argv[1:2] == ['test']:
-            self.path_data += '/tests/data/'
+            self.path_data = path + '/tests/data/'
         else:
-            self.path_data += '/data/'
+            self.path_data = path + '/data/'
         self.measurement_repository = MeasurementRepository()
 
     def find_all(self, sensors: Dict[int, Sensor]) -> Dict[int, List[Measurement]]:

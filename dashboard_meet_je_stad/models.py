@@ -5,6 +5,7 @@ import math
 import datetime
 import json
 from django.contrib.auth.models import User
+from typing import List
 
 
 class Sensor(models.Model):
@@ -18,7 +19,10 @@ class Sensor(models.Model):
     def add_measurement(self, measurement: Measurement):
         self.measurements.append(measurement)
 
-    def set_measurements(self, measurements: list):
+    def get_measurements(self) -> List[Measurement]:
+        return self.measurements
+
+    def set_measurements(self, measurements: List[Measurement]):
         self.measurements = measurements
 
     def to_dict(self):

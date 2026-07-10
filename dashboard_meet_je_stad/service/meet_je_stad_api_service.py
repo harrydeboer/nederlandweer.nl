@@ -1,10 +1,12 @@
-import os
 import requests
 from typing import Literal
 import datetime
 import csv
 from dashboard_meet_je_stad.models import Measurement, Sensor
 from typing import Dict
+from django.apps import apps
+import os
+
 
 class MeetJeStadAPIService:
 
@@ -37,12 +39,10 @@ class MeetJeStadAPIService:
             raise Exception('Format must be csv or json.')
 
         if ids == 'Utrecht':
-            keys = {}
-            for index, key in enumerate(Measurement._meta.fields):
-                keys[key] = index
             ids = ''
             for index, sensor in sensors.items():
-                last_measurement = datetime.datetime.strftime(sensor.measurements[0].timestamp, '%Y-%m-%d %H:%M:%S')
+                last_measurement = datetime.datetime.strftime(
+                    sensor.get_measurements()[-1].timestamp, '%Y-%m-%d %H:%M:%S')
                 delta = date_end - datetime.datetime.strptime(last_measurement, "%Y-%m-%d %H:%M:%S")
                 if index == 0:
                     continue
@@ -67,25 +67,28 @@ class MeetJeStadAPIService:
         except Exception:
             raise Exception(response.content.decode("utf-8"))
 
-        # read from JSON
-        results = []
-        keys = []
-
+        row_keys = []
+        row_keys_flipped = {}
+        count = 0
         for field in Measurement._meta.fields:
             if field.attname == 'pm25':
-                keys.append('pm2.5')
+                row_keys.append('pm2.5')
+            elif field.attname == 'id':
+                row_keys.append('row')
             elif field.attname == 'sensor_id':
-                keys.append('id')
+                row_keys.append('id')
             else:
-                keys.append(field.attname)
-        if is_with_row:
-            keys[0] = 'row'
+                row_keys.append(field.attname)
+            row_keys_flipped[field.attname] = count
+            count += 1
+
+        results = []
         for row in response.json():
             result = []
             for key in row:
-                if key not in keys and key != 'row':
+                if key not in row_keys:
                     print('Invalid key ' + key + ' in row.')
-            for key in keys:
+            for key in row_keys:
                 if key in row:
                     result.append(row[key])
                 else:
@@ -94,18 +97,11 @@ class MeetJeStadAPIService:
                 result[0] = None
             results.append(result)
 
-        results.reverse()
-        row_keys_flipped = {}
-        for key, field in enumerate(Measurement._meta.fields):
-            row_keys_flipped[field.attname] = key
-        results.sort(key=lambda x: x[row_keys_flipped['sensor_id']])
-
         results = self._sanitize(results, row_keys_flipped, cleanup)
 
         if format_output == 'csv':
-            path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            parent_path = os.path.dirname(path)
-            file = open(parent_path + "/data/tmp/dataset.csv", "w", newline='')
+            path = apps.get_app_config('dashboard_meet_je_stad').path
+            file = open(os.path.dirname(path) + "/data/tmp/dataset.csv", "w", newline='')
             results = [Measurement._meta.fields] + results
             csv.writer(file).writerows(results)
             file.close()

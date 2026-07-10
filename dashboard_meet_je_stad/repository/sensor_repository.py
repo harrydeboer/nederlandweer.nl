@@ -47,7 +47,7 @@ class SensorRepository:
             if pm and not sensors[index].is_particulate_matter:
                 sensors.pop(index)
                 continue
-            if not inactive and len(rows) == 1 and rows[0].timestamp < earlier_day:
+            if not inactive and rows[-1].timestamp < earlier_day:
                 sensors.pop(index)
                 continue
             else:
@@ -69,6 +69,6 @@ class SensorRepository:
         return dict(sorted(sensors.items()))
 
     def delete(self, sensor: Sensor) -> None:
-        for measurement in sensor.measurements:
+        for measurement in sensor.get_measurements():
             self.measurement_repository.delete(measurement)
         sensor.delete()

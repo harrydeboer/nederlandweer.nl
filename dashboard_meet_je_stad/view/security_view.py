@@ -60,8 +60,9 @@ class SecurityView:
         if form.is_valid():
             if form['password'].value() == form['password_repeat'].value():
                 user = request.user
-                self.user_repository.update(user, form['password'].value())
-                login(request, user)
+                if isinstance(user, User):
+                    self.user_repository.update(user, form['password'].value())
+                    login(request, user)
                 return redirect('home')
             else:
                 form.add_error('password', 'Wachtwoorden zijn niet hetzelfde.')

@@ -14,17 +14,19 @@ from dashboard_meet_je_stad.models import Sensor, Measurement
 class Command(BaseCommand):
     help = "Updates the dataset"
 
+    def __init__(self):
+        super().__init__()
+        self.measurement_repository = MeasurementRepository()
+        self.measurement_cached_repository = MeasurementCachedRepository()
+        self.sensor_repository = SensorRepository()
+
     def handle(self, *args, **options):
         dotenv_file = dotenv.find_dotenv()
         dotenv.load_dotenv(dotenv_file)
 
-        measurement_repository = MeasurementRepository()
-        measurement_cached_repository = MeasurementCachedRepository()
-        sensor_repository = SensorRepository()
+        sensors = self.sensor_repository.find_all()
 
-        sensors = sensor_repository.find_all()
-
-        measurements_cached_dict = measurement_cached_repository.find_all(sensors)
+        measurements_cached_dict = self.measurement_cached_repository.find_all(sensors)
         measurements_cached = []
         last_measurements = {}
         for index, measurements in measurements_cached_dict.items():
@@ -92,7 +94,7 @@ class Command(BaseCommand):
                 else:
                     sensor.is_lux = False
                 sensor.id = measurement.sensor_id
-                sensor_repository.create(sensor)
+                self.sensor_repository.create(sensor)
                 last_measurements[sensor.id] = measurement
             elif measurement.sensor_id in sensors:
                 sensor = sensors[measurement.sensor.id]
@@ -103,9 +105,9 @@ class Command(BaseCommand):
                 measurements.append(measurement)
                 last_measurements[sensor.id] = measurement
 
-        measurement_repository.bulk_create(measurements)
+        self.measurement_repository.bulk_create(measurements)
         for index, sensor in sensors.items():
-            sensor_repository.update(sensor)
+            self.sensor_repository.update(sensor)
 
         for measurement in measurements:
             if measurement.timestamp > earlier_day or measurement == last_measurements[measurement.sensor_id]:
@@ -113,7 +115,7 @@ class Command(BaseCommand):
         for measurement in measurements_cached:
             if measurement.timestamp < earlier_day and last_measurements[measurement.sensor.id].id != measurement.id:
                 measurements_cached.remove(measurement)
-        measurement_cached_repository.write(measurements_cached)
+        self.measurement_cached_repository.write(measurements_cached)
 
         dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')
         dotenv.set_key(dotenv_file, "END_DATE", date_now.strftime('%Y-%m-%d,%H:%M:%S'), quote_mode='never')

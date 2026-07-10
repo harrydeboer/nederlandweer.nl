@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.core.handlers.wsgi import WSGIRequest
 import datetime
-
+from django.apps import apps
 from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
 from dashboard_meet_je_stad.form.dataset_form import DatasetForm
@@ -27,7 +27,11 @@ class DatasetView:
                 end = form['end'].value()
                 start_date = datetime.datetime.strptime(start, "%Y-%m-%d,%H:%M:%S")
                 end_date = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
-                last_sensor_id = int(os.getenv('LAST_SENSOR_ID'))
+                last_sensor_id = os.getenv('LAST_SENSOR_ID')
+                if last_sensor_id != '' and last_sensor_id is not None:
+                    last_sensor_id = int(last_sensor_id)
+                else:
+                    raise Exception('Last sensor id is not set.')
                 end_date = end_date.replace(tzinfo=datetime.timezone.utc)
                 end_date += datetime.timedelta(seconds=1)
                 start_date = start_date.replace(tzinfo=datetime.timezone.utc)
@@ -50,9 +54,9 @@ class DatasetView:
                                            float(form['cutoff_pm10_max'].value())]}
                 self.service.get_data(form['start'].value(), form['end'].value(), 'sensors',
                                       'csv', sensors, ids, form['particulate_matter_only'].value(),
-                                      2 * (delta.days + 1) * 24 * 4 * last_sensor_id,
+                                      (delta.days + 1) * 24 * 4 * last_sensor_id,
                                       form['active_only'].value(), cleanup, True)
-                path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                path = os.path.dirname(apps.get_app_config('dashboard_meet_je_stad').path)
                 parent_path = os.path.dirname(path)
                 file = open(parent_path + '/data/tmp/dataset.csv', "rb")
 
