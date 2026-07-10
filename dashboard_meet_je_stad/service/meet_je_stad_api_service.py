@@ -22,7 +22,7 @@ class MeetJeStadAPIService:
                  limit: int = 100,
                  is_active_only: bool = False,
                  cleanup=None,
-                 is_with_row = False) -> list:
+                 is_with_row = False) -> list | None:
 
         if cleanup is None:
             cleanup = DatasetForm.cleanup
@@ -65,21 +65,21 @@ class MeetJeStadAPIService:
             raise Exception(response.content.decode("utf-8"))
 
         row_keys = []
-        row_keys_flipped = {}
+        row_cols = {}
         count = 0
         for field in Measurement._meta.fields:
             if field.attname == 'pm25':
                 row_keys.append('pm2.5')
-                row_keys_flipped['pm2.5'] = count
+                row_cols['pm2.5'] = count
             elif field.attname == 'id':
                 row_keys.append('row')
-                row_keys_flipped['row'] = count
+                row_cols['row'] = count
             elif field.attname == 'sensor_id':
                 row_keys.append('id')
-                row_keys_flipped['id'] = count
+                row_cols['id'] = count
             else:
                 row_keys.append(field.attname)
-                row_keys_flipped[field.attname] = count
+                row_cols[field.attname] = count
             count += 1
 
         rows = []
@@ -98,8 +98,7 @@ class MeetJeStadAPIService:
             rows.append(result)
 
         rows.reverse()
-
-        rows = self._sanitize(rows, row_keys_flipped, cleanup)
+        rows = self._sanitize(rows, row_cols, cleanup)
 
         if format_output == 'csv':
             path = apps.get_app_config('dashboard_meet_je_stad').path
@@ -108,30 +107,33 @@ class MeetJeStadAPIService:
             csv.writer(file).writerows(rows)
             file.close()
 
-            return []
+            return None
         else:
             return rows
 
-    def _sanitize(self, raw_rows: list, row_keys_flipped: dict, cleanup: dict) -> list:
+    def _sanitize(self, raw_rows: list, row_cols: dict, cleanup: dict) -> list:
 
         rows = []
         for raw_row in raw_rows:
             row = list(raw_row)
-            if 'cutoff_temp' in cleanup and cleanup['cutoff_temp'][0]:
-                if raw_row[row_keys_flipped['temperature']] is not None:
-                    if (raw_row[row_keys_flipped['temperature']] < float(cleanup['cutoff_temp'][1])
-                            or raw_row[row_keys_flipped['temperature']] > float(cleanup['cutoff_temp'][2])):
-                        row[row_keys_flipped['temperature']] = None
-            if 'cutoff_pm25' in cleanup and cleanup['cutoff_pm25'][0]:
-                if raw_row[row_keys_flipped['pm2.5']] is not None:
-                    if (raw_row[row_keys_flipped['pm2.5']] < float(cleanup['cutoff_pm25'][1])
-                            or raw_row[row_keys_flipped['pm2.5']] > float(cleanup['cutoff_pm25'][2])):
-                        row[row_keys_flipped['pm2.5']] = None
-            if 'cutoff_pm10' in cleanup and cleanup['cutoff_pm10'][0]:
-                if raw_row[row_keys_flipped['pm10']] is not None:
-                    if (raw_row[row_keys_flipped['pm10']] < float(cleanup['cutoff_pm10'][1])
-                            or raw_row[row_keys_flipped['pm10']] > float(cleanup['cutoff_pm10'][2])):
-                        row[row_keys_flipped['pm10']] = None
+            if cleanup['cutoff_temp'][0]:
+                col_temperature = row_cols['temperature']
+                if raw_row[col_temperature] is not None:
+                    if (raw_row[col_temperature] < cleanup['cutoff_temp'][1]
+                            or raw_row[col_temperature] > cleanup['cutoff_temp'][2]):
+                        row[col_temperature] = None
+            if cleanup['cutoff_pm25'][0]:
+                col_pm25 = row_cols['pm2.5']
+                if raw_row[col_pm25] is not None:
+                    if (raw_row[col_pm25] < cleanup['cutoff_pm25'][1]
+                            or raw_row[col_pm25] > cleanup['cutoff_pm25'][2]):
+                        row[col_pm25] = None
+            if cleanup['cutoff_pm10'][0]:
+                col_pm10 = row_cols['pm10']
+                if raw_row[col_pm10] is not None:
+                    if (raw_row[col_pm10] < cleanup['cutoff_pm10'][1]
+                            or raw_row[col_pm10] > cleanup['cutoff_pm10'][2]):
+                        row[col_pm10] = None
             rows += [row]
 
         return rows
