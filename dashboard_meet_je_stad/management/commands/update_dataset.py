@@ -47,6 +47,8 @@ class Command(BaseCommand):
             if start_date is None or start_date == '':
                 self.stdout.write(self.style.ERROR('Start date missing in .env.'))
                 sys.exit(1)
+            last_measurements = {}
+            measurements_cached = []
             end_date = (datetime.datetime.strptime(start_date, '%Y-%m-%d,%H:%M:%S')
                         .replace(tzinfo=datetime.timezone.utc))
         else:
@@ -64,7 +66,7 @@ class Command(BaseCommand):
         rows = []
         for sensor_id_range in range(0, int(last_sensor_id / sensor_range) + 2):
             ids_range = str(sensor_id_range * sensor_range + 1) + '-' + str((sensor_id_range + 1) * sensor_range)
-            results = MeetJeStadAPIService().get_data(
+            rows_range = MeetJeStadAPIService().get_data(
                 end_date.strftime('%Y-%m-%d,%H:%M:%S'),
                 date_now.strftime('%Y-%m-%d,%H:%M:%S'),
         'sensors',
@@ -74,10 +76,9 @@ class Command(BaseCommand):
         False,
                 (delta.days + 1) * 24 * 4 * sensor_range,
         False)
-            rows += results
+            rows += rows_range
 
         measurements = []
-        last_sensor_id = 1
         for row in rows:
             measurement = Measurement(row=row)
             if measurement.sensor_id > last_sensor_id:

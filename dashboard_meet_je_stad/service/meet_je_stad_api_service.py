@@ -2,6 +2,7 @@ import requests
 from typing import Literal
 import datetime
 import csv
+from dashboard_meet_je_stad.form.dataset_form import DatasetForm
 from dashboard_meet_je_stad.models import Measurement, Sensor
 from typing import Dict
 from django.apps import apps
@@ -9,10 +10,6 @@ import os
 
 
 class MeetJeStadAPIService:
-
-    cleanup = {'cutoff_temp': [True, -25, 70],
-               'cutoff_pm25': [True, 0, 250],
-               'cutoff_pm10': [True, 0, 250]}
 
     def get_data(self,
                  begin: str,
@@ -28,7 +25,7 @@ class MeetJeStadAPIService:
                  is_with_row = False) -> list:
 
         if cleanup is None:
-            cleanup = self.cleanup
+            cleanup = DatasetForm.cleanup
         date_begin = datetime.datetime.strptime(begin, "%Y-%m-%d,%H:%M:%S")
         date_end = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
 
@@ -73,16 +70,19 @@ class MeetJeStadAPIService:
         for field in Measurement._meta.fields:
             if field.attname == 'pm25':
                 row_keys.append('pm2.5')
+                row_keys_flipped['pm2.5'] = count
             elif field.attname == 'id':
                 row_keys.append('row')
+                row_keys_flipped['row'] = count
             elif field.attname == 'sensor_id':
                 row_keys.append('id')
+                row_keys_flipped['id'] = count
             else:
                 row_keys.append(field.attname)
-            row_keys_flipped[field.attname] = count
+                row_keys_flipped[field.attname] = count
             count += 1
 
-        results = []
+        rows = []
         for row in response.json():
             result = []
             for key in row:
@@ -95,25 +95,27 @@ class MeetJeStadAPIService:
                     result.append(None)
             if not is_with_row:
                 result[0] = None
-            results.append(result)
+            rows.append(result)
 
-        results = self._sanitize(results, row_keys_flipped, cleanup)
+        rows.reverse()
+
+        rows = self._sanitize(rows, row_keys_flipped, cleanup)
 
         if format_output == 'csv':
             path = apps.get_app_config('dashboard_meet_je_stad').path
             file = open(os.path.dirname(path) + "/data/tmp/dataset.csv", "w", newline='')
-            results = [Measurement._meta.fields] + results
-            csv.writer(file).writerows(results)
+            rows = [row_keys] + rows
+            csv.writer(file).writerows(rows)
             file.close()
 
             return []
         else:
-            return results
+            return rows
 
-    def _sanitize(self, raw_results: list, row_keys_flipped: dict, cleanup: dict) -> list:
+    def _sanitize(self, raw_rows: list, row_keys_flipped: dict, cleanup: dict) -> list:
 
-        results = []
-        for raw_row in raw_results:
+        rows = []
+        for raw_row in raw_rows:
             row = list(raw_row)
             if 'cutoff_temp' in cleanup and cleanup['cutoff_temp'][0]:
                 if raw_row[row_keys_flipped['temperature']] is not None:
@@ -121,15 +123,15 @@ class MeetJeStadAPIService:
                             or raw_row[row_keys_flipped['temperature']] > float(cleanup['cutoff_temp'][2])):
                         row[row_keys_flipped['temperature']] = None
             if 'cutoff_pm25' in cleanup and cleanup['cutoff_pm25'][0]:
-                if raw_row[row_keys_flipped['pm25']] is not None:
-                    if (raw_row[row_keys_flipped['pm25']] < float(cleanup['cutoff_pm25'][1])
-                            or raw_row[row_keys_flipped['pm25']] > float(cleanup['cutoff_pm25'][2])):
-                        row[row_keys_flipped['pm25']] = None
+                if raw_row[row_keys_flipped['pm2.5']] is not None:
+                    if (raw_row[row_keys_flipped['pm2.5']] < float(cleanup['cutoff_pm25'][1])
+                            or raw_row[row_keys_flipped['pm2.5']] > float(cleanup['cutoff_pm25'][2])):
+                        row[row_keys_flipped['pm2.5']] = None
             if 'cutoff_pm10' in cleanup and cleanup['cutoff_pm10'][0]:
                 if raw_row[row_keys_flipped['pm10']] is not None:
                     if (raw_row[row_keys_flipped['pm10']] < float(cleanup['cutoff_pm10'][1])
                             or raw_row[row_keys_flipped['pm10']] > float(cleanup['cutoff_pm10'][2])):
                         row[row_keys_flipped['pm10']] = None
-            results += [row]
+            rows += [row]
 
-        return results
+        return rows

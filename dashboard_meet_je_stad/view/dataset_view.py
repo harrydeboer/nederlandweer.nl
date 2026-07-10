@@ -43,22 +43,13 @@ class DatasetView:
                     ids = 'Utrecht'
                 else:
                     ids = form['ids'].value()
-                cleanup = {'cutoff_temp': [form['cutoff_temp'].value(),
-                                           float(form['cutoff_temp_min'].value()),
-                                           float(form['cutoff_temp_max'].value())],
-                           'cutoff_pm25': [form['cutoff_pm25'].value(),
-                                           float(form['cutoff_pm25_min'].value()),
-                                           float(form['cutoff_pm25_max'].value())],
-                           'cutoff_pm10': [form['cutoff_pm10'].value(),
-                                           float(form['cutoff_pm10_min'].value()),
-                                           float(form['cutoff_pm10_max'].value())]}
+                cleanup = form.get_populated_cleanup(form)
                 self.service.get_data(form['start'].value(), form['end'].value(), 'sensors',
                                       'csv', sensors, ids, form['particulate_matter_only'].value(),
                                       (delta.days + 1) * 24 * 4 * last_sensor_id,
                                       form['active_only'].value(), cleanup, True)
                 path = os.path.dirname(apps.get_app_config('dashboard_meet_je_stad').path)
-                parent_path = os.path.dirname(path)
-                file = open(parent_path + '/data/tmp/dataset.csv', "rb")
+                file = open(path + '/data/tmp/dataset.csv', "rb")
 
                 return FileResponse(file, content_type='text/csv', filename='dataset.csv')
 
