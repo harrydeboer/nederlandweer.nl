@@ -1,5 +1,4 @@
 import unittest
-
 from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 from dashboard_meet_je_stad.service import meet_je_stad_api_service
 from dashboard_meet_je_stad.models import Measurement
