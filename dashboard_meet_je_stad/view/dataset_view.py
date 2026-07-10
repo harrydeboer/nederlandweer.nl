@@ -43,7 +43,7 @@ class DatasetView:
                     ids = 'Utrecht'
                 else:
                     ids = form['ids'].value()
-                cleanup = form.get_populated_cleanup(form)
+                cleanup = form.get_populated_cleanup()
                 self.service.get_data(form['start'].value(), form['end'].value(), 'sensors',
                                       'csv', sensors, ids, form['particulate_matter_only'].value(),
                                       (delta.days + 1) * 24 * 4 * last_sensor_id,

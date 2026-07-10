@@ -48,14 +48,14 @@ class DatasetForm(forms.Form):
     cutoff_pm10_max = forms.FloatField(initial=cleanup['cutoff_pm10'][2],
                                        required=False, label='Max fijnstof 10')
 
-    def get_populated_cleanup(self, form: DatasetForm) -> dict:
+    def get_populated_cleanup(self) -> dict:
 
-        return {'cutoff_temp': [form['cutoff_temp'].value(),
-                         float(form['cutoff_temp_min'].value()),
-                         float(form['cutoff_temp_max'].value())],
-         'cutoff_pm25': [form['cutoff_pm25'].value(),
-                         float(form['cutoff_pm25_min'].value()),
-                         float(form['cutoff_pm25_max'].value())],
-         'cutoff_pm10': [form['cutoff_pm10'].value(),
-                         float(form['cutoff_pm10_min'].value()),
-                         float(form['cutoff_pm10_max'].value())]}
+        return {'cutoff_temp': [self['cutoff_temp'].value(),
+                         float(self['cutoff_temp_min'].value()),
+                         float(self['cutoff_temp_max'].value())],
+         'cutoff_pm25': [self['cutoff_pm25'].value(),
+                         float(self['cutoff_pm25_min'].value()),
+                         float(self['cutoff_pm25_max'].value())],
+         'cutoff_pm10': [self['cutoff_pm10'].value(),
+                         float(self['cutoff_pm10_min'].value()),
+                         float(self['cutoff_pm10_max'].value())]}
