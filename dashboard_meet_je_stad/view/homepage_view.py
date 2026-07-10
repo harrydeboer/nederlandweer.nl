@@ -29,6 +29,12 @@ class HomepageView:
             else:
                 id_sensor = int(id_sensor)
         sensors = self.sensor_repository.dress_with_measurements(sensors, pm, interval, inactive, id_sensor)
+
         form = DashboardForm(request.GET, inactive=inactive, sensors=sensors)
+        form.is_valid()
+        if id_sensor is not None and id_sensor not in sensors:
+            if 'sensor' in form.errors:
+                form.errors.pop('sensor')
+            form.add_error('sensor', 'Niet fijnstof sensor gekozen met optie alleen fijnstof sensors.')
 
         return render(request, 'homepage/index.html',{'form': form, 'sensors': sensors})
