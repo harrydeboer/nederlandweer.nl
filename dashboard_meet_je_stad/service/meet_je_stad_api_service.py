@@ -25,7 +25,7 @@ class MeetJeStadAPIService:
                  is_with_row = False) -> list | None:
 
         if cleanup is None:
-            cleanup = DatasetForm.cleanup
+            cleanup = DatasetForm.cleanup_default
         date_begin = datetime.datetime.strptime(begin, "%Y-%m-%d,%H:%M:%S")
         date_end = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
 
@@ -99,7 +99,7 @@ class MeetJeStadAPIService:
 
         if not is_with_row:
             rows.reverse()
-        rows = self._sanitize(rows, row_cols, cleanup)
+        rows = self._cleanup(rows, row_cols, cleanup)
 
         if format_output == 'csv':
             path = apps.get_app_config('dashboard_meet_je_stad').path
@@ -112,28 +112,28 @@ class MeetJeStadAPIService:
         else:
             return rows
 
-    def _sanitize(self, raw_rows: list, row_cols: dict, cleanup: dict) -> list:
+    def _cleanup(self, raw_rows: list, row_cols: dict, cleanup: dict) -> list:
 
         rows = []
         for raw_row in raw_rows:
             row = list(raw_row)
-            if cleanup['cutoff_temp'][0]:
+            if cleanup['cutoff_temp']['is_on']:
                 col_temperature = row_cols['temperature']
                 if raw_row[col_temperature] is not None:
-                    if (raw_row[col_temperature] < cleanup['cutoff_temp'][1]
-                            or raw_row[col_temperature] > cleanup['cutoff_temp'][2]):
+                    if (raw_row[col_temperature] < cleanup['cutoff_temp']['min']
+                            or raw_row[col_temperature] > cleanup['cutoff_temp']['max']):
                         row[col_temperature] = None
-            if cleanup['cutoff_pm25'][0]:
+            if cleanup['cutoff_pm25']['is_on']:
                 col_pm25 = row_cols['pm2.5']
                 if raw_row[col_pm25] is not None:
-                    if (raw_row[col_pm25] < cleanup['cutoff_pm25'][1]
-                            or raw_row[col_pm25] > cleanup['cutoff_pm25'][2]):
+                    if (raw_row[col_pm25] < cleanup['cutoff_pm25']['min']
+                            or raw_row[col_pm25] > cleanup['cutoff_pm25']['max']):
                         row[col_pm25] = None
-            if cleanup['cutoff_pm10'][0]:
+            if cleanup['cutoff_pm10']['is_on']:
                 col_pm10 = row_cols['pm10']
                 if raw_row[col_pm10] is not None:
-                    if (raw_row[col_pm10] < cleanup['cutoff_pm10'][1]
-                            or raw_row[col_pm10] > cleanup['cutoff_pm10'][2]):
+                    if (raw_row[col_pm10] < cleanup['cutoff_pm10']['min']
+                            or raw_row[col_pm10] > cleanup['cutoff_pm10']['max']):
                         row[col_pm10] = None
             rows += [row]
 

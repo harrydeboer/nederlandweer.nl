@@ -9,9 +9,9 @@ class DatasetForm(forms.Form):
         else:
             super().__init__(**kwargs)
 
-    cleanup = {'cutoff_temp': [True, -25, 70],
-               'cutoff_pm25': [True, 0, 250],
-               'cutoff_pm10': [True, 0, 250]}
+    cleanup_default = {'cutoff_temp': {'is_on': True, 'min': -25, 'max': 70},
+               'cutoff_pm25': {'is_on': True, 'min': 0, 'max': 250},
+               'cutoff_pm10': {'is_on': True, 'min': 0, 'max': 250}}
 
     start = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'placeholder': 'yyyy-mm-dd,HH:mm:ss'}),
                                 input_formats = ['Y-d-m,HH:mm:ss'], label='Begin')
@@ -26,36 +26,42 @@ class DatasetForm(forms.Form):
 
     cutoff_temp = forms.BooleanField(initial=True, required=False, label='Afkap temperatuur')
 
-    cutoff_temp_min = forms.FloatField(initial=cleanup['cutoff_temp'][1],
+    cutoff_temp_min = forms.FloatField(initial=cleanup_default['cutoff_temp']['min'],
                                        required=False, label='Min temperatuur')
 
-    cutoff_temp_max = forms.FloatField(initial=cleanup['cutoff_temp'][2],
+    cutoff_temp_max = forms.FloatField(initial=cleanup_default['cutoff_temp']['max'],
                                        required=False, label='Max temperatuur')
 
     cutoff_pm25 = forms.BooleanField(initial=True, required=False, label='Afkap fijnstof 2.5')
 
-    cutoff_pm25_min = forms.FloatField(initial=cleanup['cutoff_pm25'][1],
+    cutoff_pm25_min = forms.FloatField(initial=cleanup_default['cutoff_pm25']['min'],
                                        required=False, label='Min fijnstof 2.5')
 
-    cutoff_pm25_max = forms.FloatField(initial=cleanup['cutoff_pm25'][2],
+    cutoff_pm25_max = forms.FloatField(initial=cleanup_default['cutoff_pm25']['max'],
                                        required=False, label='Max fijnstof 2.5')
 
     cutoff_pm10 = forms.BooleanField(initial=True, required=False, label='Afkap fijnstof 10')
 
-    cutoff_pm10_min = forms.FloatField(initial=cleanup['cutoff_pm10'][1],
+    cutoff_pm10_min = forms.FloatField(initial=cleanup_default['cutoff_pm10']['min'],
                                        required=False, label='Min fijnstof 10')
 
-    cutoff_pm10_max = forms.FloatField(initial=cleanup['cutoff_pm10'][2],
+    cutoff_pm10_max = forms.FloatField(initial=cleanup_default['cutoff_pm10']['max'],
                                        required=False, label='Max fijnstof 10')
 
-    def get_populated_cleanup(self) -> dict:
+    def get_requested_cleanup(self) -> dict:
 
-        return {'cutoff_temp': [self['cutoff_temp'].value(),
-                         float(self['cutoff_temp_min'].value()),
-                         float(self['cutoff_temp_max'].value())],
-         'cutoff_pm25': [self['cutoff_pm25'].value(),
-                         float(self['cutoff_pm25_min'].value()),
-                         float(self['cutoff_pm25_max'].value())],
-         'cutoff_pm10': [self['cutoff_pm10'].value(),
-                         float(self['cutoff_pm10_min'].value()),
-                         float(self['cutoff_pm10_max'].value())]}
+        return {'cutoff_temp': {'is_on': self['cutoff_temp'].value(),
+                         'min': self.set_value(self['cutoff_temp_min'].value()),
+                         'max': self.set_value(self['cutoff_temp_max'].value())},
+         'cutoff_pm25': {'is_on': self['cutoff_pm25'].value(),
+                         'min': self.set_value(self['cutoff_pm25_min'].value()),
+                         'max': self.set_value(self['cutoff_pm25_max'].value())},
+         'cutoff_pm10': {'is_on': self['cutoff_pm10'].value(),
+                         'min': self.set_value(self['cutoff_pm10_min'].value()),
+                         'max': self.set_value(self['cutoff_pm10_max'].value())}}
+
+    def set_value(self, value: float|str) -> float| str:
+        if value == '':
+            return ''
+
+        return float(value)

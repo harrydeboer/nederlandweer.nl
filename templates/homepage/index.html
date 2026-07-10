@@ -8,14 +8,18 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-md-1 form-errors">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-11"><h1>Dashboard Meet Je Stad</h1></div>
+    </div>
+    <div class="row">
+        <div class="col form-errors">
             {% for field, errors in form.errors.items %}
                 {% for error in errors %}
                     {{ error }}
                 {% endfor %}
             {% endfor %}
         </div>
-        <div class="col-md-11"><h1>Dashboard Meet Je Stad</h1></div>
     </div>
     <div id="sensors" data-sensors="{% json_dumps sensors %}"></div>
     <div class="row">
