@@ -35,6 +35,9 @@ class HomepageView:
         if id_sensor is not None and id_sensor not in sensors:
             if 'sensor' in form.errors:
                 form.errors.pop('sensor')
-            form.add_error('sensor', 'Niet fijnstof sensor gekozen met optie alleen fijnstof sensors.')
+            if pm:
+                form.add_error('sensor', 'Niet fijnstof sensor gekozen met optie alleen fijnstof sensoren.')
+            if not inactive:
+                form.add_error('sensor', 'Inactieve sensor gekozen met optie alleen actieve sensoren.')
 
         return render(request, 'homepage/index.html',{'form': form, 'sensors': sensors})
