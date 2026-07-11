@@ -89,8 +89,8 @@ class DatasetView:
             validated = False
         ids = form['ids'].value()
         if ids != '':
-            for id_sensor in ids.split(','):
-                for id_underscore in id_sensor.split('-'):
+            for sensor_id in ids.split(','):
+                for id_underscore in sensor_id.split('-'):
                     if not id_underscore.isdigit():
                         form.add_error('ids', 'Ongeldige ids. Alleen cijfers, komma\'s en streepjes toegestaan.')
 

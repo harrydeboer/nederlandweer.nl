@@ -60,8 +60,8 @@ class Dashboard {
         let features = []
         Object.keys(this.sensors).forEach((sensor_id) => {
             let sensor = this.sensors[sensor_id];
-            for (var index = sensor['temperature'].length - 1; index >= 0; index--) {
-                if (sensor['temperature'][index] !== null) {
+            for (var index = sensor['supply'].length - 1; index >= 0; index--) {
+                if (sensor['supply'][index] !== null) {
                     break;
                 }
             }

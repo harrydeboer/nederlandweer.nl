@@ -9,11 +9,11 @@ class MeasurementRepository:
 
         return Measurement.objects.get(pk=measurement_id)
 
-    def get_days(self, id_sensor: int, days:float) -> List[Measurement]:
+    def get_days(self, sensor_id: int, days:float) -> List[Measurement]:
         date_now = datetime.datetime.now(datetime.timezone.utc)
         date_begin = date_now - datetime.timedelta(days=days)
 
-        return list(Measurement.objects.filter(sensor_id=id_sensor, timestamp__range=(date_begin, date_now)))
+        return list(Measurement.objects.filter(sensor_id=sensor_id, timestamp__range=(date_begin, date_now)))
 
     def create(self, measurement: Measurement):
         measurement.save()

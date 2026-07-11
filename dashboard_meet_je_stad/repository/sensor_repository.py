@@ -34,13 +34,13 @@ class SensorRepository:
 
         return sensors_return
 
-    def get_days(self, id_sensor: int, days:float) -> Sensor:
-        sensor = self.find_all()[id_sensor]
-        sensor.set_measurements(self.measurement_repository.get_days(id_sensor, days))
+    def get_days(self, sensor_id: int, days:float) -> Sensor:
+        sensor = self.find_all()[sensor_id]
+        sensor.set_measurements(self.measurement_repository.get_days(sensor_id, days))
         return sensor
 
     def dress_with_measurements(self, sensors: Dict[int, Sensor], pm: bool, interval: str, inactive: bool,
-                  id_sensor: int|None) -> Dict[int, Sensor]:
+                  sensor_id: int|None) -> Dict[int, Sensor]:
         measurements = self.measurement_cached_repository.find_all(sensors)
         earlier_day = datetime.datetime.now().replace(tzinfo=datetime.timezone.utc) - datetime.timedelta(days=1)
         for index, rows in measurements.items():
@@ -57,15 +57,15 @@ class SensorRepository:
 
         sensors = self.make_grid_service.make_grid(sensors, 1)
 
-        if id_sensor is not None and interval == '3month':
-            if id_sensor in sensors:
+        if sensor_id is not None and interval == '3month':
+            if sensor_id in sensors:
                 is_active = False
-                if sensors[id_sensor].is_active:
+                if sensors[sensor_id].is_active:
                     is_active = True
-                sensors[id_sensor] = self.get_days(id_sensor, 91)
-                sensors_3month = {id_sensor: sensors[id_sensor]}
-                sensors[id_sensor] = self.make_grid_service.make_grid(sensors_3month, 91)[id_sensor]
-                sensors[id_sensor].is_active = is_active
+                sensors[sensor_id] = self.get_days(sensor_id, 91)
+                sensors_3month = {sensor_id: sensors[sensor_id]}
+                sensors[sensor_id] = self.make_grid_service.make_grid(sensors_3month, 91)[sensor_id]
+                sensors[sensor_id].is_active = is_active
 
         return dict(sorted(sensors.items()))
 

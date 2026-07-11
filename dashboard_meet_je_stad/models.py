@@ -16,9 +16,6 @@ class Sensor(models.Model):
     is_active = False
     measurements = []
 
-    def add_measurement(self, measurement: Measurement):
-        self.measurements.append(measurement)
-
     def get_measurements(self) -> List[Measurement]:
         return self.measurements
 
