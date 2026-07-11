@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.handlers.wsgi import WSGIRequest
-from dashboard_meet_je_stad.models import Sensor
+from dashboard_meet_je_stad.model.sensor import Sensor
 from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 from dashboard_meet_je_stad.form.dashboard_form import DashboardForm
 

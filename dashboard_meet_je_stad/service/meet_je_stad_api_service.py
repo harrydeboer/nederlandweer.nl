@@ -3,7 +3,8 @@ from typing import Literal
 import datetime
 import csv
 from dashboard_meet_je_stad.form.dataset_form import DatasetForm
-from dashboard_meet_je_stad.models import Measurement, Sensor
+from dashboard_meet_je_stad.model.sensor import Sensor
+from dashboard_meet_je_stad.model.measurement import Measurement
 from typing import Dict
 from django.apps import apps
 import os

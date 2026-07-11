@@ -1,7 +1,8 @@
 import csv
 import sys
 import os
-from dashboard_meet_je_stad.models import Sensor, Measurement
+from dashboard_meet_je_stad.model.sensor import Sensor
+from dashboard_meet_je_stad.model.measurement import Measurement
 from dashboard_meet_je_stad.repository.measurement_repository import MeasurementRepository
 from typing import List, Dict
 from django.apps import apps

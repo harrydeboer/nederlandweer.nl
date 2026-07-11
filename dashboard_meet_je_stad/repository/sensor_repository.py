@@ -1,5 +1,5 @@
 import datetime
-from dashboard_meet_je_stad.models import Sensor
+from dashboard_meet_je_stad.model.sensor import Sensor
 from dashboard_meet_je_stad.repository.measurement_repository import MeasurementRepository
 from dashboard_meet_je_stad.repository.measurement_cached_repository import MeasurementCachedRepository
 from typing import Dict

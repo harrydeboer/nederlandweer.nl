@@ -8,7 +8,8 @@ import math
 import datetime
 import dotenv
 import sys
-from dashboard_meet_je_stad.models import Sensor, Measurement
+from dashboard_meet_je_stad.model.sensor import Sensor
+from dashboard_meet_je_stad.model.measurement import Measurement
 
 
 class Command(BaseCommand):
