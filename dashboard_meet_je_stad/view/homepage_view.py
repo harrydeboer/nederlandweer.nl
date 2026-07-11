@@ -33,7 +33,7 @@ class HomepageView:
             sensor = sensors[sensor_id]
         else:
             sensor = Sensor()
-        sensors = self.sensor_repository.dress_with_measurements(sensors, pm, interval, inactive, sensor_id)
+        sensors = self.sensor_repository.filter_and_dress_with_measurements(sensors, pm, interval, inactive, sensor_id)
 
         form = DashboardForm(request.GET, inactive=inactive, sensors=sensors)
         if not form.is_valid() and sensor_id is not None and sensor_id not in sensors:

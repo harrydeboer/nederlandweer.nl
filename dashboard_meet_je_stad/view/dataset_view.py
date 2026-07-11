@@ -37,7 +37,7 @@ class DatasetView:
                 start_date = start_date.replace(tzinfo=datetime.timezone.utc)
                 delta = end_date - start_date
                 sensors = self.sensor_repository.find_all()
-                sensors = self.sensor_repository.dress_with_measurements(sensors, False,
+                sensors = self.sensor_repository.filter_and_dress_with_measurements(sensors, False,
                                                                          '24hour', True, None)
                 if form['ids'].value() == '':
                     ids = 'Utrecht'

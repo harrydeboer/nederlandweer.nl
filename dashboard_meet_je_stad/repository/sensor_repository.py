@@ -39,7 +39,7 @@ class SensorRepository:
         sensor.set_measurements(self.measurement_repository.get_days(sensor_id, days))
         return sensor
 
-    def dress_with_measurements(self, sensors: Dict[int, Sensor], pm: bool, interval: str, inactive: bool,
+    def filter_and_dress_with_measurements(self, sensors: Dict[int, Sensor], pm: bool, interval: str, inactive: bool,
                   sensor_id: int|None) -> Dict[int, Sensor]:
         measurements = self.measurement_cached_repository.find_all(sensors)
         earlier_day = datetime.datetime.now().replace(tzinfo=datetime.timezone.utc) - datetime.timedelta(days=1)
