@@ -82,14 +82,12 @@ class Command(BaseCommand):
         False)
             measurements += measurements_range
 
-        measurements_utrecht = []
+        measurements_utrecht = {}
         for measurement in measurements:
             if measurement.sensor_id > last_sensor_id:
                 last_sensor_id = measurement.sensor_id
             if measurement.is_in_utrecht() and measurement.sensor_id not in sensors:
-                measurements_utrecht.append(measurement)
                 sensor = Sensor()
-                sensor.set_measurements([])
                 if measurement.pm25 is not None or measurement.pm10 is not None:
                     sensor.is_particulate_matter = True
                 else:
@@ -100,9 +98,9 @@ class Command(BaseCommand):
                     sensor.is_lux = False
                 sensor.id = measurement.sensor_id
                 self.sensor_repository.create(sensor)
+                measurements_utrecht[measurement.sensor.id] = [measurement]
                 sensors[measurement.sensor_id] = sensor
                 sensors_cached[sensor.id] = sensor
-                sensors_cached[sensor.id].add_measurement(measurement)
                 last_measurements[sensor.id] = measurement
             elif measurement.sensor_id in sensors:
                 sensor = sensors[measurement.sensor.id]
@@ -110,12 +108,12 @@ class Command(BaseCommand):
                     sensor.is_particulate_matter = True
                 if measurement.lux is not None:
                     sensor.is_lux = True
-                measurements_utrecht.append(measurement)
-                sensors_cached[sensor.id].add_measurement(measurement)
+                measurements_utrecht[sensor.id].append(measurement)
                 last_measurements[sensor.id] = measurement
 
-        self.measurement_repository.bulk_create(measurements_utrecht)
-        for index, sensor in sensors.items():
+        for sensor_id, sensor in sensors.items():
+            self.measurement_repository.bulk_create(measurements_utrecht[sensor_id])
+            sensor.set_measurements(measurements_utrecht[sensor_id])
             self.sensor_repository.update(sensor)
 
         for sensor_id, sensor in sensors_cached.items():

@@ -14,28 +14,23 @@ class Sensor(models.Model):
     is_particulate_matter = models.BooleanField()
     is_lux = models.BooleanField()
     is_active = False
-    measurements = []
 
     def get_measurements(self) -> List[Measurement]:
-        return self.measurements
+        return list(self.measurement_set.all())
 
     def set_measurements(self, measurements: List[Measurement]):
-        self.measurements = measurements
+        self.measurement_set.set(measurements)
 
     def add_measurement(self, measurement: Measurement):
-        self.measurements.append(measurement)
+        self.measurement_set.add(measurement)
 
     def remove_measurement(self, measurement: Measurement):
-        measurements_new = []
-        for measurement_old in self.measurements:
-            if measurement_old.id != measurement.id:
-                measurements_new.append(measurement_old)
-        self.set_measurements(measurements_new)
+        self.measurement_set.filter(id=measurement.id).delete()
 
     def to_dict(self):
         properties = {}
         measurements = []
-        for measurement in self.measurements:
+        for measurement in self.get_measurements():
             measurements.append(measurement.to_list())
         properties['measurements'] = measurements
         for field in Sensor._meta.fields:
