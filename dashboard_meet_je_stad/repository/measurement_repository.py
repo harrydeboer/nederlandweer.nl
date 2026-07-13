@@ -1,5 +1,5 @@
 import datetime
-from dashboard_meet_je_stad.model.measurement import Measurement
+from dashboard_meet_je_stad.models import Measurement
 from typing import List
 
 

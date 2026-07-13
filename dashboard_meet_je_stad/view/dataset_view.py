@@ -37,13 +37,13 @@ class DatasetView:
                 start_date = start_date.replace(tzinfo=datetime.timezone.utc)
                 delta = end_date - start_date
                 sensors = self.sensor_repository.find_all()
-                sensors = self.sensor_repository.filter_and_dress_with_measurements(sensors, False,
-                                                                         '24hour', True, None)
+                # sensors = self.sensor_repository.filter_and_dress_with_measurements(sensors, False,
+                #                                                          '24hour', True, None)
                 if form['ids'].value() == '':
                     ids = 'Utrecht'
                 else:
                     ids = form['ids'].value()
-                self.service.get_data(form['start'].value(), form['end'].value(), 'sensors',
+                self.service.get_measurements(form['start'].value(), form['end'].value(), 'sensors',
                                       'csv', sensors, ids, form['particulate_matter_only'].value(),
                                       (delta.days + 1) * 24 * 4 * last_sensor_id,
                                       form['active_only'].value(), form.get_requested_cleanup(), True)

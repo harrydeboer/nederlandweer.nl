@@ -1,18 +1,16 @@
 import requests
-from typing import Literal
+from typing import Literal, List, Dict
 import datetime
 import csv
 from dashboard_meet_je_stad.form.dataset_form import DatasetForm
-from dashboard_meet_je_stad.model.sensor import Sensor
-from dashboard_meet_je_stad.model.measurement import Measurement
-from typing import Dict
+from dashboard_meet_je_stad.models import Sensor, Measurement
 from django.apps import apps
 import os
 
 
 class MeetJeStadAPIService:
 
-    def get_data(self,
+    def get_measurements(self,
                  begin: str,
                  end: str,
                  type_api: Literal['sensors', 'flora', 'stories'],
@@ -23,7 +21,7 @@ class MeetJeStadAPIService:
                  limit: int = 100,
                  is_active_only: bool = False,
                  cleanup=None,
-                 is_with_row = False) -> list | None:
+                 is_with_row = False) -> List[Measurement] | None:
 
         if cleanup is None:
             cleanup = DatasetForm.cleanup_default
@@ -111,7 +109,10 @@ class MeetJeStadAPIService:
 
             return None
         else:
-            return rows
+            measurements = []
+            for row in rows:
+                measurements.append(Measurement(row=row))
+            return measurements
 
     def _cleanup(self, raw_rows: list, row_cols: dict, cleanup: dict) -> list:
 

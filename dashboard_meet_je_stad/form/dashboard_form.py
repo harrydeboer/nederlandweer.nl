@@ -1,16 +1,15 @@
 from django import forms
 from django.forms.fields import ChoiceField
+from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 
 
 class DashboardForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
-        sensors = kwargs.pop('sensors')
-        inactive = kwargs.pop('inactive')
+        sensor_repository = SensorRepository()
+        sensors = sensor_repository.find_all()
         choices = [("", "-")]
         for index, sensor in sensors.items():
-            if not inactive and not sensor.is_active:
-                continue
             choices.append((str(index), str(index)))
         if len(args[0]) > 0:
             super().__init__(*args, **kwargs)
