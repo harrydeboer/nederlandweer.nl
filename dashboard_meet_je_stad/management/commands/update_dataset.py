@@ -93,6 +93,7 @@ class Command(BaseCommand):
             else:
                 sensor = sensors[measurement.sensor_id]
             last_measurements[sensor.id] = measurement
+            sensors[measurement.sensor_id].add_measurement_cached(measurement)
             if measurement.pm25 is not None or measurement.pm10 is not None:
                 sensor.is_particulate_matter = True
             if measurement.lux is not None:
@@ -101,11 +102,12 @@ class Command(BaseCommand):
         for sensor_id, sensor in sensors.items():
             if sensor.id in measurements_utrecht:
                 self.measurement_repository.bulk_create(measurements_utrecht[sensor_id])
-                sensor.set_measurements_cached(sensor.get_measurements_cached() + measurements_utrecht[sensor_id])
-            for measurement in sensor.get_measurements_cached():
-                if (measurement.timestamp < earlier_day
-                        and last_measurements[measurement.sensor.id].id != measurement.id):
-                    sensor.remove_measurement_cached(measurement)
+            measurements = []
+            for index, measurement in enumerate(sensor.get_measurements_cached()):
+                if (measurement.timestamp > earlier_day
+                        or last_measurements[measurement.sensor_id].id == measurement.id):
+                    measurements.append(measurement)
+            sensor.set_measurements_cached(measurements)
             if sensor.get_measurements_cached()[-1].timestamp >= earlier_day:
                 sensor.is_active = True
             self.sensor_repository.update(sensor)

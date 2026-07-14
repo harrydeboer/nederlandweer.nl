@@ -60,6 +60,9 @@ class Dashboard {
         let features = []
         Object.keys(this.sensors).forEach((sensor_id) => {
             let sensor = this.sensors[sensor_id];
+            if (typeof sensor['supply'] === 'undefined') {
+                let test = 1
+            }
             for (var index = sensor['supply'].length - 1; index >= 0; index--) {
                 if (sensor['supply'][index] !== null) {
                     break;

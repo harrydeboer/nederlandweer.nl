@@ -29,11 +29,7 @@ class Sensor(models.Model):
         self.measurements_cached.append(measurement)
 
     def remove_measurement_cached(self, measurement: Measurement):
-        measurements_new = []
-        for measurement_old in self.measurements_cached:
-            if measurement_old.id != measurement.id:
-                measurements_new.append(measurement_old)
-        self.measurements_cached = measurements_new
+        self.get_measurements_cached().remove(measurement)
 
     def to_dict(self, is_transposed: bool = False) -> dict:
         properties = {}

@@ -21,7 +21,7 @@ class MakeGridService:
                                                  None, None, None, None, None, None]))
             last_date += datetime.timedelta(minutes=15)
         if len(measurements_old) == 1:
-            return []
+            return measurements_old
         for index_measurement, measurement in enumerate(measurements_old):
             index = int(round((measurement.timestamp.timestamp()
                                - measurements[0].timestamp.timestamp()) / 60 / 15))
