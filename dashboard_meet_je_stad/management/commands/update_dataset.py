@@ -26,18 +26,13 @@ class Command(BaseCommand):
 
         sensors = self.sensor_repository.find_all()
         sensors_cached_dict = self.sensor_cached_repository.find_all()
-        sensors_cached = {}
         last_measurements = {}
         for sensor_id, sensor_cached in sensors_cached_dict.items():
-            sensor = Sensor()
-            for field in Sensor._meta.fields:
-                sensor.__setattr__(field.attname, sensor_cached[field.attname])
             measurements = []
             for row in sensor_cached['measurements']:
                 measurements.append(Measurement(row=row))
             last_measurements[int(sensor_id)] = measurements[-1]
-            sensor.set_measurements(measurements)
-            sensors_cached[int(sensor_id)] = sensor
+            sensors[int(sensor_id)].set_measurements_cached(measurements)
 
         last_sensor_id = os.getenv('LAST_SENSOR_ID')
         if last_sensor_id is not None and last_sensor_id != '':
@@ -52,7 +47,6 @@ class Command(BaseCommand):
             if start_date is None or start_date == '':
                 self.stdout.write(self.style.ERROR('Start date missing in .env.'))
                 sys.exit(1)
-            last_measurements = {}
             end_date = (datetime.datetime.strptime(start_date, '%Y-%m-%d,%H:%M:%S')
                         .replace(tzinfo=datetime.timezone.utc))
         else:
@@ -86,42 +80,41 @@ class Command(BaseCommand):
         for measurement in measurements:
             if measurement.sensor_id > last_sensor_id:
                 last_sensor_id = measurement.sensor_id
-            if measurement.is_in_utrecht() and measurement.sensor_id not in sensors:
+            if measurement.is_in_utrecht():
+                if measurement.sensor_id in measurements_utrecht:
+                    measurements_utrecht[measurement.sensor_id].append(measurement)
+                else:
+                    measurements_utrecht[measurement.sensor_id]= [measurement]
+            else:
+                continue
+            if measurement.sensor_id not in sensors:
                 sensor = Sensor()
-                if measurement.pm25 is not None or measurement.pm10 is not None:
-                    sensor.is_particulate_matter = True
-                else:
-                    sensor.is_particulate_matter = False
-                if measurement.lux is not None:
-                    sensor.is_lux = True
-                else:
-                    sensor.is_lux = False
+                sensor.set_measurements_cached([])
+                sensor.is_particulate_matter = False
+                sensor.is_lux = False
                 sensor.id = measurement.sensor_id
                 self.sensor_repository.create(sensor)
-                measurements_utrecht[measurement.sensor.id] = [measurement]
                 sensors[measurement.sensor_id] = sensor
-                sensors_cached[sensor.id] = sensor
-                last_measurements[sensor.id] = measurement
-            elif measurement.sensor_id in sensors:
-                sensor = sensors[measurement.sensor.id]
-                if measurement.pm25 is not None or measurement.pm10 is not None:
-                    sensor.is_particulate_matter = True
-                if measurement.lux is not None:
-                    sensor.is_lux = True
-                measurements_utrecht[sensor.id].append(measurement)
-                last_measurements[sensor.id] = measurement
+            else:
+                sensor = sensors[measurement.sensor_id]
+            last_measurements[sensor.id] = measurement
+            if measurement.pm25 is not None or measurement.pm10 is not None:
+                sensor.is_particulate_matter = True
+            if measurement.lux is not None:
+                sensor.is_lux = True
 
         for sensor_id, sensor in sensors.items():
-            self.measurement_repository.bulk_create(measurements_utrecht[sensor_id])
-            sensor.set_measurements(measurements_utrecht[sensor_id])
-            self.sensor_repository.update(sensor)
-
-        for sensor_id, sensor in sensors_cached.items():
-            for measurement in sensor.get_measurements():
+            if sensor.id in measurements_utrecht:
+                self.measurement_repository.bulk_create(measurements_utrecht[sensor_id])
+                sensor.set_measurements_cached(sensor.get_measurements_cached() + measurements_utrecht[sensor_id])
+            for measurement in sensor.get_measurements_cached():
                 if (measurement.timestamp < earlier_day
                         and last_measurements[measurement.sensor.id].id != measurement.id):
-                    sensors_cached[measurement.sensor_id].remove_measurement(measurement)
-        self.sensor_cached_repository.write(sensors_cached)
+                    sensor.remove_measurement_cached(measurement)
+            if sensor.get_measurements_cached()[-1].timestamp >= earlier_day:
+                sensor.is_active = True
+            self.sensor_repository.update(sensor)
+        self.sensor_cached_repository.write(sensors)
 
         dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')
         dotenv.set_key(dotenv_file, "END_DATE", date_now.strftime('%Y-%m-%d,%H:%M:%S'), quote_mode='never')
