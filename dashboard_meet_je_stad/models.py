@@ -35,12 +35,27 @@ class Sensor(models.Model):
                 measurements_new.append(measurement_old)
         self.measurements_cached = measurements_new
 
-    def to_dict(self):
+    def to_dict(self, is_transposed: bool = False) -> dict:
         properties = {}
-        measurements = []
-        for measurement in self.get_measurements_cached():
-            measurements.append(measurement.to_list())
-        properties['measurements'] = measurements
+        if is_transposed:
+            count = 0
+            for field in Measurement._meta.fields:
+                if field.attname == 'id':
+                    count += 1
+                    continue
+                for index, measurement in enumerate(self.get_measurements_cached()):
+                    measurement = measurement.to_list()
+                    if field.attname in properties:
+                        properties[field.attname].append(measurement[count])
+                    else:
+                        properties[field.attname] = [measurement[count]]
+                count += 1
+        else:
+            measurements = []
+            for measurement in self.get_measurements_cached():
+                measurements.append(measurement.to_list())
+            properties['measurements'] = measurements
+
         for field in Sensor._meta.fields:
             prop = field.attname
             properties[prop] = self.__getattribute__(prop)

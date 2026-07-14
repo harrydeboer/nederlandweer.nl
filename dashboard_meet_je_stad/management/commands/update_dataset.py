@@ -8,7 +8,7 @@ import math
 import datetime
 import dotenv
 import sys
-from dashboard_meet_je_stad.models import Sensor, Measurement
+from dashboard_meet_je_stad.models import Sensor
 
 
 class Command(BaseCommand):
@@ -24,15 +24,10 @@ class Command(BaseCommand):
         dotenv_file = dotenv.find_dotenv()
         dotenv.load_dotenv(dotenv_file)
 
-        sensors = self.sensor_repository.find_all()
-        sensors_cached_dict = self.sensor_cached_repository.find_all()
         last_measurements = {}
-        for sensor_id, sensor_cached in sensors_cached_dict.items():
-            measurements = []
-            for row in sensor_cached['measurements']:
-                measurements.append(Measurement(row=row))
-            last_measurements[int(sensor_id)] = measurements[-1]
-            sensors[int(sensor_id)].set_measurements_cached(measurements)
+        sensors = self.sensor_cached_repository.find_all()
+        for sensor_id, sensor in sensors.items():
+            last_measurements[int(sensor_id)] = sensor.get_measurements_cached()[-1]
 
         last_sensor_id = os.getenv('LAST_SENSOR_ID')
         if last_sensor_id is not None and last_sensor_id != '':

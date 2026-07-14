@@ -38,5 +38,5 @@ class MakeGridService:
                             measurements[index] = measurement
             if measurements[-1].timestamp > date_now and measurements[-1].temperature is None:
                 measurements = measurements[:-1]
-            sensors[sensor_id].set_measurements(measurements)
+            sensors[sensor_id].set_measurements_cached(measurements)
         return sensors

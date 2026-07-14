@@ -1,7 +1,7 @@
 import sys
 import os
 import json
-from dashboard_meet_je_stad.models import Sensor
+from dashboard_meet_je_stad.models import Sensor, Measurement
 from typing import Dict
 from django.apps import apps
 
@@ -15,16 +15,35 @@ class SensorCachedRepository:
         else:
             self.path_data = path + '/data/'
 
-    def find_all(self) -> Dict[str, dict]:
+    def find_all(self) -> Dict[int, Sensor]:
 
         try:
             with open(self.path_data + 'sensor_cached.json') as json_file:
                 sensors = json.load(json_file)
-
-                return sensors
+                sensors_cached = {}
+                for sensor_id, sensor_cached in sensors.items():
+                    measurements = []
+                    sensor = Sensor()
+                    sensor.is_active = sensor_cached['is_active']
+                    for field in Sensor._meta.fields:
+                        prop = field.attname
+                        sensor.__setattr__(prop, sensor_cached[prop])
+                    for row in sensor_cached['measurements']:
+                        measurements.append(Measurement(row=row))
+                    sensor.set_measurements_cached(measurements)
+                    sensors_cached[int(sensor_id)] = sensor
+                return sensors_cached
         except FileNotFoundError:
 
             return {}
+
+    def transpose_measurements(self, sensors: Dict[int, Sensor]) -> Dict[int, Sensor]:
+        sensors_transposed = {}
+        for sensor_id, sensor in sensors.items():
+            sensor = sensor.to_dict(True)
+            sensors_transposed[int(sensor_id)] = sensor
+
+        return sensors_transposed
 
     def write(self, sensors: Dict[int, Sensor]):
         sensors_cached = {}
