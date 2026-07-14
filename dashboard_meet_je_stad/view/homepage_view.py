@@ -21,14 +21,16 @@ class HomepageView:
         sensors = self.sensor_cached_repository.find_all()
         form = DashboardForm(request.GET)
         sensor_id = None
+        interval = '24hour'
         if form.is_valid():
             sensor_id = form['sensor'].value()
-            if sensor_id != '' and form['interval'].value() == '3month':
+            interval = form['interval'].value()
+            if sensor_id != '' and interval == '3month':
                 sensors[int(sensor_id)].set_measurements_cached(
                     self.measurement_repository.get_days(int(form['sensor'].value()), 91))
         for sensor_id_new, sensor in sensors.items():
             days = 1
-            if sensor_id is not None and int(sensor_id) == sensor_id_new:
+            if sensor_id is not None and int(sensor_id) == sensor_id_new and interval == '3month':
                 days = 91
             sensors[sensor_id_new].set_measurements_cached(
                 self.make_grid_service.make_grid(sensor.get_measurements_cached(), days))
