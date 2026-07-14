@@ -23,6 +23,9 @@ class HomepageView:
         if form.is_valid():
             if form['interval'].value() == '3month':
                 self.measurement_repository.get_days(int(form['sensor'].value()), 91)
+        for sensor_id, sensor in sensors.items():
+            sensors[sensor_id].set_measurements_cached(
+                self.make_grid_service.make_grid(sensor.get_measurements_cached(), 1))
         sensors_json_transposed = self.sensor_cached_repository.transpose_measurements(sensors)
 
         return render(request, 'homepage/index.html',{'form': form,
