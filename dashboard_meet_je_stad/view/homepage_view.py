@@ -28,6 +28,14 @@ class HomepageView:
                 sensor_id = int(sensor_id)
             else:
                 sensor_id = None
+            inactive = form['inactive'].value()
+            if not inactive and sensor_id is not None and not sensors[sensor_id].is_active:
+                form.add_error('inactive',
+                               'De gekozen sensor is inactief en er is gekozen voor alleen actieve sensors.')
+            pm = form['pm'].value()
+            if pm and sensor_id is not None and not sensors[sensor_id].is_particulate_matter:
+                form.add_error('pm',
+                               'De gekozen sensor is fijnstof en er is gekozen voor alleen fijnstof sensors.')
             interval = form['interval'].value()
             if sensor_id is not None and interval == '3month':
                 sensors[sensor_id].set_measurements_cached(

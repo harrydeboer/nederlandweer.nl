@@ -23,6 +23,9 @@ class MeetJeStadAPIService:
                  cleanup=None,
                  is_with_row = False) -> List[Measurement] | None:
 
+        if limit > 1000000:
+            raise Exception('Aantal rijen mag niet meer zijn dan 1000000.')
+
         if cleanup is None:
             cleanup = DatasetForm.cleanup_default
         date_begin = datetime.datetime.strptime(begin, "%Y-%m-%d,%H:%M:%S")
