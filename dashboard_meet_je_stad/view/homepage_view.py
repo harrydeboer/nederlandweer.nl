@@ -19,34 +19,47 @@ class HomepageView:
         if not request.user.is_authenticated or not request.user.is_superuser:
             return HttpResponseRedirect('inloggen')
         sensors = self.sensor_cached_repository.find_all()
-        form = DashboardForm(request.GET)
-        sensor_id = None
+        form = DashboardForm(request.GET, sensors=sensors)
         interval = '24hour'
+        inactive = False
+        pm = False
+        sensor_id = None
         if form.is_valid():
             sensor_id = form['sensor'].value()
-            if sensor_id != '':
+            if sensor_id is not None and sensor_id != '':
                 sensor_id = int(sensor_id)
             else:
                 sensor_id = None
             inactive = form['inactive'].value()
-            if not inactive and sensor_id is not None and not sensors[sensor_id].is_active:
-                form.add_error('inactive',
-                               'De gekozen sensor is inactief en er is gekozen voor alleen actieve sensors.')
             pm = form['pm'].value()
-            if pm and sensor_id is not None and not sensors[sensor_id].is_particulate_matter:
-                form.add_error('pm',
-                               'De gekozen sensor is fijnstof en er is gekozen voor alleen fijnstof sensors.')
             interval = form['interval'].value()
-            if sensor_id is not None and interval == '3month':
+            if sensor_id is not None and interval == '3month' and len(form.errors) == 0:
                 sensors[sensor_id].set_measurements_cached(
                     self.measurement_repository.get_days(sensor_id, 91))
-        for sensor_id_new, sensor in sensors.items():
+        sensors_new = {}
+        for sensor_id_old, sensor in sensors.items():
+            if not inactive and not sensor.is_active:
+                continue
+            if pm and not sensor.is_particulate_matter:
+                continue
+            sensors_new[sensor_id_old] = sensor
+        form = DashboardForm(request.GET, sensors=sensors_new)
+        if not form.is_valid():
+            if 'sensor' in form.errors:
+                form.errors.pop('sensor')
+            if not sensor_id is None and not inactive and not sensors[sensor_id].is_active:
+                form.add_error('inactive',
+                               'De gekozen sensor is inactief en er is gekozen voor alleen actieve sensors.')
+            if not sensor_id is None and pm and not sensors[sensor_id].is_particulate_matter:
+                form.add_error('pm',
+                               'De gekozen sensor is fijnstof en er is gekozen voor alleen fijnstof sensors.')
+        for sensor_id_new, sensor in sensors_new.items():
             days = 1
             if sensor_id is not None and sensor_id == sensor_id_new and interval == '3month':
                 days = 91
-            sensors[sensor_id_new].set_measurements_cached(
+            sensors_new[sensor_id_new].set_measurements_cached(
                 self.make_grid_service.make_grid(sensor.get_measurements_cached(), days))
-        sensors_json_transposed = self.sensor_cached_repository.transpose_measurements(sensors)
+        sensors_json_transposed = self.sensor_cached_repository.transpose_measurements(sensors_new)
 
         return render(request, 'homepage/index.html',{'form': form,
                                                       'sensors_json': json.dumps(sensors_json_transposed)})

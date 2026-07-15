@@ -22,29 +22,28 @@ class DatasetView:
 
         if form.is_valid() and self.validate(form):
 
+            start = form['start'].value()
+            end = form['end'].value()
+            start_date = datetime.datetime.strptime(start, "%Y-%m-%d,%H:%M:%S")
+            end_date = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
+            end_date = end_date.replace(tzinfo=datetime.timezone.utc)
+            end_date += datetime.timedelta(seconds=1)
+            start_date = start_date.replace(tzinfo=datetime.timezone.utc)
+            delta = end_date - start_date
+            sensors = self.sensor_repository.find_all()
+            if form['ids'].value() == '':
+                ids = 'Utrecht'
+                count = len(sensors)
+            else:
+                ids = form['ids'].value()
+                count = 0
+                for sensor_id in ids.split(','):
+                    if sensor_id.isdigit():
+                        count += 1
+                    else:
+                        sensors_underscore = sensor_id.split('-')
+                        count += int(sensors_underscore[1]) - int(sensors_underscore[0]) + 1
             try:
-                start = form['start'].value()
-                end = form['end'].value()
-                start_date = datetime.datetime.strptime(start, "%Y-%m-%d,%H:%M:%S")
-                end_date = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
-                end_date = end_date.replace(tzinfo=datetime.timezone.utc)
-                end_date += datetime.timedelta(seconds=1)
-                start_date = start_date.replace(tzinfo=datetime.timezone.utc)
-                delta = end_date - start_date
-                sensors = self.sensor_repository.find_all()
-                if form['ids'].value() == '':
-                    ids = 'Utrecht'
-                    count = len(sensors)
-                else:
-                    ids = form['ids'].value()
-                    count = 0
-                    for sensor_id in ids.split(','):
-                        if sensor_id.isdigit():
-                            count += 1
-                        else:
-                            sensors_underscore = sensor_id.split('-')
-                            count += int(sensors_underscore[1]) - int(sensors_underscore[0]) + 1
-
                 self.service.get_measurements(form['start'].value(), form['end'].value(), 'sensors',
                                       'csv', sensors, ids, form['particulate_matter_only'].value(),
                                       (delta.days + 1) * 24 * 4 * count,

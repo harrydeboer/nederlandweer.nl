@@ -1,20 +1,19 @@
 from django import forms
 from django.forms.fields import ChoiceField
-from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 
 
 class DashboardForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
-        sensor_repository = SensorRepository()
-        sensors = sensor_repository.find_all()
-        choices = [("", "-")]
-        for index, sensor in sensors.items():
-            choices.append((str(index), str(index)))
+        sensors = kwargs['sensors']
+        kwargs.pop('sensors')
         if len(args[0]) > 0:
             super().__init__(*args, **kwargs)
         else:
             super().__init__(**kwargs)
+        choices = [("", "-")]
+        for index, sensor in sensors.items():
+            choices.append((str(index), str(index)))
         self.fields['sensor'] = ChoiceField(choices=choices, required=False,
                                             widget=forms.Select(attrs={'class': 'form-select'}))
 
