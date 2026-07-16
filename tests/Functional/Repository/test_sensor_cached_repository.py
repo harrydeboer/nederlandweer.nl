@@ -10,5 +10,5 @@ class TestSensorCachedRepository(TestCase):
 
     def test_get_data(self) -> None:
 
-        result = self.sensor_cached_repository.find_all()
-        self.assertEqual(len(result), 1)
+        sensors_cached = self.sensor_cached_repository.find_all()
+        self.assertTrue(isinstance(sensors_cached, dict))

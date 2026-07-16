@@ -21,8 +21,10 @@ class Command(BaseCommand):
         self.sensor_repository = SensorRepository()
 
     def handle(self, *args, **options):
-        dotenv_file = dotenv.find_dotenv()
-        dotenv.load_dotenv(dotenv_file)
+        if sys.argv[1:2] == ['test']:
+            dotenv_file = '.env.test'
+        else:
+            dotenv_file = '.env'
 
         last_measurements = {}
         sensors = self.sensor_cached_repository.find_all()
