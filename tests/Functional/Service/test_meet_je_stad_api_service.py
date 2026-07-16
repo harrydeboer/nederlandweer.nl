@@ -1,16 +1,20 @@
-import unittest
+from django.test import TestCase
 from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
-from dashboard_meet_je_stad.service import meet_je_stad_api_service
 from dashboard_meet_je_stad.models import Measurement
+from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
 
 
-class TestMeetJeStadAPIService(unittest.TestCase):
+class TestMeetJeStadAPIService(TestCase):
+    fixtures = ['fixture.json']
+
+    def setUp(self) -> None:
+        self.sensor_repository = SensorRepository()
+        self.service = MeetJeStadAPIService()
 
     def test_get_data(self) -> None:
-        service = meet_je_stad_api_service.MeetJeStadAPIService()
         sensor_repository = SensorRepository()
 
-        measurements = service.get_measurements('2025-06-20,0:00:00',
+        measurements = self.service.get_measurements('2025-06-20,0:00:00',
                                   '2025-06-30,23:59:00',
                                   'sensors',
                                   'json',
@@ -19,8 +23,8 @@ class TestMeetJeStadAPIService(unittest.TestCase):
         self.assertTrue(isinstance(measurements, list))
         self.assertTrue(isinstance(measurements[0], Measurement))
 
-        measurements = service.get_measurements('2017-11-16,0:00:00',
-                                  '2025-11-16,23:59:00',
+        measurements = self.service.get_measurements('2017-11-16,0:00:00',
+                                  '2026-07-15,23:59:00',
                                   'sensors',
                                   'json',
                                   sensor_repository.find_all())

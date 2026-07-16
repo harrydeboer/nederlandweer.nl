@@ -5,8 +5,10 @@ from dashboard_meet_je_stad.repository.sensor_cached_repository import SensorCac
 class TestSensorCachedRepository(TestCase):
     fixtures = ['fixture.json']
 
-    def test_get_data(self) -> None:
-        repository = SensorCachedRepository()
+    def setUp(self) -> None:
+        self.sensor_cached_repository = SensorCachedRepository()
 
-        result = repository.find_all()
+    def test_get_data(self) -> None:
+
+        result = self.sensor_cached_repository.find_all()
         self.assertEqual(len(result), 1)

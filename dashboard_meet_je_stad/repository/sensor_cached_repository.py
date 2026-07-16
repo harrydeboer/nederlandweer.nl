@@ -51,3 +51,8 @@ class SensorCachedRepository:
             sensors_cached[sensor_id] = sensor.to_dict()
         with open(self.path_data + 'sensor_cached.json', 'w', encoding='utf-8') as f:
             json.dump(sensors_cached, f, ensure_ascii=False, indent=4)
+
+    def move(self, old: str, new: str):
+        if os.path.isfile(self.path_data + new):
+            os.remove(self.path_data + new)
+        os.rename(self.path_data + old, self.path_data + new)
