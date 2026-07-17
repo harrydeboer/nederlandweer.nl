@@ -18,6 +18,7 @@ class MakeGridService:
             measurement = Measurement()
             measurement.sensor_id = measurements_old[0].sensor_id
             measurement.timestamp = last_date
+            measurement.extra = 'null'
             measurements.append(Measurement(row=measurement.to_list()))
             last_date += datetime.timedelta(minutes=15)
         if len(measurements_old) == 1:

@@ -105,7 +105,10 @@ class Measurement(models.Model):
         self.battery = self.set_float(row[10])
         self.pm25 = self.set_float(row[11])
         self.pm10 = self.set_float(row[12])
-        self.extra = json.dumps(row[13])
+        if row[13] is None:
+            self.extra = 'null'
+        else:
+            self.extra = json.dumps(row[13])
 
     def is_in_utrecht(self) -> bool:
         utrecht_center_lat_degrees = 52.085 * math.pi / 180
@@ -139,6 +142,8 @@ class Measurement(models.Model):
             else:
                 if prop == 'pm2.5':
                     row.append(self.pm25)
+                elif prop == 'extra':
+                    row.append(json.loads(self.extra))
                 else:
                     row.append(self.__getattribute__(prop))
         return row

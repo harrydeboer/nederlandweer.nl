@@ -8,7 +8,7 @@ class CleanupService:
                        'cutoff_pm25': {'is_on': True, 'min': 0, 'max': 250},
                        'cutoff_pm10': {'is_on': True, 'min': 0, 'max': 250}}
 
-    def clean(self, measurements: List[Measurement], cleanup = None) -> List[Measurement]:
+    def clean(self, measurements: List[Measurement], cleanup: dict| None = None) -> List[Measurement]:
         if cleanup is None:
             cleanup = self.cleanup_default
         for measurement in measurements:
@@ -25,7 +25,7 @@ class CleanupService:
             if cleanup['cutoff_pm10']['is_on']:
                 if not measurement.pm10 is None:
                     if (measurement.pm10 < cleanup['cutoff_pm10']['min']
-                            or measurement.temperature > cleanup['cutoff_pm10']['max']):
+                            or measurement.pm10 > cleanup['cutoff_pm10']['max']):
                         measurement.pm10 = None
 
         return measurements
