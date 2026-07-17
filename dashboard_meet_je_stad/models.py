@@ -31,26 +31,20 @@ class Sensor(models.Model):
     def remove_measurement_cached(self, measurement: Measurement):
         self.get_measurements_cached().remove(measurement)
 
-    def to_dict(self, is_transposed: bool = False) -> dict:
+    def to_dict(self) -> dict:
         properties = {}
-        if is_transposed:
-            count = 0
-            for field in Measurement._meta.fields:
-                if field.attname == 'id':
-                    count += 1
-                    continue
-                for index, measurement in enumerate(self.get_measurements_cached()):
-                    measurement = measurement.to_list()
-                    if field.attname in properties:
-                        properties[field.attname].append(measurement[count])
-                    else:
-                        properties[field.attname] = [measurement[count]]
-                count += 1
-        else:
-            measurements = []
-            for measurement in self.get_measurements_cached():
-                measurements.append(measurement.to_list())
-            properties['measurements'] = measurements
+        count = 0
+        for field in Measurement._meta.fields:
+            key = field.attname
+            if field.attname == 'id':
+                key = 'measurement_id'
+            for index, measurement in enumerate(self.get_measurements_cached()):
+                measurement = measurement.to_list()
+                if key in properties:
+                    properties[key].append(measurement[count])
+                else:
+                    properties[key] = [measurement[count]]
+            count += 1
 
         for field in Sensor._meta.fields:
             prop = field.attname

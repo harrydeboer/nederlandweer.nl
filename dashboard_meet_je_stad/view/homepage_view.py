@@ -36,14 +36,14 @@ class HomepageView:
             if sensor_id is not None and interval == '3month' and len(form.errors) == 0:
                 sensors[sensor_id].set_measurements_cached(
                     self.measurement_repository.get_days(sensor_id, 91))
-        sensors_new = {}
+        sensors_filtered = {}
         for sensor_id_old, sensor in sensors.items():
             if not inactive and not sensor.is_active:
                 continue
             if pm and not sensor.is_particulate_matter:
                 continue
-            sensors_new[sensor_id_old] = sensor
-        form = DashboardForm(request.GET, sensors=sensors_new)
+            sensors_filtered[sensor_id_old] = sensor
+        form = DashboardForm(request.GET, sensors=sensors_filtered)
         if not form.is_valid():
             if 'sensor' in form.errors:
                 form.errors.pop('sensor')
@@ -53,13 +53,15 @@ class HomepageView:
             if not sensor_id is None and pm and not sensors[sensor_id].is_particulate_matter:
                 form.add_error('pm',
                                'De gekozen sensor is fijnstof en er is gekozen voor alleen fijnstof sensors.')
-        for sensor_id_new, sensor in sensors_new.items():
+        for sensor_id_filtered, sensor in sensors_filtered.items():
             days = 1
-            if sensor_id is not None and sensor_id == sensor_id_new and interval == '3month':
+            if sensor_id is not None and sensor_id == sensor_id_filtered and interval == '3month':
                 days = 91
-            sensors_new[sensor_id_new].set_measurements_cached(
+            sensors_filtered[sensor_id_filtered].set_measurements_cached(
                 self.make_grid_service.make_grid(sensor.get_measurements_cached(), days))
-        sensors_json_transposed = self.sensor_cached_repository.transpose_measurements(sensors_new)
+        sensors_dict = {}
+        for sensor_id, sensor in sensors_filtered.items():
+            sensors_dict[sensor_id] = sensor.to_dict()
 
         return render(request, 'homepage/index.html',{'form': form,
-                                                      'sensors_json': json.dumps(sensors_json_transposed)})
+                                                      'sensors_json': json.dumps(sensors_dict)})

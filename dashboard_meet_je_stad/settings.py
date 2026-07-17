@@ -152,6 +152,7 @@ if os.getenv('DEBUG') == '1':
 else:
     SESSION_COOKIE_SECURE = True
 
+filename_error = str(Path(__file__).parents[1]) + '/error.log'
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -159,7 +160,7 @@ LOGGING = {
         "file": {
             "level": "ERROR",
             "class": "logging.FileHandler",
-            "filename": os.getenv('ERROR_LOG_PATH'),
+            "filename": filename_error,
         },
     },
     "loggers": {

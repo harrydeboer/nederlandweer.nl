@@ -28,7 +28,14 @@ class SensorCachedRepository:
                     for field in Sensor._meta.fields:
                         prop = field.attname
                         sensor.__setattr__(prop, sensor_cached[prop])
-                    for row in sensor_cached['measurements']:
+                    rows = []
+                    for field in Measurement._meta.fields:
+                        key = field.attname
+                        if field.attname == 'id':
+                            key = 'measurement_id'
+                        rows.append(sensor_cached[key])
+                    rows = [list(i) for i in zip(*rows)]
+                    for row in rows:
                         measurements.append(Measurement(row=row))
                     sensor.set_measurements_cached(measurements)
                     sensors_cached[int(sensor_id)] = sensor
@@ -36,14 +43,6 @@ class SensorCachedRepository:
         except FileNotFoundError:
 
             return {}
-
-    def transpose_measurements(self, sensors: Dict[int, Sensor]) -> Dict[int, Sensor]:
-        sensors_transposed = {}
-        for sensor_id, sensor in sensors.items():
-            sensor = sensor.to_dict(True)
-            sensors_transposed[int(sensor_id)] = sensor
-
-        return sensors_transposed
 
     def write(self, sensors: Dict[int, Sensor]):
         sensors_cached = {}
