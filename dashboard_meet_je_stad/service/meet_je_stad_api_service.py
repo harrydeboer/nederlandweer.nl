@@ -2,7 +2,6 @@ import requests
 from typing import Literal, List, Dict
 import datetime
 import csv
-from dashboard_meet_je_stad.form.dataset_form import DatasetForm
 from dashboard_meet_je_stad.models import Sensor, Measurement
 from django.apps import apps
 import os
@@ -20,14 +19,11 @@ class MeetJeStadAPIService:
                  is_particulate_matter_only: bool = False,
                  limit: int = 100,
                  is_active_only: bool = False,
-                 cleanup=None,
-                 is_with_row = False) -> List[Measurement] | None:
+                 is_with_row = False) -> List[Measurement]:
 
         if limit > 1000000:
             raise Exception('Aantal rijen mag niet meer zijn dan 1000000.')
 
-        if cleanup is None:
-            cleanup = DatasetForm.cleanup_default
         date_begin = datetime.datetime.strptime(begin, "%Y-%m-%d,%H:%M:%S")
         date_end = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
 
@@ -101,7 +97,10 @@ class MeetJeStadAPIService:
 
         if not is_with_row:
             rows.reverse()
-        rows = self._cleanup(rows, row_cols, cleanup)
+
+        measurements = []
+        for row in rows:
+            measurements.append(Measurement(row=row))
 
         if format_output == 'csv':
             path = apps.get_app_config('dashboard_meet_je_stad').path
@@ -110,36 +109,4 @@ class MeetJeStadAPIService:
             csv.writer(file).writerows(rows)
             file.close()
 
-            return None
-        else:
-            measurements = []
-            for row in rows:
-                measurements.append(Measurement(row=row))
-            return measurements
-
-    def _cleanup(self, raw_rows: list, row_cols: dict, cleanup: dict) -> list:
-
-        rows = []
-        for raw_row in raw_rows:
-            row = list(raw_row)
-            if cleanup['cutoff_temp']['is_on']:
-                col_temperature = row_cols['temperature']
-                if raw_row[col_temperature] is not None:
-                    if (raw_row[col_temperature] < cleanup['cutoff_temp']['min']
-                            or raw_row[col_temperature] > cleanup['cutoff_temp']['max']):
-                        row[col_temperature] = None
-            if cleanup['cutoff_pm25']['is_on']:
-                col_pm25 = row_cols['pm2.5']
-                if raw_row[col_pm25] is not None:
-                    if (raw_row[col_pm25] < cleanup['cutoff_pm25']['min']
-                            or raw_row[col_pm25] > cleanup['cutoff_pm25']['max']):
-                        row[col_pm25] = None
-            if cleanup['cutoff_pm10']['is_on']:
-                col_pm10 = row_cols['pm10']
-                if raw_row[col_pm10] is not None:
-                    if (raw_row[col_pm10] < cleanup['cutoff_pm10']['min']
-                            or raw_row[col_pm10] > cleanup['cutoff_pm10']['max']):
-                        row[col_pm10] = None
-            rows += [row]
-
-        return rows
+        return measurements

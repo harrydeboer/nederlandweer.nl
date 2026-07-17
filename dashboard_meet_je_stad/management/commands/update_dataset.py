@@ -1,3 +1,4 @@
+from dashboard_meet_je_stad.service.cleanup_service import CleanupService
 from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
 from dashboard_meet_je_stad.repository.measurement_repository import MeasurementRepository
 from dashboard_meet_je_stad.repository.sensor_cached_repository import SensorCachedRepository
@@ -19,6 +20,7 @@ class Command(BaseCommand):
         self.measurement_repository = MeasurementRepository()
         self.sensor_cached_repository = SensorCachedRepository()
         self.sensor_repository = SensorRepository()
+        self.cleanup_service = CleanupService()
 
     def handle(self, *args, **options):
         if sys.argv[1:2] == ['test']:
@@ -72,6 +74,7 @@ class Command(BaseCommand):
                 (delta.days + 1) * 24 * 4 * sensor_range,
         False)
             measurements += measurements_range
+        measurements = self.cleanup_service.clean(measurements)
 
         measurements_utrecht = {}
         for measurement in measurements:

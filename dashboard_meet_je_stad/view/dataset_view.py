@@ -4,6 +4,7 @@ from django.core.handlers.wsgi import WSGIRequest
 import datetime
 from django.apps import apps
 from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
+from dashboard_meet_je_stad.service.cleanup_service import CleanupService
 from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
 from dashboard_meet_je_stad.form.dataset_form import DatasetForm
 import os
@@ -12,7 +13,8 @@ import os
 class DatasetView:
 
     def __init__(self):
-        self.service = MeetJeStadAPIService()
+        self.api_service = MeetJeStadAPIService()
+        self.cleanup_service = CleanupService()
         self.sensor_repository = SensorRepository()
 
     def index(self, request: WSGIRequest) -> HttpResponse | FileResponse:
@@ -44,10 +46,11 @@ class DatasetView:
                         sensors_underscore = sensor_id.split('-')
                         count += int(sensors_underscore[1]) - int(sensors_underscore[0]) + 1
             try:
-                self.service.get_measurements(form['start'].value(), form['end'].value(), 'sensors',
+                measurements = self.api_service.get_measurements(form['start'].value(), form['end'].value(), 'sensors',
                                       'csv', sensors, ids, form['particulate_matter_only'].value(),
                                       (delta.days + 1) * 24 * 4 * count,
-                                      form['active_only'].value(), form.get_requested_cleanup(), True)
+                                      form['active_only'].value(), True)
+                self.cleanup_service.clean(measurements, form.get_requested_cleanup())
                 path = os.path.dirname(apps.get_app_config('dashboard_meet_je_stad').path)
                 file = open(path + '/data/tmp/dataset.csv', "rb")
 
