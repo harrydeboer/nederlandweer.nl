@@ -63,22 +63,15 @@ class MeetJeStadAPIService:
             raise Exception(response.content.decode("utf-8"))
 
         row_keys = []
-        row_cols = {}
-        count = 0
         for field in Measurement._meta.fields:
             if field.attname == 'pm25':
                 row_keys.append('pm2.5')
-                row_cols['pm2.5'] = count
             elif field.attname == 'id':
                 row_keys.append('row')
-                row_cols['row'] = count
             elif field.attname == 'sensor_id':
                 row_keys.append('id')
-                row_cols['id'] = count
             else:
                 row_keys.append(field.attname)
-                row_cols[field.attname] = count
-            count += 1
 
         rows = []
         for row in response.json():
