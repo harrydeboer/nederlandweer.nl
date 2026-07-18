@@ -43,6 +43,9 @@ class Sensor(models.Model):
     def get_measurements(self) -> List[Measurement]:
         return list(self.measurement_set.all())
 
+    def set_measurements(self, measurements: List[Measurement]):
+        self.measurement_set.set(measurements)
+
     def get_measurements_cached(self) -> List[Measurement]:
         return self._measurements_cached
 
