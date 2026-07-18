@@ -24,16 +24,17 @@ class SensorCachedRepository:
                 for sensor_id, sensor_cached in sensors.items():
                     measurements = []
                     sensor = Sensor()
-                    sensor.is_active = sensor_cached['is_active']
+                    sensor.set_is_active_sensor(sensor_cached['is_active_sensor'])
                     for field in Sensor._meta.fields:
                         prop = field.attname
-                        sensor.__setattr__(prop, sensor_cached[prop])
+                        attribute = getattr(sensor, 'set_' + prop[1:])
+                        attribute(sensor_cached[prop[1:]])
                     rows = []
                     for field in Measurement._meta.fields:
                         key = field.attname
-                        if field.attname == 'id':
-                            key = 'measurement_id'
-                        rows.append(sensor_cached[key])
+                        if field.attname == '_id':
+                            key = '_measurement_id'
+                        rows.append(sensor_cached[key[1:]])
                     rows = [list(i) for i in zip(*rows)]
                     for row in rows:
                         measurements.append(Measurement(row=row))

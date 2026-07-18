@@ -78,43 +78,43 @@ class Command(BaseCommand):
 
         measurements_utrecht = {}
         for measurement in measurements:
-            if measurement.sensor_id > last_sensor_id:
-                last_sensor_id = measurement.sensor_id
+            if measurement.get_sensor_id() > last_sensor_id:
+                last_sensor_id = measurement.get_sensor_id()
             if measurement.is_in_utrecht():
-                if measurement.sensor_id in measurements_utrecht:
-                    measurements_utrecht[measurement.sensor_id].append(measurement)
+                if measurement.get_sensor_id() in measurements_utrecht:
+                    measurements_utrecht[measurement.get_sensor_id()].append(measurement)
                 else:
-                    measurements_utrecht[measurement.sensor_id]= [measurement]
+                    measurements_utrecht[measurement.get_sensor_id()]= [measurement]
             else:
                 continue
-            if measurement.sensor_id not in sensors:
+            if measurement.get_sensor_id() not in sensors:
                 sensor = Sensor()
                 sensor.set_measurements_cached([])
-                sensor.is_particulate_matter = False
-                sensor.is_lux = False
-                sensor.id = measurement.sensor_id
+                sensor.set_is_particulate_matter(False)
+                sensor.set_is_lux(False)
+                sensor.set_id(measurement.get_sensor_id())
                 self.sensor_repository.create(sensor)
-                sensors[measurement.sensor_id] = sensor
+                sensors[measurement.get_sensor_id()] = sensor
             else:
-                sensor = sensors[measurement.sensor_id]
-            last_measurements[sensor.id] = measurement
-            sensors[measurement.sensor_id].add_measurement_cached(measurement)
-            if measurement.pm25 is not None or measurement.pm10 is not None:
-                sensor.is_particulate_matter = True
-            if measurement.lux is not None:
-                sensor.is_lux = True
+                sensor = sensors[measurement.get_sensor_id()]
+            last_measurements[sensor.get_id()] = measurement
+            sensors[measurement.get_sensor_id()].add_measurement_cached(measurement)
+            if measurement.get_pm25() is not None or measurement.get_pm10() is not None:
+                sensor.set_is_particulate_matter(True)
+            if measurement.get_lux() is not None:
+                sensor.set_is_lux(True)
 
         for sensor_id, sensor in sensors.items():
-            if sensor.id in measurements_utrecht:
+            if sensor.get_id() in measurements_utrecht:
                 self.measurement_repository.bulk_create(measurements_utrecht[sensor_id])
             measurements = []
             for index, measurement in enumerate(sensor.get_measurements_cached()):
-                if (measurement.timestamp > earlier_day
-                        or last_measurements[measurement.sensor_id].id == measurement.id):
+                if (measurement.get_timestamp() > earlier_day
+                        or last_measurements[measurement.get_sensor_id()].get_id() == measurement.get_id()):
                     measurements.append(measurement)
             sensor.set_measurements_cached(measurements)
-            if sensor.get_measurements_cached()[-1].timestamp >= earlier_day:
-                sensor.is_active = True
+            if sensor.get_measurements_cached()[-1].get_timestamp() >= earlier_day:
+                sensor.set_is_active_sensor(True)
             self.sensor_repository.update(sensor)
         self.sensor_cached_repository.write(sensors)
 

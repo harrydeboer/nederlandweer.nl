@@ -25,9 +25,9 @@ class SensorRepository:
         sensors_return = {}
         for sensor in sensors:
             if pm and sensor.is_particulate_matter:
-                sensors_return[sensor.id] = sensor
+                sensors_return[sensor.get_id()] = sensor
             elif not pm:
-                sensors_return[sensor.id] = sensor
+                sensors_return[sensor.get_id()] = sensor
 
         return sensors_return
 

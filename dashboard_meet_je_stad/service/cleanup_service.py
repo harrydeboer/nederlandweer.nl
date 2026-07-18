@@ -13,19 +13,22 @@ class CleanupService:
             cleanup = self.cleanup_default
         for measurement in measurements:
             if cleanup['cutoff_temp']['is_on']:
-                if not measurement.temperature is None:
-                    if (measurement.temperature < cleanup['cutoff_temp']['min']
-                            or measurement.temperature > cleanup['cutoff_temp']['max']):
-                        measurement.temperature = None
+                temperature = measurement.get_temperature()
+                if not temperature is None:
+                    if (temperature < cleanup['cutoff_temp']['min']
+                            or temperature > cleanup['cutoff_temp']['max']):
+                        measurement.set_temperature(None)
             if cleanup['cutoff_pm25']['is_on']:
-                if not measurement.pm25 is None:
-                    if (measurement.pm25 < cleanup['cutoff_pm25']['min']
-                            or measurement.pm25 > cleanup['cutoff_pm25']['max']):
-                        measurement.pm25 = None
+                pm25 = measurement.get_pm25()
+                if not pm25 is None:
+                    if (pm25 < cleanup['cutoff_pm25']['min']
+                            or pm25 > cleanup['cutoff_pm25']['max']):
+                        measurement.set_pm25(None)
             if cleanup['cutoff_pm10']['is_on']:
-                if not measurement.pm10 is None:
-                    if (measurement.pm10 < cleanup['cutoff_pm10']['min']
-                            or measurement.pm10 > cleanup['cutoff_pm10']['max']):
-                        measurement.pm10 = None
+                pm10 = measurement.get_pm10()
+                if not pm10 is None:
+                    if (pm10 < cleanup['cutoff_pm10']['min']
+                            or pm10 > cleanup['cutoff_pm10']['max']):
+                        measurement.set_pm10(None)
 
         return measurements

@@ -38,7 +38,7 @@ class HomepageView:
                     self.measurement_repository.get_days(sensor_id, 91))
         sensors_filtered = {}
         for sensor_id_old, sensor in sensors.items():
-            if not inactive and not sensor.is_active:
+            if not inactive and not sensor.is_active_sensor():
                 continue
             if pm and not sensor.is_particulate_matter:
                 continue
@@ -47,7 +47,7 @@ class HomepageView:
         if not form.is_valid():
             if 'sensor' in form.errors:
                 form.errors.pop('sensor')
-            if not sensor_id is None and not inactive and not sensors[sensor_id].is_active:
+            if not sensor_id is None and not inactive and not sensors[sensor_id].is_active_sensor():
                 form.add_error('inactive',
                                'De gekozen sensor is inactief en er is gekozen voor alleen actieve sensors.')
             if not sensor_id is None and pm and not sensors[sensor_id].is_particulate_matter:

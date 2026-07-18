@@ -37,7 +37,7 @@ class MeetJeStadAPIService:
             ids = ''
             for index, sensor in sensors.items():
                 last_measurement = datetime.datetime.strftime(
-                    sensor.get_measurements()[-1].timestamp, '%Y-%m-%d %H:%M:%S')
+                    sensor.get_measurements()[-1].get_timestamp(), '%Y-%m-%d %H:%M:%S')
                 delta = date_end - datetime.datetime.strptime(last_measurement, "%Y-%m-%d %H:%M:%S")
                 if index == 0:
                     continue
@@ -64,14 +64,14 @@ class MeetJeStadAPIService:
 
         row_keys = []
         for field in Measurement._meta.fields:
-            if field.attname == 'pm25':
+            if field.attname == '_pm25':
                 row_keys.append('pm2.5')
-            elif field.attname == 'id':
+            elif field.attname == '_id':
                 row_keys.append('row')
-            elif field.attname == 'sensor_id':
+            elif field.attname == '_sensor_id':
                 row_keys.append('id')
             else:
-                row_keys.append(field.attname)
+                row_keys.append(field.attname[1:])
 
         rows = []
         for row in response.json():
