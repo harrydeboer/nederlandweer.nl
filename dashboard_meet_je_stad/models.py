@@ -266,5 +266,25 @@ class Measurement(models.Model):
         return float(value)
 
 class DashboardUser(models.Model):
+    _id = models.BigAutoField(primary_key=True)
     _user = models.OneToOneField(User, on_delete=models.CASCADE)
     _sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE, null=True)
+
+    def get_id(self) -> int:
+        return self._id
+
+    def set_id(self, value:int):
+        self._id = value
+
+    def get_user(self) -> User:
+        return self._user
+
+    def set_user(self, user: User):
+        self._user = user
+
+    def get_sensor(self) -> Sensor:
+        return self._sensor
+
+    def set_sensor(self, sensor: Sensor):
+        self._sensor = sensor
+

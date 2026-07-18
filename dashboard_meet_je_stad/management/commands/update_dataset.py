@@ -76,15 +76,12 @@ class Command(BaseCommand):
             measurements += measurements_range
         measurements = self.cleanup_service.clean(measurements)
 
-        measurements_utrecht = {}
+        measurements_utrecht = []
         for measurement in measurements:
             if measurement.get_sensor_id() > last_sensor_id:
                 last_sensor_id = measurement.get_sensor_id()
             if measurement.is_in_utrecht():
-                if measurement.get_sensor_id() in measurements_utrecht:
-                    measurements_utrecht[measurement.get_sensor_id()].append(measurement)
-                else:
-                    measurements_utrecht[measurement.get_sensor_id()]= [measurement]
+                measurements_utrecht.append(measurement)
             else:
                 continue
             if measurement.get_sensor_id() not in sensors:
@@ -104,9 +101,8 @@ class Command(BaseCommand):
             if measurement.get_lux() is not None:
                 sensor.set_is_lux(True)
 
+        self.measurement_repository.bulk_create(measurements_utrecht)
         for sensor_id, sensor in sensors.items():
-            if sensor.get_id() in measurements_utrecht:
-                self.measurement_repository.bulk_create(measurements_utrecht[sensor_id])
             measurements = []
             for index, measurement in enumerate(sensor.get_measurements_cached()):
                 if (measurement.get_timestamp() > earlier_day
