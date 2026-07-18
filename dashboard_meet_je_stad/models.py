@@ -130,14 +130,11 @@ class Measurement(models.Model):
         self.set_pm10(row[12])
         self.set_extra(row[13])
 
-    def get_id(self) -> int:
+    def get_id(self) -> int|None:
         return self._id
 
     def set_id(self, value: int|None):
-        if value == '' or value is None:
-            self._id = None
-        else:
-            self._id = int(value)
+        self._id = value
 
     def get_timestamp(self) -> datetime.datetime:
         return self._timestamp
@@ -149,10 +146,7 @@ class Measurement(models.Model):
         return self._firmware_version
 
     def set_firmware_version(self, value: int|None):
-        if value == '' or value is None:
-            self._firmware_version = None
-        else:
-            self._firmware_version = int(value)
+        self._firmware_version = value
 
     def get_longitude(self) -> float | None:
         return self._longitude
