@@ -24,7 +24,6 @@ class SensorCachedRepository:
                 for sensor_id, sensor_cached in sensors.items():
                     measurements = []
                     sensor = Sensor()
-                    sensor.set_is_active_sensor(sensor_cached['is_active_sensor'])
                     for field in Sensor._meta.fields:
                         prop = field.attname
                         attribute = getattr(sensor, 'set_' + prop[1:])

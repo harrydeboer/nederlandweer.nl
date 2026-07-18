@@ -60,9 +60,6 @@ class Dashboard {
         let features = []
         Object.keys(this.sensors).forEach((sensor_id) => {
             let sensor = this.sensors[sensor_id];
-            if (typeof sensor['supply'] === 'undefined') {
-                let test = 1
-            }
             for (var index = sensor['supply'].length - 1; index >= 0; index--) {
                 if (sensor['supply'][index] !== null) {
                     break;
@@ -82,7 +79,7 @@ class Dashboard {
             if ($('#id_inactive:checked').length === 0 && sensor['is_active'] === false) {
                 return;
             }
-            if (sensor['is_active'] === false) {
+            if (sensor['is_active_sensor'] === false) {
                 sourceImage = '/static/img/sensor-red.png'
             } else {
                 sourceImage = '/static/img/sensor-green.png'

@@ -13,7 +13,7 @@ class Sensor(models.Model):
     _id = models.AutoField(primary_key=True)
     _is_particulate_matter = models.BooleanField()
     _is_lux = models.BooleanField()
-    _is_active_sensor = False
+    _is_active_sensor = models.BooleanField()
     _measurements_cached = []
 
     def get_id(self):
@@ -77,7 +77,6 @@ class Sensor(models.Model):
             except AttributeError:
                 attribute = getattr(self, prop[1:])
             properties[prop[1:]] = attribute()
-        properties['is_active_sensor'] = self.is_active_sensor()
 
         return properties
 

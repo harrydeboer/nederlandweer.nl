@@ -89,6 +89,7 @@ class Command(BaseCommand):
                 sensor.set_measurements_cached([])
                 sensor.set_is_particulate_matter(False)
                 sensor.set_is_lux(False)
+                sensor.set_is_active_sensor(False)
                 sensor.set_id(measurement.get_sensor_id())
                 self.sensor_repository.create(sensor)
                 sensors[measurement.get_sensor_id()] = sensor
@@ -111,6 +112,8 @@ class Command(BaseCommand):
             sensor.set_measurements_cached(measurements)
             if sensor.get_measurements_cached()[-1].get_timestamp() >= earlier_day:
                 sensor.set_is_active_sensor(True)
+            else:
+                sensor.set_is_active_sensor(False)
             self.sensor_repository.update(sensor)
         self.sensor_cached_repository.write(sensors)
 
