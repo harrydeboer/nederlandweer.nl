@@ -11,4 +11,4 @@ class TestSensor(TestCase):
 
     def test_get_data(self) -> None:
         sensor = self.sensor_repository.get(1196)
-        self.assertEqual(len(sensor.to_dict()), 1 + len(Sensor._meta.fields))
+        self.assertEqual(len(sensor.to_dict()), len(Sensor._meta.fields))

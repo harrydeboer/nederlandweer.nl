@@ -40,7 +40,8 @@
         "pk": 1196,
         "fields": {
             "_is_particulate_matter": false,
-            "_is_lux": false
+            "_is_lux": false,
+            "_is_active_sensor": false
     }},
     {
         "model": "dashboard_meet_je_stad.measurement",
