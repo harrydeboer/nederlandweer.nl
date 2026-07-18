@@ -86,10 +86,6 @@ class Command(BaseCommand):
                 continue
             if measurement.get_sensor_id() not in sensors:
                 sensor = Sensor()
-                sensor.set_measurements_cached([])
-                sensor.set_is_particulate_matter(False)
-                sensor.set_is_lux(False)
-                sensor.set_is_active_sensor(False)
                 sensor.set_id(measurement.get_sensor_id())
                 self.sensor_repository.create(sensor)
                 sensors[measurement.get_sensor_id()] = sensor

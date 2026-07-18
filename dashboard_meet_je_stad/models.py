@@ -10,6 +10,13 @@ import datetime
 
 class Sensor(models.Model):
 
+    def __init__(self, *args: Any, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        self._is_particulate_matter = False
+        self._is_lux = False
+        self._is_active_sensor = False
+        self._measurements_cached = []
+
     _id = models.AutoField(primary_key=True)
     _is_particulate_matter = models.BooleanField()
     _is_lux = models.BooleanField()
