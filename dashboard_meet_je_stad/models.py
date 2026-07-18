@@ -116,7 +116,8 @@ class Measurement(models.Model):
             return
         self.set_id(row[0])
         self.set_sensor_id(row[1])
-        self.set_timestamp(row[2])
+        self.set_timestamp(datetime.datetime.strptime(row[2],
+                                                      "%Y-%m-%d %H:%M:%S").replace(tzinfo=datetime.timezone.utc))
         self.set_firmware_version(row[3])
         self.set_longitude(row[4])
         self.set_latitude(row[5])
@@ -141,8 +142,8 @@ class Measurement(models.Model):
     def get_timestamp(self) -> datetime.datetime:
         return self._timestamp
 
-    def set_timestamp(self, value: str):
-        self._timestamp = datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S").replace(tzinfo=datetime.timezone.utc)
+    def set_timestamp(self, value: datetime.datetime):
+        self._timestamp = value
 
     def get_firmware_version(self) -> int|None:
         return self._firmware_version

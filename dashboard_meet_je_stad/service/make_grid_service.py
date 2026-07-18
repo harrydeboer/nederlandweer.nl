@@ -17,7 +17,7 @@ class MakeGridService:
         for index in range(0, range_end):
             measurement = Measurement()
             measurement.set_sensor_id(measurements_old[0].get_sensor_id())
-            measurement.set_timestamp(last_date.strftime('%Y-%m-%d %H:%M:%S'))
+            measurement.set_timestamp(last_date)
             measurement.set_extra(None)
             measurements.append(Measurement(row=measurement.to_list()))
             last_date += datetime.timedelta(minutes=15)
