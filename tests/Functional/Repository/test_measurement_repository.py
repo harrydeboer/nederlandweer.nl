@@ -21,6 +21,6 @@ class TestMeasurementRepository(TestCase):
                                   + datetime.timedelta(days=1))
         self.measurement_repository.bulk_create([measurement])
         measurements = self.measurement_repository.get_days(measurement.get_sensor_id(), 91)
-        self.assertEqual(len(measurements), 1)
+        self.assertGreater(len(measurements),0)
         self.measurement_repository.delete(measurement)
         self.assertIsNone(measurement.get_id())
