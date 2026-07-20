@@ -12,3 +12,4 @@ class TestMeasurement(TestCase):
     def test_get_data(self) -> None:
         measurement = self.measurement_repository.get(226785)
         self.assertEqual(len(measurement.to_list()), len(Measurement._meta.fields))
+        self.assertTrue(measurement.is_in_utrecht())

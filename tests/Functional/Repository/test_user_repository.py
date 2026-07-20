@@ -10,5 +10,11 @@ class TestUserRepository(TestCase):
 
     def test_get_data(self) -> None:
 
-        result = self.user_repository.find_by_username('test')
-        self.assertIsNotNone(result)
+        user = self.user_repository.find_by_username('test')
+        if user is None:
+            raise Exception('User not found.')
+        self.assertEqual(user.get_username(), 'test')
+        user = self.user_repository.find_by_email('test@test.com')
+        if user is None:
+            raise Exception('User not found.')
+        self.assertEqual(user.email, 'test@test.com')

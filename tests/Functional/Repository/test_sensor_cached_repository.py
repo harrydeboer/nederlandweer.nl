@@ -12,3 +12,7 @@ class TestSensorCachedRepository(TestCase):
 
         sensors_cached = self.sensor_cached_repository.find_all()
         self.assertTrue(isinstance(sensors_cached, dict))
+        self.sensor_cached_repository.write({})
+        sensors_cached_empty = self.sensor_cached_repository.find_all()
+        self.assertEqual(sensors_cached_empty, {})
+        self.sensor_cached_repository.write(sensors_cached)

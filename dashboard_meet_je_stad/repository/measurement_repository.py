@@ -13,7 +13,7 @@ class MeasurementRepository:
         date_now = datetime.datetime.now(datetime.timezone.utc)
         date_begin = date_now - datetime.timedelta(days=days)
 
-        return list(Measurement.objects.filter(sensor_id=sensor_id, timestamp__range=(date_begin, date_now)))
+        return list(Measurement.objects.filter(_sensor_id=sensor_id, _timestamp__range=(date_begin, date_now)))
 
     def create(self, measurement: Measurement):
         measurement.save()
