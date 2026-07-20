@@ -12,4 +12,7 @@ class TestCleanupService(TestCase):
 
     def test(self):
         measurement = self.measurement_repository.get(226785)
-        self.assertTrue(len(self.service.clean([measurement])), 1)
+        measurement.set_temperature(1000)
+        measurements = self.service.clean([measurement])
+        self.assertEqual(len(measurements), 1)
+        self.assertIsNone(measurements[0].get_temperature())

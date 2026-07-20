@@ -13,15 +13,16 @@ class TestMeetJeStadAPIService(TestCase):
 
     def test_get_data(self) -> None:
         sensor_repository = SensorRepository()
-
+        sensor_id = 1085
         measurements = self.service.get_measurements('2025-06-20,0:00:00',
                                   '2025-06-30,23:59:00',
                                   'sensors',
                                   'json',
                                   sensor_repository.find_all(),
-                                  '1085')
+                                  str(sensor_id))
         self.assertTrue(isinstance(measurements, list))
         self.assertTrue(isinstance(measurements[0], Measurement))
+        self.assertEqual(measurements[0].get_sensor_id(), sensor_id)
 
         measurements = self.service.get_measurements('2017-11-16,0:00:00',
                                   '2026-07-15,23:59:00',
