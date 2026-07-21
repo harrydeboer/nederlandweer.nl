@@ -38,7 +38,7 @@ if os.getenv('DEBUG') == '1':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', 'dashboard']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', 'meetjestadutrecht.nl']
 
 
 # Application definition
