@@ -58,7 +58,7 @@ class HomepageView:
             if sensor_id is not None and sensor_id == sensor_id_filtered and interval == '3month':
                 days = 91
             sensors_filtered[sensor_id_filtered].set_measurements_cached(
-                self.make_grid_service.make_grid(sensor.get_measurements_cached(), days))
+                self.make_grid_service.make_grid(sensor.get_measurements_cached(), sensor.get_id(), days))
         sensors_dict = {}
         for sensor_id, sensor in sensors_filtered.items():
             sensors_dict[sensor_id] = sensor.to_dict()

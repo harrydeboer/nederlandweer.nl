@@ -4,7 +4,8 @@ import datetime
 
 
 class MakeGridService:
-    def make_grid(self, measurements_old: List[Measurement], days:float)  -> List[Measurement]:
+
+    def make_grid(self, measurements_old: List[Measurement], sensor_id: int, days:float)  -> List[Measurement]:
 
         date_now = datetime.datetime.now(datetime.timezone.utc)
         measurements = []
@@ -16,12 +17,12 @@ class MakeGridService:
         range_end = round(96 * days + 1)
         for index in range(0, range_end):
             measurement = Measurement()
-            measurement.set_sensor_id(measurements_old[0].get_sensor_id())
+            measurement.set_sensor_id(sensor_id)
             measurement.set_timestamp(last_date)
             measurement.set_extra(None)
             measurements.append(Measurement(row=measurement.to_list()))
             last_date += datetime.timedelta(minutes=15)
-        if len(measurements_old) == 1:
+        if len(measurements_old) == 1 and measurements_old[0].get_timestamp() < date_now - datetime.timedelta(days=1):
             return measurements_old
         for index_measurement, measurement in enumerate(measurements_old):
             index = int(round((measurement.get_timestamp().timestamp()

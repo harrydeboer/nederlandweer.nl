@@ -13,7 +13,7 @@ class SecurityTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.post('/registreren', {'username': 'Test','email': 'test@test.nl',
+        response = self.client.post('/registreren', {'username': 'Test2','email': 'test2@test2.nl',
                                          'password': 'secret','password_repeat':'secret'})
 
         self.assertEqual(response.status_code, 302)

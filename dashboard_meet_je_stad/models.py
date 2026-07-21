@@ -121,7 +121,7 @@ class Measurement(models.Model):
         if len(row) == 0:
             return
         self.set_id(row[0])
-        self.set_sensor_id(row[1])
+        self.set_sensor_id(int(row[1]))
         self.set_timestamp(datetime.datetime.strptime(row[2],
                                                       "%Y-%m-%d %H:%M:%S").replace(tzinfo=datetime.timezone.utc))
         self.set_firmware_version(row[3])
@@ -139,8 +139,11 @@ class Measurement(models.Model):
     def get_id(self) -> int|None:
         return self._id
 
-    def set_id(self, value: int|None):
-        self._id = value
+    def set_id(self, value: int|str|None):
+        if value is None:
+            self._id = None
+        else:
+            self._id = int(value)
 
     def get_timestamp(self) -> datetime.datetime:
         return self._timestamp
@@ -211,8 +214,8 @@ class Measurement(models.Model):
     def get_sensor_id(self):
         return self._sensor_id
 
-    def set_sensor_id(self, value:str):
-        self._sensor_id = int(value)
+    def set_sensor_id(self, value:int):
+        self._sensor_id = value
 
     def get_sensor(self):
         return self._sensor
@@ -266,7 +269,7 @@ class Measurement(models.Model):
         return float(value)
 
 class DashboardUser(models.Model):
-    _id = models.BigAutoField(primary_key=True)
+    _id = models.AutoField(primary_key=True)
     _user = models.OneToOneField(User, on_delete=models.CASCADE)
     _sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE, null=True)
 

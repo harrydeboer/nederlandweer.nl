@@ -3,5 +3,5 @@ python-dotenv>=1.2.2
 requests>=2.33.0
 gunicorn==23.0.0
 gevent==25.9.1
-psycopg2-binary==2.9.11
+mysqlclient==2.2.8
 zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
