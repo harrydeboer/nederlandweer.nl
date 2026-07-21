@@ -32,12 +32,6 @@ class Command(BaseCommand):
         sensors = self.sensor_cached_repository.find_all()
         for sensor_id, sensor in sensors.items():
             last_measurements[int(sensor_id)] = sensor.get_measurements_cached()[-1]
-        sensors_db = self.sensor_repository.find_all()
-        for sensor_id, sensor in sensors.items():
-            if sensor_id not in sensors_db:
-                sensor_db = Sensor()
-                sensor_db.set_id(sensor_id)
-                self.sensor_repository.create(sensor_db)
 
         last_sensor_id = os.getenv('LAST_SENSOR_ID')
         if last_sensor_id is not None and last_sensor_id != '':
