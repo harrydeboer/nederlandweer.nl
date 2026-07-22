@@ -61,30 +61,30 @@ class Sensor(models.Model):
     def remove_measurement_cached(self, measurement):
         self.get_measurements_cached().remove(measurement)
 
-    # def to_dict(self) -> dict:
-    #     properties = {}
-    #     count = 0
-    #     for field in Measurement._meta.fields:
-    #         key = field.attname
-    #         if field.attname == '_id':
-    #             key = '_measurement_id'
-    #         for index, measurement in enumerate(self.get_measurements_cached()):
-    #             measurement = measurement.to_list()
-    #             if key[1:] in properties:
-    #                 properties[key[1:]].append(measurement[count])
-    #             else:
-    #                 properties[key[1:]] = [measurement[count]]
-    #         count += 1
-    #
-    #     for field in Sensor._meta.fields:
-    #         prop = field.attname
-    #         try:
-    #             attribute = getattr(self, 'get_' + prop[1:])
-    #         except AttributeError:
-    #             attribute = getattr(self, prop[1:])
-    #         properties[prop[1:]] = attribute()
-    #
-    #     return properties
+    def to_dict(self) -> dict:
+        properties = {}
+        count = 0
+        for field in Measurement._meta.fields:
+            key = field.attname
+            if field.attname == '_id':
+                key = '_measurement_id'
+            for index, measurement in enumerate(self.get_measurements_cached()):
+                measurement = measurement.to_list()
+                if key[1:] in properties:
+                    properties[key[1:]].append(measurement[count])
+                else:
+                    properties[key[1:]] = [measurement[count]]
+            count += 1
+
+        for field in Sensor._meta.fields:
+            prop = field.attname
+            try:
+                attribute = getattr(self, 'get_' + prop[1:])
+            except AttributeError:
+                attribute = getattr(self, prop[1:])
+            properties[prop[1:]] = attribute()
+
+        return properties
 
 class Measurement(models.Model):
 
