@@ -1,4 +1,3 @@
-from typing import List
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
@@ -44,16 +43,16 @@ class Sensor(models.Model):
     def set_is_active_sensor(self, is_active_sensor: bool):
         self._is_active_sensor = is_active_sensor
 
-    def get_measurements(self) -> List[Measurement]:
+    def get_measurements(self):
         return list(self.measurement_set.all())
 
-    def set_measurements(self, measurements: List[Measurement]):
+    def set_measurements(self, measurements):
         self.measurement_set.set(measurements)
 
-    def get_measurements_cached(self) -> List[Measurement]:
+    def get_measurements_cached(self):
         return self._measurements_cached
 
-    def set_measurements_cached(self, measurements: List[Measurement]):
+    def set_measurements_cached(self, measurements):
         self._measurements_cached = measurements
 
     def add_measurement_cached(self, measurement: Measurement):
@@ -62,30 +61,30 @@ class Sensor(models.Model):
     def remove_measurement_cached(self, measurement: Measurement):
         self.get_measurements_cached().remove(measurement)
 
-    def to_dict(self) -> dict:
-        properties = {}
-        count = 0
-        for field in Measurement._meta.fields:
-            key = field.attname
-            if field.attname == '_id':
-                key = '_measurement_id'
-            for index, measurement in enumerate(self.get_measurements_cached()):
-                measurement = measurement.to_list()
-                if key[1:] in properties:
-                    properties[key[1:]].append(measurement[count])
-                else:
-                    properties[key[1:]] = [measurement[count]]
-            count += 1
-
-        for field in Sensor._meta.fields:
-            prop = field.attname
-            try:
-                attribute = getattr(self, 'get_' + prop[1:])
-            except AttributeError:
-                attribute = getattr(self, prop[1:])
-            properties[prop[1:]] = attribute()
-
-        return properties
+    # def to_dict(self) -> dict:
+    #     properties = {}
+    #     count = 0
+    #     for field in Measurement._meta.fields:
+    #         key = field.attname
+    #         if field.attname == '_id':
+    #             key = '_measurement_id'
+    #         for index, measurement in enumerate(self.get_measurements_cached()):
+    #             measurement = measurement.to_list()
+    #             if key[1:] in properties:
+    #                 properties[key[1:]].append(measurement[count])
+    #             else:
+    #                 properties[key[1:]] = [measurement[count]]
+    #         count += 1
+    #
+    #     for field in Sensor._meta.fields:
+    #         prop = field.attname
+    #         try:
+    #             attribute = getattr(self, 'get_' + prop[1:])
+    #         except AttributeError:
+    #             attribute = getattr(self, prop[1:])
+    #         properties[prop[1:]] = attribute()
+    #
+    #     return properties
 
 class Measurement(models.Model):
 
