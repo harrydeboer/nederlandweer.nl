@@ -55,10 +55,10 @@ class Sensor(models.Model):
     def set_measurements_cached(self, measurements):
         self._measurements_cached = measurements
 
-    def add_measurement_cached(self, measurement: Measurement):
+    def add_measurement_cached(self, measurement):
         self._measurements_cached.append(measurement)
 
-    def remove_measurement_cached(self, measurement: Measurement):
+    def remove_measurement_cached(self, measurement):
         self.get_measurements_cached().remove(measurement)
 
     # def to_dict(self) -> dict:
