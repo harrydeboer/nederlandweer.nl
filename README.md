@@ -8,3 +8,5 @@ Make the database.
 Run the migrations.
 Run the update_dataset command.
 Register and make the user a superuser to see the full site.
+
+To update the site on the server execute the update.sh script.

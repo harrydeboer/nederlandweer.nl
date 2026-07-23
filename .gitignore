@@ -5,6 +5,7 @@
 /node_modules
 /data
 /tests/data
+/tmp
 # Environments
 .env
 .env.test
