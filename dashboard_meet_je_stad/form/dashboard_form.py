@@ -4,6 +4,9 @@ from django.forms.fields import ChoiceField
 
 class DashboardForm(forms.Form):
 
+    """The sensors are retrieved from the kwargs and then removed from kwargs.
+    The choices of the sensor are added to the sensor field.
+    """
     def __init__(self, *args, **kwargs):
         sensors = kwargs['sensors']
         kwargs.pop('sensors')

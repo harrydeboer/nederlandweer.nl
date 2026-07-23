@@ -12,6 +12,7 @@ import sys
 from dashboard_meet_je_stad.models import Sensor
 
 
+"""The command retrieves new measurements, updates the sensor and the cache."""
 class Command(BaseCommand):
     help = "Updates the dataset"
 
@@ -57,8 +58,12 @@ class Command(BaseCommand):
             end_date += datetime.timedelta(seconds=1)
         date_now = datetime.datetime.now(datetime.timezone.utc)
         delta = date_now - end_date
-        earlier_day = datetime.datetime.now().replace(tzinfo=datetime.timezone.utc) - datetime.timedelta(days=1)
+        earlier_day = date_now - datetime.timedelta(days=1)
 
+        """The measurements are retrieved from the api. 
+        Not all ids are requested at once but a range of ids are requested.
+        Afterwards the measurements are getting a cleanup.
+        """
         sensor_range = math.ceil(50 / (delta.days + 1) * 7)
         measurements = []
         for sensor_id_range in range(0, int(last_sensor_id / sensor_range) + 2):
@@ -76,6 +81,12 @@ class Command(BaseCommand):
             measurements += measurements_range
         measurements = self.cleanup_service.clean(measurements)
 
+        """The last sensor found is stored in last_sensor_id and get written to the .env.
+        When a measurement is in Utrecht is is stored in measurements_utrecht.
+        If a measurement has a sensor which is not in the cache it is created.
+        The last measurements are updated.
+        When a measurement has pm or lux the sensor is updated.
+        """
         measurements_utrecht = []
         for measurement in measurements:
             if measurement.get_sensor_id() > last_sensor_id:
@@ -98,6 +109,11 @@ class Command(BaseCommand):
             if measurement.get_lux() is not None:
                 sensor.set_is_lux(True)
 
+        """The measurement are created.
+        The sensor get the correct cached measurements. 
+        These are the last measurements and the measurements more recent than a day earlier.
+        If the sensor has a measurement that is more recent than a day earlier it is set to active.
+        """
         self.measurement_repository.bulk_create(measurements_utrecht)
         for sensor_id, sensor in sensors.items():
             measurements = []

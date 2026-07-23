@@ -19,6 +19,10 @@ class SensorCachedRepository:
 
         try:
             with open(self.path_data + 'sensor_cached.json') as json_file:
+
+                """ The sensor is loaded from json to a dictionary.
+                The sensor gets measurements from the measurement fields in the dictionary.
+                """
                 sensors = json.load(json_file)
                 sensors_cached = {}
                 for sensor_id, sensor_cached in sensors.items():

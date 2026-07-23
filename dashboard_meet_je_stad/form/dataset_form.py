@@ -49,6 +49,7 @@ class DatasetForm(forms.Form):
     cutoff_pm10_max = forms.FloatField(initial=CleanupService.cleanup_default['cutoff_pm10']['max'],
                                        required=False, label='Max fijnstof 10')
 
+    """ Replaces the default cleanup with the values from this form."""
     def get_requested_cleanup(self) -> dict:
         cleanup = CleanupService.cleanup_default
         for key, value in CleanupService.cleanup_default.items():

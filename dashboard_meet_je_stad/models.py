@@ -61,6 +61,10 @@ class Sensor(models.Model):
     def remove_measurement_cached(self, measurement):
         self.get_measurements_cached().remove(measurement)
 
+    """The sensor is converted to a dictionary.
+    The measurement fields are added to the dictionary and contain all the measurement values.
+    The underscores are removed in the properties.
+    """
     def to_dict(self) -> dict:
         properties = {}
         count = 0
@@ -228,6 +232,8 @@ class Measurement(models.Model):
     def set_extra(self, extra: list|None):
         self._extra = json.dumps(extra)
 
+    """The haversine formula is used to determine if a measurement is 
+    within a radius of 9.46km from the center of Utrecht."""
     def is_in_utrecht(self) -> bool:
         utrecht_center_lat_degrees = 52.085 * math.pi / 180
         utrecht_center_long_degrees = 5.085 * math.pi / 180
@@ -251,6 +257,7 @@ class Measurement(models.Model):
 
         return False
 
+    """The measurement is transformed to a list with the timestamp converted to a string."""
     def to_list(self):
         row = []
         for field in Measurement._meta.fields:

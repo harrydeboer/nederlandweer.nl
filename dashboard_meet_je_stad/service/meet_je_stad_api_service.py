@@ -35,17 +35,12 @@ class MeetJeStadAPIService:
 
         if ids == 'Utrecht':
             ids = ''
-            for index, sensor in sensors.items():
-                last_measurement = datetime.datetime.strftime(
-                    sensor.get_measurements()[-1].get_timestamp(), '%Y-%m-%d %H:%M:%S')
-                delta = date_end - datetime.datetime.strptime(last_measurement, "%Y-%m-%d %H:%M:%S")
-                if index == 0:
+            for sensor_id, sensor in sensors.items():
+                if is_active_only and not sensor.is_active_sensor():
                     continue
-                if is_active_only and delta.days > 0:
+                if is_particulate_matter_only and not sensor.is_particulate_matter():
                     continue
-                if is_particulate_matter_only and sensor.is_particulate_matter == '0':
-                    continue
-                ids += str(index) + ','
+                ids += str(sensor_id) + ','
             ids = ids[:-1]
 
         uri = 'https://meetjestad.net/data/?type='
@@ -62,6 +57,7 @@ class MeetJeStadAPIService:
         except Exception:
             raise Exception(response.content.decode("utf-8"))
 
+        """The measurement fields are used to make row_keys that the api returns."""
         row_keys = []
         for field in Measurement._meta.fields:
             if field.attname == '_pm25':
@@ -73,6 +69,9 @@ class MeetJeStadAPIService:
             else:
                 row_keys.append(field.attname[1:])
 
+        """The rows from the api are used to fill result and are added to rows to make Measurement objects.
+        When is_with_row is not chosen then the 'row' key is set to None and the rows are reversed.
+        """
         rows = []
         for row in response.json():
             result = []
@@ -87,10 +86,8 @@ class MeetJeStadAPIService:
             if not is_with_row:
                 result[0] = None
             rows.append(result)
-
         if not is_with_row:
             rows.reverse()
-
         measurements = []
         for row in rows:
             measurements.append(Measurement(row=row))
