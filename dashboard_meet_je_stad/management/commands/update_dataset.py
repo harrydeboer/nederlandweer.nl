@@ -93,9 +93,7 @@ class Command(BaseCommand):
         for measurement in measurements:
             if measurement.get_sensor_id() > last_sensor_id:
                 last_sensor_id = measurement.get_sensor_id()
-            if measurement.is_in_utrecht():
-                measurements_utrecht.append(measurement)
-            else:
+            if not measurement.is_in_utrecht():
                 continue
             if measurement.get_sensor_id() not in sensors:
                 sensor = Sensor()
@@ -109,6 +107,8 @@ class Command(BaseCommand):
                 sensor.set_is_particulate_matter(True)
             if measurement.get_lux() is not None:
                 sensor.set_is_lux(True)
+            if measurement.get_timestamp() >= earlier_day:
+                measurements_utrecht.append(measurement)
 
         """Make a dictionary of measurements of Utrecht per sensor."""
         measurements_new = {}
@@ -133,10 +133,10 @@ class Command(BaseCommand):
                     measurements_cached.append(measurement)
             if sensor_id in measurements_new:
                 measurements_cached += measurements_new[sensor_id]
-            if measurements_cached[-1].get_timestamp() >= earlier_day:
-                sensor.set_measurements_cached(self.make_grid_service.make_grid(measurements_cached, sensor_id, 1))
-            else:
+            if len(measurements_cached) == 0 or measurements_cached[-1].get_timestamp() < earlier_day:
                 sensor.set_measurements_cached([last_measurements[sensor_id]])
+            else:
+                sensor.set_measurements_cached(self.make_grid_service.make_grid(measurements_cached, sensor_id, 1))
             if sensor.get_measurements_cached()[-1].get_timestamp() >= earlier_day:
                 sensor.set_is_active_sensor(True)
             else:
