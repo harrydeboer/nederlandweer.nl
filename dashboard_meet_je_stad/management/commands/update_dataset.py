@@ -110,38 +110,31 @@ class Command(BaseCommand):
             if measurement.get_lux() is not None:
                 sensor.set_is_lux(True)
 
-        """The measurement are created.
-        The sensors get the correct cached measurements. 
-        These are the last measurements and the measurements more recent than a day earlier.
-        If the sensor has a measurement that is more recent than a day earlier it is set to active.
-        """
-        self.measurement_repository.bulk_create(measurements_utrecht)
+        """Make a dictionary of measurements of Utrecht per sensor."""
         measurements_new = {}
         for index, measurement in enumerate(measurements_utrecht):
             if measurement.get_sensor_id() in measurements_new:
                 measurements_new[measurement.get_sensor_id()].append(measurement)
             else:
                 measurements_new[measurement.get_sensor_id()] = [measurement]
+
+        """The measurements are created.
+        The sensors get the correct cached measurements. 
+        These are the last measurements or the measurements more recent than a day earlier.
+        If the measurements are more recent than a day earlier they are put in a grid.
+        If the sensor has a measurement that is more recent than a day earlier it is set to active.
+        """
+        self.measurement_repository.bulk_create(measurements_utrecht)
         for sensor_id, sensor in sensors.items():
-            measurements = []
+            measurements_cached = []
             for index, measurement in enumerate(sensor.get_measurements_cached()):
                 if (measurement.get_timestamp() > earlier_day
                         or last_measurements[measurement.get_sensor_id()].get_id() == measurement.get_id()):
-                    measurements.append(measurement)
+                    measurements_cached.append(measurement)
             if sensor_id in measurements_new:
-                if len(measurements) > 0:
-                    if measurements_new[sensor_id][-1].get_timestamp() >= earlier_day:
-                        sensor.set_measurements_cached(self.make_grid_service.make_grid(
-                            measurements + measurements_new[sensor_id], sensor_id, 1))
-                    else:
-                        sensor.set_measurements_cached([last_measurements[sensor_id]])
-                elif measurements_new[sensor_id][-1].get_timestamp() >= earlier_day:
-                    sensor.set_measurements_cached(
-                        self.make_grid_service.make_grid(measurements_new[sensor_id], sensor_id, 1))
-                else:
-                    sensor.set_measurements_cached([last_measurements[sensor_id]])
-            elif len(measurements) > 0:
-                    sensor.set_measurements_cached(self.make_grid_service.make_grid(measurements, sensor_id, 1))
+                measurements_cached += measurements_new[sensor_id]
+            if measurements_cached[-1].get_timestamp() >= earlier_day:
+                sensor.set_measurements_cached(self.make_grid_service.make_grid(measurements_cached, sensor_id, 1))
             else:
                 sensor.set_measurements_cached([last_measurements[sensor_id]])
             if sensor.get_measurements_cached()[-1].get_timestamp() >= earlier_day:
