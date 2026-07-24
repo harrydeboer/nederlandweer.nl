@@ -9,7 +9,7 @@ class Dashboard {
         } else {
             return;
         }
-        if (sensor_selected.data('sensor')['id'] !== null) {
+        if (typeof sensor_selected.data('sensor')['supply'] !== 'undefined') {
             this.sensors[sensor_selected.data('sensor')['id']] = sensor_selected.data('sensor');
         }
         this.sensor = $('#id_sensor');
