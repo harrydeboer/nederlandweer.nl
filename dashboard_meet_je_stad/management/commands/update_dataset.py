@@ -90,6 +90,7 @@ class Command(BaseCommand):
         When a measurement has pm or lux the sensor is updated.
         """
         measurements_utrecht = []
+        measurements_new = {}
         for measurement in measurements:
             if measurement.get_sensor_id() > last_sensor_id:
                 last_sensor_id = measurement.get_sensor_id()
@@ -108,15 +109,11 @@ class Command(BaseCommand):
             if measurement.get_lux() is not None:
                 sensor.set_is_lux(True)
             if measurement.get_timestamp() >= earlier_day:
-                measurements_utrecht.append(measurement)
-
-        """Make a dictionary of measurements of Utrecht per sensor."""
-        measurements_new = {}
-        for index, measurement in enumerate(measurements_utrecht):
-            if measurement.get_sensor_id() in measurements_new:
-                measurements_new[measurement.get_sensor_id()].append(measurement)
-            else:
-                measurements_new[measurement.get_sensor_id()] = [measurement]
+                if measurement.get_sensor_id() in measurements_new:
+                    measurements_new[measurement.get_sensor_id()].append(measurement)
+                else:
+                    measurements_new[measurement.get_sensor_id()] = [measurement]
+            measurements_utrecht.append(measurement)
 
         """The measurements are created.
         The sensors get the correct cached measurements. 
