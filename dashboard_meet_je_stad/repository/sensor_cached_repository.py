@@ -15,6 +15,10 @@ class SensorCachedRepository:
         else:
             self.path_data = path + '/data/'
 
+    def find_all_as_string(self):
+        with open(self.path_data + 'sensor_cached.json') as json_file:
+            return json_file.read()
+
     def find_all(self) -> Dict[int, Sensor]:
 
         try:

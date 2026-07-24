@@ -1,4 +1,5 @@
 from dashboard_meet_je_stad.service.cleanup_service import CleanupService
+from dashboard_meet_je_stad.service.make_grid_service import MakeGridService
 from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
 from dashboard_meet_je_stad.repository.measurement_repository import MeasurementRepository
 from dashboard_meet_je_stad.repository.sensor_cached_repository import SensorCachedRepository
@@ -22,6 +23,7 @@ class Command(BaseCommand):
         self.sensor_cached_repository = SensorCachedRepository()
         self.sensor_repository = SensorRepository()
         self.cleanup_service = CleanupService()
+        self.make_grid_service = MakeGridService()
 
     def handle(self, *args, **options):
         if sys.argv[1:2] == ['test']:
@@ -103,25 +105,45 @@ class Command(BaseCommand):
             else:
                 sensor = sensors[measurement.get_sensor_id()]
             last_measurements[sensor.get_id()] = measurement
-            sensors[measurement.get_sensor_id()].add_measurement_cached(measurement)
             if measurement.get_pm25() is not None or measurement.get_pm10() is not None:
                 sensor.set_is_particulate_matter(True)
             if measurement.get_lux() is not None:
                 sensor.set_is_lux(True)
 
         """The measurement are created.
-        The sensor get the correct cached measurements. 
+        The sensors get the correct cached measurements. 
         These are the last measurements and the measurements more recent than a day earlier.
         If the sensor has a measurement that is more recent than a day earlier it is set to active.
         """
         self.measurement_repository.bulk_create(measurements_utrecht)
+        measurements_new = {}
+        for index, measurement in enumerate(measurements_utrecht):
+            if measurement.get_sensor_id() in measurements_new:
+                measurements_new[measurement.get_sensor_id()].append(measurement)
+            else:
+                measurements_new[measurement.get_sensor_id()] = [measurement]
         for sensor_id, sensor in sensors.items():
             measurements = []
             for index, measurement in enumerate(sensor.get_measurements_cached()):
                 if (measurement.get_timestamp() > earlier_day
                         or last_measurements[measurement.get_sensor_id()].get_id() == measurement.get_id()):
                     measurements.append(measurement)
-            sensor.set_measurements_cached(measurements)
+            if sensor_id in measurements_new:
+                if len(measurements) > 0:
+                    if measurements_new[sensor_id][-1].get_timestamp() >= earlier_day:
+                        sensor.set_measurements_cached(self.make_grid_service.make_grid(
+                            measurements + measurements_new[sensor_id], sensor_id, 1))
+                    else:
+                        sensor.set_measurements_cached([last_measurements[sensor_id]])
+                elif measurements_new[sensor_id][-1].get_timestamp() >= earlier_day:
+                    sensor.set_measurements_cached(
+                        self.make_grid_service.make_grid(measurements_new[sensor_id], sensor_id, 1))
+                else:
+                    sensor.set_measurements_cached([last_measurements[sensor_id]])
+            elif len(measurements) > 0:
+                    sensor.set_measurements_cached(self.make_grid_service.make_grid(measurements, sensor_id, 1))
+            else:
+                sensor.set_measurements_cached([last_measurements[sensor_id]])
             if sensor.get_measurements_cached()[-1].get_timestamp() >= earlier_day:
                 sensor.set_is_active_sensor(True)
             else:

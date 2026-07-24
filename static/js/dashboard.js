@@ -76,7 +76,7 @@ class Dashboard {
                 sensor['is_particulate_matter'] === false) {
                 return;
             }
-            if ($('#id_inactive:checked').length === 0 && sensor['is_active'] === false) {
+            if ($('#id_inactive:checked').length === 0 && sensor['is_active_sensor'] === false) {
                 return;
             }
             if (sensor['is_active_sensor'] === false) {
