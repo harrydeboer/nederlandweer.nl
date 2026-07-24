@@ -2,11 +2,15 @@ class Dashboard {
 
     constructor(form) {
         this.form = form;
+        let sensor_selected = $('#sensor');
         let sensors = $('#sensors');
         if (sensors.length > 0) {
             this.sensors = sensors.data('sensors');
         } else {
             return;
+        }
+        if (sensor_selected.data('sensor') !== null) {
+            this.sensors[sensor_selected.data('sensor')['id']] = sensor_selected.data('sensor');
         }
         this.sensor = $('#id_sensor');
         this.type = $('input[name=type]');
