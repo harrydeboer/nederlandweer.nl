@@ -4,6 +4,7 @@ import json
 from dashboard_meet_je_stad.models import Sensor, Measurement
 from typing import Dict
 from django.apps import apps
+from pathlib import Path
 
 
 class SensorCachedRepository:
@@ -15,9 +16,13 @@ class SensorCachedRepository:
         else:
             self.path_data = path + '/data/'
 
-    def find_all_as_string(self):
-        with open(self.path_data + 'sensor_cached.json') as json_file:
-            return json_file.read()
+    def find_all_as_string(self) -> str:
+        try:
+            with open(self.path_data + 'sensor_cached.json') as json_file:
+                return json_file.read()
+        except FileNotFoundError:
+
+            return '{}'
 
     def find_all(self) -> Dict[int, Sensor]:
 
@@ -56,5 +61,7 @@ class SensorCachedRepository:
         sensors_cached = {}
         for sensor_id, sensor in sensors.items():
             sensors_cached[sensor_id] = sensor.to_dict()
+        if not os.path.exists(self.path_data):
+            Path(self.path_data).mkdir(parents=True, exist_ok=True)
         with open(self.path_data + 'sensor_cached.json', 'w', encoding='utf-8') as f:
             json.dump(sensors_cached, f, ensure_ascii=False, indent=4)

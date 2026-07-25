@@ -9,6 +9,8 @@ from dashboard_meet_je_stad.service.cleanup_service import CleanupService
 from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
 from dashboard_meet_je_stad.form.dataset_form import DatasetForm
 import os
+import sys
+from pathlib import Path
 
 
 class DatasetView:
@@ -17,6 +19,11 @@ class DatasetView:
         self.api_service = MeetJeStadAPIService()
         self.cleanup_service = CleanupService()
         self.sensor_repository = SensorRepository()
+        path = os.path.dirname(apps.get_app_config('dashboard_meet_je_stad').path)
+        if sys.argv[1:2] == ['test']:
+            self.path_data = path + '/tests/data/'
+        else:
+            self.path_data = path + '/data/'
 
     def index(self, request: WSGIRequest) -> HttpResponse | FileResponse:
         if not request.user.is_authenticated or not request.user.is_superuser:
@@ -32,8 +39,12 @@ class DatasetView:
             start = form['start'].value()
             end = form['end'].value()
             start_date = datetime.datetime.strptime(start, "%Y-%m-%d,%H:%M:%S").replace(tzinfo=datetime.timezone.utc)
-            end_date = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S").replace(tzinfo=datetime.timezone.utc)
-            end_date += datetime.timedelta(seconds=1)
+            if end is None or end == '':
+                end = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d,%H:%M:%S')
+                end_date = datetime.datetime.now(datetime.timezone.utc)
+            else:
+                end_date = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S").replace(tzinfo=datetime.timezone.utc)
+                end_date += datetime.timedelta(seconds=1)
             delta = end_date - start_date
             sensors = self.sensor_repository.find_all()
             if form['ids'].value() == '':
@@ -58,15 +69,16 @@ class DatasetView:
                                       (delta.days + 1) * 24 * 4 * count,
                                       form['active_only'].value(), True)
                 self.cleanup_service.clean(measurements, form.get_requested_cleanup())
-                path = os.path.dirname(apps.get_app_config('dashboard_meet_je_stad').path)
-                file = open(path + "/data/tmp/dataset.csv", "w", newline='')
+                if not os.path.exists(self.path_data + '/tmp'):
+                    Path(self.path_data + '/tmp').mkdir(parents=True, exist_ok=True)
+                file = open(self.path_data + "/tmp/dataset.csv", "w", newline='')
                 rows = []
                 for measurement in measurements:
                     rows.append(measurement.to_list())
                 rows = [self.api_service.get_row_keys()] + rows
                 csv.writer(file).writerows(rows)
                 file.close()
-                file = open(path + '/data/tmp/dataset.csv', "rb")
+                file = open(self.path_data + '/tmp/dataset.csv', "rb")
 
                 return FileResponse(file, content_type='text/csv', filename='dataset.csv')
 
@@ -95,7 +107,10 @@ class DatasetView:
 
             validated = False
         try:
-            end_date = datetime.datetime.strptime(form['end'].value(), "%Y-%m-%d,%H:%M:%S")
+            end = form['end'].value()
+            if end is None or end == '':
+                end = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d,%H:%M:%S')
+            end_date = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
         except ValueError:
             form.add_error('end', 'Voer een waarde in met formaat yyyy-mm-dd,HH:mm:ss')
 
