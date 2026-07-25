@@ -17,7 +17,6 @@ class TestMeetJeStadAPIService(TestCase):
         measurements = self.service.get_measurements('2025-06-20,0:00:00',
                                   '2025-06-30,23:59:00',
                                   'sensors',
-                                  'json',
                                   sensor_repository.find_all(),
                                   str(sensor_id))
         self.assertTrue(isinstance(measurements, list))
@@ -27,7 +26,6 @@ class TestMeetJeStadAPIService(TestCase):
         measurements = self.service.get_measurements('2017-11-16,0:00:00',
                                   '2026-07-15,23:59:00',
                                   'sensors',
-                                  'json',
                                   sensor_repository.find_all())
         self.assertTrue(isinstance(measurements, list))
         self.assertTrue(isinstance(measurements[0], Measurement))

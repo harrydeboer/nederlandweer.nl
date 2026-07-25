@@ -27,6 +27,9 @@ class TestUpdateDatasetCommand(TestCase):
         sensors = self.sensor_cached_repository.find_all()
         for sensor_id, sensor in sensors.items():
             self.sensor_repository.create(sensor)
-            self.measurement_repository.bulk_create(sensor.get_measurements_cached())
+            measurements = sensor.get_measurements_cached()
+            for measurement in measurements:
+                if not measurement.get_supply() is None:
+                    self.measurement_repository.create(measurement)
         call_command('update_dataset')
         self.assertTrue(isinstance(self.sensor_cached_repository.find_all(), dict))

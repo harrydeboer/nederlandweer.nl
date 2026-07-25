@@ -74,7 +74,6 @@ class Command(BaseCommand):
                 end_date.strftime('%Y-%m-%d,%H:%M:%S'),
                 date_now.strftime('%Y-%m-%d,%H:%M:%S'),
         'sensors',
-        'json',
                 sensors,
                 ids_range,
         False,

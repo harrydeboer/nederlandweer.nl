@@ -1,10 +1,7 @@
 import requests
 from typing import Literal, List, Dict
 import datetime
-import csv
 from dashboard_meet_je_stad.models import Sensor, Measurement
-from django.apps import apps
-import os
 
 
 class MeetJeStadAPIService:
@@ -13,7 +10,6 @@ class MeetJeStadAPIService:
                  begin: str,
                  end: str,
                  type_api: Literal['sensors', 'flora', 'stories'],
-                 format_output: Literal['csv', 'json'],
                  sensors: Dict[int, Sensor],
                  ids: str = 'Utrecht',
                  is_particulate_matter_only: bool = False,
@@ -29,9 +25,6 @@ class MeetJeStadAPIService:
 
         if type_api not in ['sensors', 'flora', 'stories']:
             raise Exception('type must be sensors, flora or stories.')
-
-        if format_output not in ['csv', 'json']:
-            raise Exception('Format must be csv or json.')
 
         if ids == 'Utrecht':
             ids = ''
@@ -58,16 +51,7 @@ class MeetJeStadAPIService:
             raise Exception(response.content.decode("utf-8"))
 
         """The measurement fields are used to make row_keys that the api returns."""
-        row_keys = []
-        for field in Measurement._meta.fields:
-            if field.attname == '_pm25':
-                row_keys.append('pm2.5')
-            elif field.attname == '_id':
-                row_keys.append('row')
-            elif field.attname == '_sensor_id':
-                row_keys.append('id')
-            else:
-                row_keys.append(field.attname[1:])
+        row_keys = self.get_row_keys()
 
         """The rows from the api are used to fill result and are added to rows to make Measurement objects.
         When is_with_row is not chosen then the 'row' key is set to None and the rows are reversed.
@@ -92,11 +76,17 @@ class MeetJeStadAPIService:
         for row in rows:
             measurements.append(Measurement(row=row))
 
-        if format_output == 'csv':
-            path = apps.get_app_config('dashboard_meet_je_stad').path
-            file = open(os.path.dirname(path) + "/data/tmp/dataset.csv", "w", newline='')
-            rows = [row_keys] + rows
-            csv.writer(file).writerows(rows)
-            file.close()
-
         return measurements
+
+    def get_row_keys(self):
+        row_keys = []
+        for field in Measurement._meta.fields:
+            if field.attname == '_pm25':
+                row_keys.append('pm2.5')
+            elif field.attname == '_id':
+                row_keys.append('row')
+            elif field.attname == '_sensor_id':
+                row_keys.append('id')
+            else:
+                row_keys.append(field.attname[1:])
+        return row_keys

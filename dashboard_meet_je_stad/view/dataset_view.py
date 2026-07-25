@@ -1,8 +1,12 @@
+import csv
+
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.core.handlers.wsgi import WSGIRequest
 import datetime
 from django.apps import apps
+
+from dashboard_meet_je_stad.models import Measurement
 from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 from dashboard_meet_je_stad.service.cleanup_service import CleanupService
 from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
@@ -24,13 +28,15 @@ class DatasetView:
 
         if form.is_valid() and self.validate(form):
 
+            """Get the start and end date which are used to request measurements from the api.
+            The difference is used in determining the number of rows requested.
+            The number of ids requested is also used in determining the number of rows requested.
+            """
             start = form['start'].value()
             end = form['end'].value()
-            start_date = datetime.datetime.strptime(start, "%Y-%m-%d,%H:%M:%S")
-            end_date = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S")
-            end_date = end_date.replace(tzinfo=datetime.timezone.utc)
+            start_date = datetime.datetime.strptime(start, "%Y-%m-%d,%H:%M:%S").replace(tzinfo=datetime.timezone.utc)
+            end_date = datetime.datetime.strptime(end, "%Y-%m-%d,%H:%M:%S").replace(tzinfo=datetime.timezone.utc)
             end_date += datetime.timedelta(seconds=1)
-            start_date = start_date.replace(tzinfo=datetime.timezone.utc)
             delta = end_date - start_date
             sensors = self.sensor_repository.find_all()
             if form['ids'].value() == '':
@@ -45,13 +51,27 @@ class DatasetView:
                     else:
                         sensors_underscore = sensor_id.split('-')
                         count += int(sensors_underscore[1]) - int(sensors_underscore[0]) + 1
+
+            """Get the measurements from the api and clean up.
+            Give the file with the dataset as response.
+            """
             try:
-                measurements = self.api_service.get_measurements(form['start'].value(), form['end'].value(), 'sensors',
-                                      'csv', sensors, ids, form['particulate_matter_only'].value(),
+                measurements = self.api_service.get_measurements(start, end, 'sensors',
+                                      sensors, ids, form['particulate_matter_only'].value(),
                                       (delta.days + 1) * 24 * 4 * count,
                                       form['active_only'].value(), True)
                 self.cleanup_service.clean(measurements, form.get_requested_cleanup())
                 path = os.path.dirname(apps.get_app_config('dashboard_meet_je_stad').path)
+                file = open(path + "/data/tmp/dataset.csv", "w", newline='')
+                row_keys = []
+                for field in Measurement._meta.fields:
+                    row_keys.append(field.attname)
+                rows = []
+                for measurement in measurements:
+                    rows.append(measurement.to_list())
+                rows = [self.api_service.get_row_keys()] + rows
+                csv.writer(file).writerows(rows)
+                file.close()
                 file = open(path + '/data/tmp/dataset.csv', "rb")
 
                 return FileResponse(file, content_type='text/csv', filename='dataset.csv')
