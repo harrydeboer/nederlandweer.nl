@@ -22,6 +22,8 @@ class HomepageView:
     def index(self, request: WSGIRequest) -> HttpResponse:
         if not request.user.is_authenticated or not request.user.is_superuser:
             return HttpResponseRedirect('inloggen')
+
+        """First the form is build with all sensors in order to read the requested sensor_id."""
         sensors = self.sensor_repository.find_all()
         form = DashboardForm(request.GET, sensors=sensors)
         inactive = False
@@ -38,10 +40,18 @@ class HomepageView:
             inactive = form['inactive'].value()
             pm = form['pm'].value()
             interval = form['interval'].value()
+
+            """When measurements are requested with an interval of 3 months they are retrieved.
+            They are put in a grid and are set to the sensor selected.
+            """
             if sensor_id is not None and sensor_id != '' and interval == '3month' and len(form.errors) == 0:
                 sensor_selected.set_measurements_cached(self.make_grid_service.make_grid(
                     self.measurement_repository.get_days(sensor_id, 91), sensor_id, 91))
                 sensor_selected = sensor_selected
+
+        """The sensors that are not chosen are filtered away and the form is made again with the filtered sensors.
+        If a sensor is chosen that is not valid an error message is added.
+        """
         sensors_filtered = {}
         for sensor_id_old, sensor in sensors.items():
             if not inactive and not sensor.is_active_sensor():

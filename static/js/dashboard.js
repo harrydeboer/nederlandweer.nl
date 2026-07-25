@@ -2,16 +2,20 @@ class Dashboard {
 
     constructor(form) {
         this.form = form;
-        let sensor_selected = $('#sensor');
         let sensors = $('#sensors');
         if (sensors.length > 0) {
             this.sensors = sensors.data('sensors');
         } else {
             return;
         }
+        /*
+        If the requested sensor has a supply field it overwrites the data in the corresponding id of sensors. $
+         */
+        let sensor_selected = $('#sensor');
         if (typeof sensor_selected.data('sensor')['supply'] !== 'undefined') {
             this.sensors[sensor_selected.data('sensor')['id']] = sensor_selected.data('sensor');
         }
+
         this.sensor = $('#id_sensor');
         this.type = $('input[name=type]');
         this.features = this.makeFeatures();
@@ -24,6 +28,9 @@ class Dashboard {
             source: vectorSource,
         });
 
+        /*
+        Make a map of Utrecht.
+         */
         this.map = new ol.Map({
             layers: [
                 new ol.layer.Tile({
@@ -54,6 +61,9 @@ class Dashboard {
 
         this.graph();
 
+        /*
+         The popup of the sensor requested waits 500ms to show because the map needs time to load.
+         */
         let that = this;
         setTimeout(function () {
             that.popupIcon(that.sensor.val());
@@ -64,6 +74,9 @@ class Dashboard {
         let features = []
         Object.keys(this.sensors).forEach((sensor_id) => {
             let sensor = this.sensors[sensor_id];
+            /*
+            The last measurement index that is put in the grid is retrieved.
+             */
             for (var index = sensor['supply'].length - 1; index >= 0; index--) {
                 if (sensor['supply'][index] !== null) {
                     break;
@@ -175,7 +188,8 @@ class Dashboard {
 
     mapClick(event) {
         if (this.popupIcon(event)) {
-            this.sensor.val()
+            this.sensor.val();
+            this.sensorChange();
         }
     }
 

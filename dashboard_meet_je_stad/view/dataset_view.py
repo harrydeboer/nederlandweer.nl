@@ -1,12 +1,9 @@
 import csv
-
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.core.handlers.wsgi import WSGIRequest
 import datetime
 from django.apps import apps
-
-from dashboard_meet_je_stad.models import Measurement
 from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 from dashboard_meet_je_stad.service.cleanup_service import CleanupService
 from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAPIService
@@ -63,9 +60,6 @@ class DatasetView:
                 self.cleanup_service.clean(measurements, form.get_requested_cleanup())
                 path = os.path.dirname(apps.get_app_config('dashboard_meet_je_stad').path)
                 file = open(path + "/data/tmp/dataset.csv", "w", newline='')
-                row_keys = []
-                for field in Measurement._meta.fields:
-                    row_keys.append(field.attname)
                 rows = []
                 for measurement in measurements:
                     rows.append(measurement.to_list())
