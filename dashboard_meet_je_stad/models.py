@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
-from typing import Any
+from typing import Any, List
 import math
 import json
 import datetime
@@ -43,22 +43,22 @@ class Sensor(models.Model):
     def set_is_active_sensor(self, is_active_sensor: bool):
         self._is_active_sensor = is_active_sensor
 
-    def get_measurements(self):
+    def get_measurements(self) -> List['Measurement']:
         return list(self.measurement_set.all())
 
     def set_measurements(self, measurements):
         self.measurement_set.set(measurements)
 
-    def get_measurements_cached(self):
+    def get_measurements_cached(self) -> List['Measurement']:
         return self._measurements_cached
 
     def set_measurements_cached(self, measurements):
         self._measurements_cached = measurements
 
-    def add_measurement_cached(self, measurement):
+    def add_measurement_cached(self, measurement: 'Measurement'):
         self._measurements_cached.append(measurement)
 
-    def remove_measurement_cached(self, measurement):
+    def remove_measurement_cached(self, measurement: 'Measurement'):
         self.get_measurements_cached().remove(measurement)
 
     """The sensor is converted to a dictionary.

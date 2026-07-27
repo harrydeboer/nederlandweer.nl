@@ -101,7 +101,7 @@ DATABASES = {
     }
 }
 
-STATIC_ROOT = '/home/deb2005684/domains/meetjestadutrecht.nl/public_html/static'
+STATIC_ROOT = os.getenv('STATIC_ROOT')
 
 LOGIN_URL = '/inloggen'
 # Password validation
