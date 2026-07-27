@@ -1,4 +1,5 @@
 import datetime
+from django.db.utils import IntegrityError
 from dashboard_meet_je_stad.models import Measurement
 from typing import List
 
@@ -16,7 +17,10 @@ class MeasurementRepository:
         return list(Measurement.objects.filter(_sensor_id=sensor_id, _timestamp__range=(date_begin, date_now)))
 
     def create(self, measurement: Measurement):
-        measurement.save()
+        try:
+            measurement.save()
+        except IntegrityError:
+            return
 
     def bulk_create(self, measurements: List[Measurement]):
 
