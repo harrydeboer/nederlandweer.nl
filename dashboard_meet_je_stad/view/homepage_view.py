@@ -20,7 +20,7 @@ class HomepageView:
         self.sensor_repository = SensorRepository()
 
     def index(self, request: WSGIRequest) -> HttpResponse:
-        if not request.user.is_authenticated or not request.user.is_superuser:
+        if not request.user.is_authenticated or not request.user.is_staff:
             return HttpResponseRedirect('inloggen')
 
         """First the form is build with all sensors in order to read the requested sensor_id."""
