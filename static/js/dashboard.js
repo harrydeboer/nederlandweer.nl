@@ -19,9 +19,12 @@ class Dashboard {
         }
 
         this.sensor = $('#id_sensor');
-        if (sensor_selected['id'] !== null) {
-            this.sensor.val(sensor_selected['id'].toString());
+        if (typeof sensor_selected !== 'undefined') {
+            if (sensor_selected['id'] !== null) {
+                this.sensor.val(sensor_selected['id'].toString());
+            }
         }
+
         this.type = $('input[name=type]');
         this.features = this.makeFeatures();
 
