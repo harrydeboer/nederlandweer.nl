@@ -24,12 +24,17 @@ class HomepageView:
             return HttpResponseRedirect('inloggen')
 
         """First the form is build with all sensors in order to read the requested sensor_id."""
-        sensors = self.sensor_repository.find_all()
-        form = DashboardForm(request.GET, sensors=sensors)
         inactive = False
         pm = False
+        sensors = self.sensor_repository.find_all()
+        form = DashboardForm(request.GET, sensors=sensors, inactive=inactive, pm=pm)
         sensor_id = None
         sensor_selected = Sensor()
+        if hasattr(request.user, 'dashboarduser'):
+            dashboard_user = request.user.dashboarduser
+            sensor_selected = sensors[dashboard_user.get_sensor_id()]
+            if not sensor_selected.is_active_sensor():
+                inactive = True
         if form.is_valid():
             sensor_id = form['sensor'].value()
             if sensor_id is not None and sensor_id != '':
@@ -59,7 +64,7 @@ class HomepageView:
             if pm and not sensor.is_particulate_matter:
                 continue
             sensors_filtered[sensor_id_old] = sensor
-        form = DashboardForm(request.GET, sensors=sensors_filtered)
+        form = DashboardForm(request.GET, sensors=sensors_filtered, inactive=inactive, pm=pm)
         if not form.is_valid():
             if 'sensor' in form.errors:
                 form.errors.pop('sensor')

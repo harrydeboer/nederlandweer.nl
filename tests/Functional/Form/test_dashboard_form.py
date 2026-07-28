@@ -11,5 +11,5 @@ class TestDashboardForm(TestCase):
 
     def test_forms(self):
         form_data = {'sensor': 1196, 'type': 'temperature', 'interval': '24hour'}
-        form = DashboardForm(form_data, sensors=self.sensor_repository.find_all())
+        form = DashboardForm(form_data, sensors=self.sensor_repository.find_all(), inactive=False, pm=False)
         self.assertTrue(form.is_valid())

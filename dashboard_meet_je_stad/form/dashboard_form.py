@@ -9,7 +9,11 @@ class DashboardForm(forms.Form):
     """
     def __init__(self, *args, **kwargs):
         sensors = kwargs['sensors']
+        inactive = kwargs['inactive']
+        pm = kwargs['pm']
         kwargs.pop('sensors')
+        kwargs.pop('inactive')
+        kwargs.pop('pm')
         if len(args[0]) > 0:
             super().__init__(*args, **kwargs)
         else:
@@ -19,6 +23,10 @@ class DashboardForm(forms.Form):
             choices.append((str(index), str(index)))
         self.fields['sensor'] = ChoiceField(choices=choices, required=False,
                                             widget=forms.Select(attrs={'class': 'form-select'}))
+        if inactive:
+            self.fields['inactive'].initial = inactive
+        if pm:
+            self.fields['pm'].initial = pm
 
     inactive = forms.BooleanField(label='Inactief', required=False,
                                   widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))

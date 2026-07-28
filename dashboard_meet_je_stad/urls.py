@@ -17,6 +17,7 @@ Including another URLconf
 from django.urls import path
 from django.contrib import admin
 from dashboard_meet_je_stad.view.homepage_view import HomepageView
+from dashboard_meet_je_stad.view.assign_sensor_view import AssignSensorView
 from dashboard_meet_je_stad.view.dataset_view import DatasetView
 from dashboard_meet_je_stad.view.security_view import SecurityView
 
@@ -28,5 +29,6 @@ urlpatterns = [
     path("verander-wachtwoord", SecurityView().change_password, name='change_password'),
     path("uitloggen", SecurityView().logout, name='logout'),
     path('admin/dataset', DatasetView().index, name='dataset'),
+    path('admin/wijs-sensor-toe', AssignSensorView().index, name='assign_sensor'),
     path('admin/', admin.site.urls),
 ]

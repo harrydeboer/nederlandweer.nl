@@ -297,3 +297,9 @@ class DashboardUser(models.Model):
     def set_sensor(self, sensor: Sensor):
         self._sensor = sensor
 
+    def get_sensor_id(self):
+        return self._sensor_id
+
+    def set_sensor_id(self, value:int):
+        self._sensor_id = value
+
