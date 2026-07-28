@@ -1,0 +1,40 @@
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/deb2005684/dashboard_meet_je_stad"
+PassengerBaseURI "/"
+PassengerPython "/home/deb2005684/virtualenv/dashboard_meet_je_stad/3.13/bin/python"
+PassengerAppLogFile "/home/deb2005684/logs/passenger.log"
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+
+<IfModule mod_deflate.c>
+    SetOutputFilter DEFLATE
+    AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript \
+    application/javascript application/json
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+    SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip
+</IfModule>
+
+AddType application/x-font-ttf .ttf
+<IfModule mod_expires.c>
+    ExpiresActive on
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    ExpiresByType image/ico "access plus 1 year"
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType application/x-font-ttf "access plus 1 year"
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "allow-from https://www.google.com/recaptcha/api.js"
+    Header set X-Content-Type-Options "nosniff"
+    Header set Referrer-Policy "same-origin"
+    <FilesMatch "\\.(ico|jpe?g|png|gif|swf|css|js|ttf|woff|woff2|otf|eot)$">
+        Header set Cache-Control "max-age=31536000, must-revalidate"
+    </FilesMatch>
+</IfModule>
