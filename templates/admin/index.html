@@ -1,0 +1,11 @@
+{% extends "base_admin.html" %}
+
+{% load mtime %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block content %}
+    Maak een <a href="{% url 'dataset' %}">dataset</a>.
+{% endblock %}

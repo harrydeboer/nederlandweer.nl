@@ -28,7 +28,7 @@
             "first_name": "",
             "last_name": "",
             "email": "test@test.com",
-            "is_staff": true,
+            "is_staff": false,
             "is_active": true,
             "date_joined": "2026-02-11T10:33:46.769Z",
             "groups": [],

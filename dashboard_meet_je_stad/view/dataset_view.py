@@ -1,6 +1,6 @@
 import csv
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, FileResponse
+from django.http import HttpResponse, FileResponse
 from django.core.handlers.wsgi import WSGIRequest
 import datetime
 from django.apps import apps
@@ -11,6 +11,8 @@ from dashboard_meet_je_stad.form.dataset_form import DatasetForm
 import os
 import sys
 from pathlib import Path
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.decorators import method_decorator
 
 
 class DatasetView:
@@ -25,9 +27,8 @@ class DatasetView:
         else:
             self.path_data = path + '/data/'
 
+    @method_decorator(staff_member_required)
     def index(self, request: WSGIRequest) -> HttpResponse | FileResponse:
-        if not request.user.is_authenticated or not request.user.is_superuser:
-            return HttpResponseRedirect('inloggen')
         form = DatasetForm(request.GET)
 
         if form.is_valid() and self.validate(form):
@@ -85,7 +86,7 @@ class DatasetView:
             except Exception as e:
                 form.add_error(None, str(e))
 
-        return render(request, 'dataset/index.html', {'form': form})
+        return render(request, 'admin/dataset.html', {'form': form})
 
     def validate(self, form: DatasetForm) -> bool:
         validated = True

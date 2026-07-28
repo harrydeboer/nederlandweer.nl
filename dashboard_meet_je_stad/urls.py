@@ -15,6 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
+from django.contrib import admin
 from dashboard_meet_je_stad.view.homepage_view import HomepageView
 from dashboard_meet_je_stad.view.dataset_view import DatasetView
 from dashboard_meet_je_stad.view.security_view import SecurityView
@@ -22,9 +23,10 @@ from dashboard_meet_je_stad.view.security_view import SecurityView
 
 urlpatterns = [
     path('', HomepageView().index, name='home'),
-    path('dataset', DatasetView().index, name='dataset'),
     path("inloggen", SecurityView().login, name='login'),
     path("registreren", SecurityView().registrate, name='register'),
     path("verander-wachtwoord", SecurityView().change_password, name='change_password'),
     path("uitloggen", SecurityView().logout, name='logout'),
+    path('admin/dataset', DatasetView().index, name='dataset'),
+    path('admin/', admin.site.urls),
 ]
