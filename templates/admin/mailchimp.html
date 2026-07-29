@@ -1,0 +1,23 @@
+{% extends "base_admin.html" %}
+
+{% load mtime %}
+
+{% block title %}
+    Lees mailchimp sheet
+{% endblock %}
+
+{% block content %}
+    <div class="col form-errors">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    {{ error }}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    <form action="" method="post" enctype='multipart/form-data'>
+        {{ form.file.label_tag }}{{ form.file }}
+        <input type="submit" value="Lees in" class="btn btn-success">
+    {% csrf_token %}
+    </form>
+    {{ message }}
+{% endblock %}

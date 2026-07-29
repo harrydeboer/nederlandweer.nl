@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-    <form action="" method="post" id="dashboard-form">
+    <form action="" method="post">
         {{ form.user.label_tag }}{{ form.user }}{{ form.sensor.label_tag }}{{ form.sensor }}
         <input type="submit" value="Wijs toe" class="btn btn-success">
     {% csrf_token %}

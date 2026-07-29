@@ -18,6 +18,7 @@ from django.urls import path
 from django.contrib import admin
 from dashboard_meet_je_stad.view.homepage_view import HomepageView
 from dashboard_meet_je_stad.view.assign_sensor_view import AssignSensorView
+from dashboard_meet_je_stad.view.mailchimp_view import MailchimpView
 from dashboard_meet_je_stad.view.dataset_view import DatasetView
 from dashboard_meet_je_stad.view.security_view import SecurityView
 
@@ -30,5 +31,6 @@ urlpatterns = [
     path("uitloggen", SecurityView().logout, name='logout'),
     path('admin/dataset', DatasetView().index, name='dataset'),
     path('admin/wijs-sensor-toe', AssignSensorView().index, name='assign_sensor'),
+    path('admin/mailchimp', MailchimpView().index, name='mailchimp'),
     path('admin/', admin.site.urls),
 ]
