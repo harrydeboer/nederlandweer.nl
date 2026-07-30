@@ -7,9 +7,28 @@
 {% endblock %}
 
 {% block content %}
-    <form action="" method="post">
-        {{ form.user.label_tag }}{{ form.user }}{{ form.sensor.label_tag }}{{ form.sensor }}
-        <input type="submit" value="Wijs toe" class="btn btn-success">
-    {% csrf_token %}
-    </form>
+    <div class="row">
+        <div class="col">
+            <form action="" method="post">
+                <div class="row">
+                    <div class="col-md-4">
+                        {{ form.user }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.sensor }}
+                    </div>
+                    <div class="col-md-4">
+                        <input type="submit" value="Wijs toe" class="btn btn-success">
+                        {% csrf_token %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% for user in dashboard_users %}
+        <div class="row">
+            <div class="col">{{ user.get_sensor_id }}</div>
+            <div class="col">{{ user.get_user.email }}</div>
+        </div>
+    {% endfor %}
 {% endblock %}

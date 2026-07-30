@@ -19,7 +19,16 @@ class AssignSensorView:
         if form.is_valid():
             user_id = int(form['user'].value())
             user = self.user_repository.get(user_id)
-            sensor_id = int(form['sensor'].value())
+            if form['sensor'].value() != '':
+                sensor_id = int(form['sensor'].value())
+            else:
+                sensor_id = None
             self.user_repository.save_dashboard_user(user, sensor_id)
 
-        return render(request, 'admin/assign_sensor.html', {'form': form})
+        dashboard_users = []
+        for user in self.user_repository.find_all():
+            if hasattr(user, 'dashboarduser'):
+                dashboard_users.append(user.dashboarduser)
+
+        return render(request, 'admin/assign_sensor.html',
+                      {'form': form, 'dashboard_users': dashboard_users})
