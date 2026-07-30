@@ -21,7 +21,7 @@ class AssignSensorForm(forms.Form):
                                             widget=forms.Select(attrs={'class': 'form-select'}))
         dashboard_user_sensors = {}
         for user in users:
-            if hasattr(user, 'dashboard_sensor'):
+            if hasattr(user, 'dashboarduser'):
                 dashboard_user_sensors[user.dashboarduser.get_sensor_id()] = user.dashboarduser.get_user().email
         choices = [("", "-")]
         for index, sensor in sensor_repository.find_all().items():
