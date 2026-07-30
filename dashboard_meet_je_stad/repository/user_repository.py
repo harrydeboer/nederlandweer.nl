@@ -65,7 +65,7 @@ class UserRepository:
         user.delete()
 
     def save_dashboard_user(self, user: User, sensor_id: int):
-        dashboard_user = DashboardUser.objects.filter(_user=user, _sensor_id=sensor_id).first()
+        dashboard_user = DashboardUser.objects.filter(_user=user).first()
         if dashboard_user is not None:
             dashboard_user.set_sensor_id(sensor_id)
             dashboard_user.save()

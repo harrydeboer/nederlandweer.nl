@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.test import TestCase
 from dashboard_meet_je_stad.repository.user_repository import UserRepository
 
@@ -18,3 +19,16 @@ class TestUserRepository(TestCase):
         if user is None:
             raise Exception('User not found.')
         self.assertEqual(user.email, 'test@test.com')
+
+        user = User()
+        user.email = 'test22@test22.com'
+        user.username = 'test22'
+        user = self.user_repository.create(user, 'secret')
+        user_id = user.id
+
+        self.assertEqual(user.dashboarduser.get_sensor_id(), 840)
+        self.user_repository.save_dashboard_user(user, 1196)
+        user = self.user_repository.get(user_id)
+        self.assertEqual(user.dashboarduser.get_sensor_id(), 1196)
+        self.user_repository.delete(user)
+        self.assertEqual(user.id, None)

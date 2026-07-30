@@ -22,5 +22,8 @@ class HomepageTest(TestCase):
         response = self.client.get("/?sensor=&type=temperature&interval=24hour&inactive=on")
         self.assertEqual(response.status_code, 200)
 
+        response = self.client.get("/?sensor=&type=temperature&interval=24hour&pm=on")
+        self.assertEqual(response.status_code, 200)
+
         response = self.client.get("?sensor=1196&type=temperature&interval=3month")
         self.assertEqual(response.status_code, 200)

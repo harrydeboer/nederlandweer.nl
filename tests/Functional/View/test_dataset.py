@@ -3,7 +3,7 @@ from django.test import Client
 from django.http import HttpResponse, FileResponse
 
 
-class HomepageTest(TestCase):
+class DatasetTest(TestCase):
     fixtures = ['fixture.json']
 
     def setUp(self):

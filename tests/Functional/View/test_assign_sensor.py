@@ -4,7 +4,7 @@ from django.test import Client
 from dashboard_meet_je_stad.repository.user_repository import UserRepository
 
 
-class HomepageTest(TestCase):
+class AssignSensorTest(TestCase):
     fixtures = ['fixture.json']
 
     def setUp(self):

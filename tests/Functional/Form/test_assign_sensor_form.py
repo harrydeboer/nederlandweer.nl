@@ -4,7 +4,7 @@ from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 from dashboard_meet_je_stad.repository.user_repository import UserRepository
 
 
-class TestLoginForm(TestCase):
+class TestAssignSensorForm(TestCase):
     fixtures = ['fixture.json']
 
     def setUp(self):
