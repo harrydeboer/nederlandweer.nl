@@ -12,7 +12,7 @@ class UserRepository:
     def __init__(self):
         path = os.path.dirname(apps.get_app_config('dashboard_meet_je_stad').path)
         if sys.argv[1:2] == ['test']:
-            self.path_data = path + '/tests/'
+            self.path_data = path + '/tests/data/'
         else:
             self.path_data = path + '/data/'
 
@@ -32,8 +32,11 @@ class UserRepository:
     def create(self, user: User, password: str) -> User:
         user.set_password(password)
         user.save()
-        wb_obj = openpyxl.load_workbook(self.path_data + 'Stations tbv Mailchimp.xlsx')
-        sheet_obj = wb_obj.active
+        try:
+            wb_obj = openpyxl.load_workbook(self.path_data + 'Stations tbv Mailchimp.xlsx')
+            sheet_obj = wb_obj.active
+        except FileNotFoundError:
+            return user
         rows = []
         assign = False
         sensor_id = None
@@ -52,6 +55,7 @@ class UserRepository:
             dashboard_user.set_sensor_id(sensor_id)
             dashboard_user.set_user(user)
             dashboard_user.save()
+        wb_obj.close()
 
         return user
 

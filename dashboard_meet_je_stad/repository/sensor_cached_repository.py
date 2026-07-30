@@ -19,7 +19,9 @@ class SensorCachedRepository:
     def find_all_as_string(self) -> str:
         try:
             with open(self.path_data + 'sensor_cached.json') as json_file:
-                return json_file.read()
+                result = json_file.read()
+                json_file.close()
+                return result
         except FileNotFoundError:
 
             return '{}'
@@ -52,6 +54,7 @@ class SensorCachedRepository:
                         measurements.append(Measurement(row=row))
                     sensor.set_measurements_cached(measurements)
                     sensors_cached[int(sensor_id)] = sensor
+                json_file.close()
                 return sensors_cached
         except FileNotFoundError:
 
@@ -65,3 +68,4 @@ class SensorCachedRepository:
             Path(self.path_data).mkdir(parents=True, exist_ok=True)
         with open(self.path_data + 'sensor_cached.json', 'w', encoding='utf-8') as f:
             json.dump(sensors_cached, f, ensure_ascii=False, indent=4)
+            f.close()

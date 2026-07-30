@@ -34,6 +34,7 @@ class MailchimpView:
                     with open(self.path_data + 'Stations tbv Mailchimp.xlsx', "wb+") as destination:
                         for chunk in file.chunks():
                             destination.write(chunk)
+                    destination.close()
                     message = 'Inlezen is gelukt.'
 
         return render(request, 'admin/mailchimp.html', {'form': form, 'message': message})
