@@ -40,7 +40,6 @@ class UserRepository:
             sheet_obj = wb_obj.active
         except FileNotFoundError:
             return user
-        rows = []
         assign = False
         sensor_id = None
         if sheet_obj is None:
@@ -53,7 +52,7 @@ class UserRepository:
             if row[1] == user.email and isinstance(row[0], int):
                 sensor_id = int(row[0])
                 assign = True
-            rows.append(row)
+                break
         if assign and sensor_id is not None and sensor_id in sensors:
             dashboard_user = DashboardUser()
             dashboard_user.set_sensor_id(sensor_id)
