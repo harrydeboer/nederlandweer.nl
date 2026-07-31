@@ -6,6 +6,8 @@ import os
 import sys
 from django.apps import apps
 
+from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
+
 
 class UserRepository:
 
@@ -15,6 +17,7 @@ class UserRepository:
             self.path_data = path + '/tests/data/'
         else:
             self.path_data = path + '/data/'
+        self.sensor_repository = SensorRepository()
 
     def get(self, user_id: int) -> User:
 
@@ -42,6 +45,7 @@ class UserRepository:
         sensor_id = None
         if sheet_obj is None:
             return user
+        sensors = self.sensor_repository.find_all()
         for i in range(1, sheet_obj.max_row + 1):
             row = []
             for j in range(1, sheet_obj.max_column + 1):
@@ -50,7 +54,7 @@ class UserRepository:
                 sensor_id = int(row[0])
                 assign = True
             rows.append(row)
-        if assign and sensor_id is not None:
+        if assign and sensor_id is not None and sensor_id in sensors:
             dashboard_user = DashboardUser()
             dashboard_user.set_sensor_id(sensor_id)
             dashboard_user.set_user(user)

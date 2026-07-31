@@ -18,12 +18,10 @@
         <div class="col">
             <form action="" method="post" enctype='multipart/form-data'>
                 <div class="row">
-                    <div class="col-md-4">{{ form.file.label_tag }}
-                    </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         {{ form.file }}
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <input type="submit" value="Lees in" class="btn btn-success">
                         {% csrf_token %}
                     </div>
