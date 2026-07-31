@@ -17,8 +17,10 @@ class MailchimpTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
-        os.remove(os.path.dirname(apps.get_app_config('dashboard_meet_je_stad').path)
-                    + '/tests/data/Stations tbv Mailchimp.xlsx')
+        if os.path.isfile(os.path.dirname(apps.get_app_config('dashboard_meet_je_stad').path)
+                    + '/tests/data/Stations tbv Mailchimp.xlsx'):
+            os.remove(os.path.dirname(apps.get_app_config('dashboard_meet_je_stad').path)
+                      + '/tests/data/Stations tbv Mailchimp.xlsx')
 
         file = open(os.path.dirname(apps.get_app_config('dashboard_meet_je_stad').path)
                     + '/tests/Stations tbv Mailchimp.xlsx', 'rb+')
