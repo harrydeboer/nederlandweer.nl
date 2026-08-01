@@ -241,7 +241,6 @@ class Dashboard {
     drawChart() {
         let id = this.sensor.val();
         let vertical = '°C';
-        let horizontal = 't';
         let horizontalData = [new Date()];
         let verticalData = [null];
         let type = $('input[name=type]:checked').val();
@@ -308,7 +307,7 @@ class Dashboard {
             title: title,
             curveType: 'function',
             vAxis: { title: vertical },
-            hAxis: { title: horizontal, format: 'MM-dd HH:mm' },
+            hAxis: { format: 'MM-dd HH:mm' },
             legend: { position: 'none' }
         };
         let chart = new google.visualization.LineChart(document.getElementById('curve_chart'));

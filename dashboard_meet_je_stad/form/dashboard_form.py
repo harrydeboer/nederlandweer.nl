@@ -35,8 +35,8 @@ class DashboardForm(forms.Form):
     choices = [
         ('temperature', 'Temperatuur'),
         ('humidity', 'Luchtvochtigheid'),
-        ('pm25', 'Fijnstof 2,5'),
-        ('pm10', 'Fijnstof 10'),
+        ('pm25', 'Fijnstof 2,5 µm'),
+        ('pm10', 'Fijnstof 10 µm'),
     ]
     type = forms.ChoiceField(
         widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
