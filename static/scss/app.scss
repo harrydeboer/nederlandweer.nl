@@ -5,9 +5,13 @@ body {
 }
 
 #map {
-  height: 95%; /* 100% of the viewport height - navbar height */
+  height: calc(100vh - 250px); /* 100% of the viewport height - navbar height */
   margin-left: 15px;
   margin-right: 15px;
+}
+
+#map .ol-viewport {
+  border-radius: 25px;
 }
 
 .sensor-title {
