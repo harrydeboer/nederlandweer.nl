@@ -6,11 +6,6 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-md-1">
-        </div>
-        <div class="col-md-11"><h1>Dashboard Meet Je Stad</h1></div>
-    </div>
-    <div class="row">
         <div class="col form-errors">
             {% for field, errors in form.errors.items %}
                 {% for error in errors %}
@@ -28,43 +23,41 @@
             </div>
         </div>
         <div class="col-xs-12 col-md-6">
+            <div id="curve_chart" class="col-xs-12"></div>
             <form action="" method="get" id="dashboard-form">
                 <div class="row">
-                    <div class="col-md-2">{{ form.sensor.label_tag }}</div>
-                    <div class="col-md-1">
+                    <div class="col">{{ form.sensor.label_tag }}</div>
+                    <div class="col">
                         {{ form.sensor }}
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col col-md-3" id="types">
+                    <div class="col col-md-6" id="types">
                         {% for type in form.type %}
                             <div class="row">
                                 {{ type }}
                             </div>
                         {% endfor %}
-                    </div>
-                    <div id="curve_chart" class="col col-md-9"></div>
-                </div>
-                <div class="row">
-                    {% for interval in form.interval %}
                         <div class="row">
-                            {{ interval }}
+                            {% for interval in form.interval %}
+                                <div class="col">
+                                    {{ interval }}
+                                </div>
+                            {% endfor %}
                         </div>
-                    {% endfor %}
-                </div>
-                <div class="row">
-                    <div class="col-md-2">{{ form.inactive.label_tag }}</div>
-                    <div class="col-md-1">
-                        {{ form.inactive }}
+                        <div class="row">
+                            <div class="col">{{ form.inactive.label_tag }}</div>
+                            <div class="col">
+                                {{ form.inactive }}
+                            </div>
+                            <div class="col" id="label-pm">{{ form.pm.label_tag }}</div>
+                            <div class="col">
+                                {{ form.pm }}
+                            </div>
+                        </div>
+                        <input type="submit" value="Toon" class="btn btn-success">
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-2">{{ form.pm.label_tag }}</div>
-                    <div class="col-md-1">
-                        {{ form.pm }}
-                    </div>
-                </div>
-                <input type="submit" value="Toon" class="btn btn-success">
             </form>
         </div>
     </div>

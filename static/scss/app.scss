@@ -6,6 +6,8 @@ body {
 
 #map {
   height: calc(100vh - 52px); /* 100% of the viewport height - navbar height */
+  margin-left: 15px;
+  margin-right: 15px;
 }
 
 .sensor-title {
@@ -15,14 +17,12 @@ body {
 
 #sensor {
   width: 300px;
+  margin-top: 25px;
 }
 
 #curve_chart {
+  margin-top: -25px;
   height: 500px;
-}
-
-#types {
-  margin-top: 200px;
 }
 
 #id_sensor {
@@ -31,4 +31,15 @@ body {
 
 .form-errors {
   color: red;
+}
+
+#mjs-logo {
+  height: 120px;
+  margin-left: 30px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+#label-pm {
+  white-space: nowrap;
 }
