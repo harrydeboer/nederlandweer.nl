@@ -21,6 +21,9 @@ from dashboard_meet_je_stad.view.assign_sensor_view import AssignSensorView
 from dashboard_meet_je_stad.view.mailchimp_view import MailchimpView
 from dashboard_meet_je_stad.view.dataset_view import DatasetView
 from dashboard_meet_je_stad.view.security_view import SecurityView
+from django.contrib.sitemaps.views import sitemap
+from dashboard_meet_je_stad.page_sitemap import PageSitemap
+from django.views.decorators.cache import cache_page
 
 
 urlpatterns = [
@@ -29,6 +32,12 @@ urlpatterns = [
     path("registreren", SecurityView().registrate, name='register'),
     path("verander-wachtwoord", SecurityView().change_password, name='change_password'),
     path("uitloggen", SecurityView().logout, name='logout'),
+    path(
+        "sitemap.xml",
+        cache_page(3600)(sitemap),
+        {"sitemaps": {'page' : PageSitemap}},
+        name="django.contrib.sitemaps.views.sitemap",
+    ),
     path('admin/dataset', DatasetView().index, name='dataset'),
     path('admin/wijs-sensor-toe', AssignSensorView().index, name='assign_sensor'),
     path('admin/mailchimp', MailchimpView().index, name='mailchimp'),

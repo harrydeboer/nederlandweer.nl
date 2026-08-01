@@ -303,3 +303,9 @@ class DashboardUser(models.Model):
     def set_sensor_id(self, value:int):
         self._sensor_id = value
 
+class Page:
+    title ='Dashboard Meet Je Stad'
+    lastedit_date = datetime.datetime.strptime('2026-08-01', '%Y-%m-%d')
+
+    def get_absolute_url(self):
+        return ""

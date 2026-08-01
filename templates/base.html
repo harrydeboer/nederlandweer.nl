@@ -18,21 +18,23 @@
 <body>
 <div class="container">
     <img src="{% mtime 'img/meetjestadlogomsj_with_title.png' %}" alt="logo" id="mjs-logo">
-    {% block nav %}
-        <nav class="navbar navbar-expand navbar-light bg-light">
-            <div class="container-fluid">
-                <div id="navbar_supported_content">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li><a href="{% url 'home' %}" class="pageLink">Home</a></li>
-                        <li><a href="{% url 'login' %}" class="pageLink"><img src="{% mtime 'img/person-blue.png' %}"
-                                                                              alt="person" class="user-logo"
-                                                                              width="22"></a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    {% endblock %}
 </div>
+{% block nav %}
+    <nav class="navbar navbar-expand navbar-light bg-light">
+        <div class="container">
+            <div id="navbar_supported_content">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li><a href="{% url 'home' %}" class="pageLink">Home</a></li>
+                    <li><a href="{% url 'login' %}" class="pageLink"><img src="{% mtime 'img/person-blue.png' %}"
+                                                                          alt="person" class="user-logo"
+                                                                          width="22"></a></li>
+                    <li><a href="https://mcu.nl/" class="pageLink">MCU</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
 <div class="container">
     {% block content %}
     {% endblock %}
