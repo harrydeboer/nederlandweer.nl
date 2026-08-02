@@ -5,6 +5,10 @@
     <title>{% block title %}{% endblock %}</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="mcu, dashboard, meetjestad, Utrecht">
+    <meta name="description"
+          content="Op deze site kun je alles invoeren qua eten en drinken en zien welke voedingswaarden je binnen krijgt.">
+    <meta name="author" content="Harry">
     <link rel="apple-touch-icon" sizes="180x180" href="{% mtime 'img/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" href="{% mtime 'img/favicon-32x32.png' %}" sizes="32x32">
     <link rel="icon" type="image/png" href="{% mtime 'img/favicon-16x16.png' %}" sizes="16x16">
@@ -34,7 +38,6 @@
         </div>
     </nav>
 {% endblock %}
-
 <div class="container">
     {% block content %}
     {% endblock %}
