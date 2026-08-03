@@ -19,14 +19,8 @@ class AssignSensorForm(forms.Form):
             choices.append((str(user.id), user.email))
         self.fields['user'] = ChoiceField(choices=choices, required=False,
                                             widget=forms.Select(attrs={'class': 'form-select'}))
-        dashboard_user_sensors = {}
-        for user in users:
-            if hasattr(user, 'dashboarduser'):
-                dashboard_user_sensors[user.dashboarduser.get_sensor_id()] = user.dashboarduser.get_user().email
         choices = [("", "-")]
         for index, sensor in sensor_repository.find_all().items():
-            if sensor.get_id() in dashboard_user_sensors:
-                continue
             choices.append((str(index), str(index)))
         self.fields['sensor'] = ChoiceField(choices=choices, required=False,
                                             widget=forms.Select(attrs={'class': 'form-select'}))
