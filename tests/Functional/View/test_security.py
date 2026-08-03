@@ -26,7 +26,7 @@ class SecurityTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.post('/inloggen', {'username': 'Test', 'password': 'secret'})
+        response = self.client.post('/inloggen', {'username': 'test', 'password': 'secret'})
 
         self.assertEqual(response.status_code, 302)
 

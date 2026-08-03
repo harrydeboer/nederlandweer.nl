@@ -38,7 +38,7 @@ if os.getenv('DEBUG') == '1':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', 'meetjestadutrecht.nl', 'www.meetjestadutrecht.nl']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', 'nedelandweer.nl', 'www.nedelandweer.nl']
 
 
 # Application definition
@@ -93,19 +93,14 @@ WSGI_APPLICATION = 'dashboard_meet_je_stad.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.getenv('DATABASE_NAME'),
         'USER': os.getenv('DATABASE_USER'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
         'HOST': 'localhost',
         'PORT': '',
-        'OPTIONS': {
-            'sql_mode': 'STRICT_TRANS_TABLES',
-        }
     }
 }
-
-STATIC_ROOT = os.getenv('STATIC_ROOT')
 
 LOGIN_URL = '/inloggen'
 # Password validation
