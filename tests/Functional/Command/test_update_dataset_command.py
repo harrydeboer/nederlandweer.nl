@@ -34,6 +34,7 @@ class TestUpdateDatasetCommand(TestCase):
             measurements = sensor.get_measurements_cached()
             for measurement in measurements:
                 if not measurement.get_supply() is None:
+                    measurement.set_id(None)
                     self.measurement_repository.create(measurement)
         call_command('update_dataset')
         self.assertTrue(isinstance(self.sensor_cached_repository.find_all(), dict))
