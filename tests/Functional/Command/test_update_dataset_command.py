@@ -6,6 +6,7 @@ from dashboard_meet_je_stad.repository.sensor_cached_repository import SensorCac
 import dotenv
 import os
 import datetime
+from django.db import connection
 
 
 class TestUpdateDatasetCommand(TestCase):
@@ -34,7 +35,9 @@ class TestUpdateDatasetCommand(TestCase):
             measurements = sensor.get_measurements_cached()
             for measurement in measurements:
                 if not measurement.get_supply() is None:
-                    measurement.set_id(None)
                     self.measurement_repository.create(measurement)
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT setval('dashboard_meet_je_stad_measurement__id_seq', " +
+                           "(SELECT MAX(_id) FROM dashboard_meet_je_stad_measurement)+1);")
         call_command('update_dataset')
         self.assertTrue(isinstance(self.sensor_cached_repository.find_all(), dict))
