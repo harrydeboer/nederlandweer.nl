@@ -10,6 +10,7 @@ from django.db import connection
 
 
 class TestUpdateDatasetCommand(TestCase):
+    fixtures = ['fixture.json']
 
     def setUp(self):
         self.measurement_repository = MeasurementRepository()

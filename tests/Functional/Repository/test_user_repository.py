@@ -30,9 +30,9 @@ class TestUserRepository(TestCase):
 
         if os.path.isfile(os.path.dirname(apps.get_app_config('dashboard_meet_je_stad').path)
                           + '/tests/data/Stations tbv Mailchimp.xlsx'):
-            self.assertEqual(user.dashboarduser.get_sensor_id(), 840)
-            self.user_repository.save_dashboard_user(user, 1196)
+            self.assertEqual(user.dashboarduser.get_sensor_id(), 2)
+            self.user_repository.save_dashboard_user(user, 1)
             user = self.user_repository.get(user_id)
-            self.assertEqual(user.dashboarduser.get_sensor_id(), 1196)
+            self.assertEqual(user.dashboarduser.get_sensor_id(), 1)
             self.user_repository.delete(user)
             self.assertEqual(user.id, None)

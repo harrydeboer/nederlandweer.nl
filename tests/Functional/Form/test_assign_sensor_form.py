@@ -12,6 +12,6 @@ class TestAssignSensorForm(TestCase):
         self.user_repository = UserRepository()
 
     def test_forms(self):
-        form_data = {'user': self.user_repository.get(1).id, 'sensor': self.sensor_repository.get(1196).get_id()}
+        form_data = {'user': self.user_repository.get(1).id, 'sensor': self.sensor_repository.get(1).get_id()}
         form = AssignSensorForm(form_data)
         self.assertTrue(form.is_valid())

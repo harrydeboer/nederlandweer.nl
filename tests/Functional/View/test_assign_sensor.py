@@ -17,7 +17,7 @@ class AssignSensorTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.post("/admin/wijs-sensor-toe", {'user': 1, 'sensor': 1196})
+        response = self.client.post("/admin/wijs-sensor-toe", {'user': 1, 'sensor': 1})
         self.assertEqual(response.status_code, 200)
 
-        self.assertEqual(self.user_repository.get(1).dashboarduser.get_sensor_id(), 1196)
+        self.assertEqual(self.user_repository.get(1).dashboarduser.get_sensor_id(), 1)

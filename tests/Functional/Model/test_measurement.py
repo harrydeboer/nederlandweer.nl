@@ -10,7 +10,7 @@ class TestMeasurement(TestCase):
         self.measurement_repository = MeasurementRepository()
 
     def test_get_data(self) -> None:
-        measurement = self.measurement_repository.get(226785)
+        measurement = self.measurement_repository.get(1)
         self.assertEqual(len(measurement.to_list()), len(Measurement._meta.fields))
         self.assertTrue(measurement.is_in_utrecht())
-        self.assertEqual(measurement.get_sensor().get_id(), 1196)
+        self.assertEqual(measurement.get_sensor().get_id(), 1)

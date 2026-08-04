@@ -13,7 +13,7 @@ class TestSensorRepository(TestCase):
     def test_get_data(self) -> None:
         sensors = self.sensor_repository.find_all(False)
         self.assertEqual(len(sensors), 2)
-        sensor_id = 1196
+        sensor_id = 1
         sensor = self.sensor_repository.get(sensor_id)
         self.assertEqual(sensor.get_id(), sensor_id)
         sensor = Sensor()

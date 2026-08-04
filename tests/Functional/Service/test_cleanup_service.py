@@ -11,7 +11,7 @@ class TestCleanupService(TestCase):
         self.service = CleanupService()
 
     def test(self):
-        measurement = self.measurement_repository.get(226785)
+        measurement = self.measurement_repository.get(1)
         measurement.set_temperature(1000)
         measurements = self.service.clean([measurement])
         self.assertEqual(len(measurements), 1)

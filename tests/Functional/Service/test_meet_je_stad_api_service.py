@@ -24,7 +24,7 @@ class TestMeetJeStadAPIService(TestCase):
         self.assertEqual(measurements[0].get_sensor_id(), sensor_id)
 
         measurements = self.service.get_measurements('2017-11-16,0:00:00',
-                                  '2026-07-15,23:59:00',
+                                  '2017-11-17,00:00:00',
                                   'sensors',
                                   sensor_repository.find_all())
         self.assertTrue(isinstance(measurements, list))

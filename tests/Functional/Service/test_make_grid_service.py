@@ -11,6 +11,6 @@ class TestMakeGridService(TestCase):
         self.service = MakeGridService()
 
     def test(self):
-        measurement = self.measurement_repository.get(226785)
+        measurement = self.measurement_repository.get(1)
         measurements = self.service.make_grid([measurement], measurement.get_sensor_id(), 1)
         self.assertTrue(len(measurements), 97)

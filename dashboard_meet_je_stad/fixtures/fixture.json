@@ -37,7 +37,7 @@
     },
     {
         "model": "dashboard_meet_je_stad.sensor",
-        "pk": 1196,
+        "pk": 1,
         "fields": {
             "_is_particulate_matter": false,
             "_is_lux": false,
@@ -45,7 +45,7 @@
     }},
     {
         "model": "dashboard_meet_je_stad.sensor",
-        "pk": 840,
+        "pk": 2,
         "fields": {
             "_is_particulate_matter": true,
             "_is_lux": false,
@@ -53,9 +53,9 @@
     }},
     {
         "model": "dashboard_meet_je_stad.measurement",
-        "pk": 226785,
+        "pk": 1,
         "fields": {
-            "_sensor": 1196,
+            "_sensor": 1,
             "_timestamp": "2026-06-06T08:18:38Z",
             "_firmware_version": 254,
             "_longitude": 5.09521,
@@ -71,9 +71,9 @@
         }},
     {
         "model": "dashboard_meet_je_stad.measurement",
-        "pk": 226786,
+        "pk": 2,
         "fields": {
-            "_sensor": 840,
+            "_sensor": 2,
             "_timestamp": "2026-06-14T20:43:21Z",
             "_firmware_version": 254,
             "_longitude": 5.09521,

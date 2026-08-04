@@ -10,7 +10,7 @@ class TestMeasurementRepository(TestCase):
         self.measurement_repository = MeasurementRepository()
 
     def test_repository(self) -> None:
-        measurement_id = 226785
+        measurement_id = 1
         measurement = self.measurement_repository.get(measurement_id)
         self.assertEqual(measurement.get_id(), measurement_id)
         measurement.set_id(None)
