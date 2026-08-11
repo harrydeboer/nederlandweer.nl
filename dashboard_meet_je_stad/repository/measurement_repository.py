@@ -10,9 +10,13 @@ class MeasurementRepository:
 
         return Measurement.objects.get(pk=measurement_id)
 
-    def get_days(self, sensor_id: int, days:float) -> List[Measurement]:
+    def get_previous_month(self, sensor_id: int) -> List[Measurement]:
         date_now = datetime.datetime.now(datetime.timezone.utc)
-        date_begin = date_now - datetime.timedelta(days=days)
+        first = datetime.datetime.now().replace(day=1)
+        date_begin = first - datetime.timedelta(days=1)
+        date_begin = date_begin.replace(day=date_now.day, hour=0, minute=0, second=0)
+        diff = (datetime.datetime.now().timestamp() - date_begin.timestamp())
+        date_begin = date_now - datetime.timedelta(seconds=diff)
 
         return list(Measurement.objects.filter(_sensor_id=sensor_id, _timestamp__range=(date_begin, date_now)))
 

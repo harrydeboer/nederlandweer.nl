@@ -1,13 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.handlers.wsgi import WSGIRequest
-
 from dashboard_meet_je_stad.models import Sensor
 from dashboard_meet_je_stad.repository.measurement_repository import MeasurementRepository
 from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
 from dashboard_meet_je_stad.repository.sensor_cached_repository import SensorCachedRepository
 from dashboard_meet_je_stad.form.dashboard_form import DashboardForm
-from dashboard_meet_je_stad.service.make_grid_service import MakeGridService
 import json
 
 
@@ -15,7 +13,6 @@ class HomepageView:
 
     def __init__(self):
         self.measurement_repository = MeasurementRepository()
-        self.make_grid_service = MakeGridService()
         self.sensor_cached_repository = SensorCachedRepository()
         self.sensor_repository = SensorRepository()
 
@@ -46,12 +43,9 @@ class HomepageView:
             pm = form['pm'].value()
             interval = form['interval'].value()
 
-            """When measurements are requested with an interval of 3 months they are retrieved.
-            They are put in a grid and are set to the sensor selected.
-            """
-            if sensor_id is not None and sensor_id != '' and interval == '3month' and len(form.errors) == 0:
-                sensor_selected.set_measurements_cached(self.make_grid_service.make_grid(
-                    self.measurement_repository.get_days(sensor_id, 91), sensor_id, 91))
+            if sensor_id is not None and sensor_id != '' and interval == '1month' and len(form.errors) == 0:
+                sensor_selected.set_measurements_cached(
+                    self.measurement_repository.get_previous_month(sensor_id))
                 sensor_selected = sensor_selected
 
         """The sensors that are not chosen are filtered away and the form is made again with the filtered sensors.

@@ -46,7 +46,7 @@ class DashboardForm(forms.Form):
 
     choices_graph = [
         ('24hour', '24 uur'),
-        ('3month', '3 maanden'),
+        ('1month', '1 maand'),
     ]
     interval = forms.ChoiceField(
         widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),

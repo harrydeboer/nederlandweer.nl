@@ -65,7 +65,12 @@ class Dashboard {
         this.sensor.on('change', this.sensorChange.bind(this));
         this.type.on('change', this.graph.bind(this));
 
-        this.graph();
+        if ($("input[name=interval][value='1month']").prop("checked")) {
+            this.graphColumn();
+        } else {
+            this.graph();
+        }
+
 
         /*
          The popup of the sensor requested waits 500ms to show because the map needs time to load.
@@ -210,7 +215,7 @@ class Dashboard {
             let dateFirst = new Date(this.sensors[this.sensor.val()].timestamp[0])
             let dateLast = new Date(this.sensors[this.sensor.val()].timestamp.slice(-1)[0])
             if ((dateLast.getTime() - dateFirst.getTime()) / 1000 > 24 * 60 * 60) {
-                $("input[name=interval][value='3month']").prop("checked",true);
+                $("input[name=interval][value='1month']").prop("checked",true);
             } else {
                 $("input[name=interval][value='24hour']").prop("checked",true);
             }
@@ -236,6 +241,11 @@ class Dashboard {
     graph() {
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(this.drawChart.bind(this));
+    }
+
+    graphColumn() {
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(this.drawColumnChart.bind(this));
     }
 
     drawChart() {
@@ -311,6 +321,49 @@ class Dashboard {
             legend: { position: 'none' }
         };
         let chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+        chart.draw(data, options);
+    }
+
+    drawColumnChart() {
+
+        let sensor_selected = $('#sensor');
+        let dataSensor;
+        if (typeof sensor_selected.data('sensor')['supply'] !== 'undefined') {
+            dataSensor = sensor_selected.data('sensor');
+        }
+        let data = new google.visualization.DataTable();
+        data.addColumn('string', 'Dag');
+        data.addColumn('number', 'Aantal');
+
+        let counts = {}
+        let date;
+        let dateNow = new Date();
+
+        for (let i = 0; i < dataSensor['supply'].length; i++) {
+            date = new Date(dataSensor['timestamp'][i] + " UTC")
+            let dateString = date.getMonth() + 1 + '-' + date.getDate();
+            if (dateString === dateNow.getMonth() + 1 + '-' + dateNow.getDate()) {
+                continue;
+            }
+            if (dateString in counts) {
+                counts[dateString] += 1;
+            } else {
+                counts[dateString] = 1;
+            }
+        }
+        let rows = []
+        for (let key in counts) {
+            rows.push([key, counts[key]]);
+        }
+        data.addRows(rows)
+
+        let options = {
+            title: 'Maandoverzicht',
+            vAxis: { title: 'Aantal' },
+            hAxis: { format: 'dag' },
+            legend: { position: 'none' }
+        };
+        let chart = new google.visualization.ColumnChart(document.getElementById('curve_chart'));
         chart.draw(data, options);
     }
 }

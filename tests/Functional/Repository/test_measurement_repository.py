@@ -21,7 +21,10 @@ class TestMeasurementRepository(TestCase):
         measurement.set_timestamp(datetime.datetime.now().replace(tzinfo=datetime.timezone.utc)
                                   + datetime.timedelta(days=1))
         self.measurement_repository.bulk_create([measurement])
-        measurements = self.measurement_repository.get_days(measurement.get_sensor_id(), 91)
+        measurement.set_timestamp(datetime.datetime.now().replace(tzinfo=datetime.timezone.utc) -
+                                  datetime.timedelta(days=1))
+        self.measurement_repository.bulk_create([measurement])
+        measurements = self.measurement_repository.get_previous_month(measurement.get_sensor_id())
         self.assertGreater(len(measurements),0)
         measurement.set_id(measurement_id_new)
         self.measurement_repository.delete(measurement)
