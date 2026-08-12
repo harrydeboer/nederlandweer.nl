@@ -2,6 +2,7 @@ import datetime
 from django.db.utils import IntegrityError
 from dashboard_meet_je_stad.models import Measurement
 from typing import List
+import pytz
 
 
 class MeasurementRepository:
@@ -12,7 +13,7 @@ class MeasurementRepository:
 
     def get_previous_month(self, sensor_id: int) -> List[Measurement]:
         date_now = datetime.datetime.now(datetime.timezone.utc)
-        first = datetime.datetime.now().replace(day=1)
+        first = datetime.datetime.now(pytz.timezone('Europe/Amsterdam')).replace(day=1)
         date_begin = first - datetime.timedelta(days=1)
         date_begin = date_begin.replace(day=date_now.day, hour=0, minute=0, second=0)
         diff = (datetime.datetime.now().timestamp() - date_begin.timestamp())

@@ -6,3 +6,4 @@ gunicorn==26.0.0
 gevent==26.7.0
 zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
 openpyxl==3.1.5
+pytz==2026.3.post1
