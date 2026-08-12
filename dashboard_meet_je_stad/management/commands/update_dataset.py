@@ -128,10 +128,11 @@ class Command(BaseCommand):
                 if (measurement.get_timestamp() >= earlier_day
                         or last_measurements[measurement.get_sensor_id()].get_id() == measurement.get_id()):
                     measurements_cached.append(measurement)
-                if measurement.get_timestamp() > earlier_day and measurement.get_supply() is not None:
-                    sensor.set_is_active_sensor(True)
             if sensor_id in measurements_new:
                 measurements_cached += measurements_new[sensor_id]
+            for index, measurement in enumerate(measurements_cached):
+                if measurement.get_timestamp() > earlier_day and measurement.get_supply() is not None:
+                    sensor.set_is_active_sensor(True)
             if sensor.is_active_sensor():
                 sensor.set_measurements_cached(self.make_grid_service.make_grid(measurements_cached, sensor_id, 1))
             else:
