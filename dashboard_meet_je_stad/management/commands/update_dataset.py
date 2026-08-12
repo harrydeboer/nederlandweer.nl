@@ -131,7 +131,7 @@ class Command(BaseCommand):
             if sensor_id in measurements_new:
                 measurements_cached += measurements_new[sensor_id]
             for index, measurement in enumerate(measurements_cached):
-                if measurement.get_timestamp() > earlier_day and measurement.get_supply() is not None:
+                if measurement.get_timestamp() >= earlier_day and measurement.get_supply() is not None:
                     sensor.set_is_active_sensor(True)
             if sensor.is_active_sensor():
                 sensor.set_measurements_cached(self.make_grid_service.make_grid(measurements_cached, sensor_id, 1))
