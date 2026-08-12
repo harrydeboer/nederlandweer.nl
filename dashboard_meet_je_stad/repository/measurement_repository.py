@@ -13,11 +13,11 @@ class MeasurementRepository:
 
     def get_previous_month(self, sensor_id: int) -> List[Measurement]:
         date_now = datetime.datetime.now(datetime.timezone.utc)
-        first = datetime.datetime.now(pytz.timezone('Europe/Amsterdam')).replace(day=1)
+        date_now_amsterdam = datetime.datetime.now(pytz.timezone('Europe/Amsterdam'))
+        first = date_now_amsterdam.replace(day=1)
         date_begin = first - datetime.timedelta(days=1)
-        date_begin = date_begin.replace(day=date_now.day, hour=0, minute=0, second=0)
-        diff = (datetime.datetime.now().timestamp() - date_begin.timestamp())
-        date_begin = date_now - datetime.timedelta(seconds=diff)
+        date_begin = date_begin.replace(day=date_now_amsterdam.day, hour=0, minute=0, second=0)
+        date_begin = date_begin.astimezone(pytz.utc)
 
         return list(Measurement.objects.filter(_sensor_id=sensor_id, _timestamp__range=(date_begin, date_now)))
 
