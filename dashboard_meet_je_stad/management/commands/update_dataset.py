@@ -123,20 +123,19 @@ class Command(BaseCommand):
         self.measurement_repository.bulk_create(measurements_utrecht)
         for sensor_id, sensor in sensors.items():
             measurements_cached = []
+            sensor.set_is_active_sensor(False)
             for index, measurement in enumerate(sensor.get_measurements_cached()):
-                if (measurement.get_timestamp() > earlier_day
+                if (measurement.get_timestamp() >= earlier_day
                         or last_measurements[measurement.get_sensor_id()].get_id() == measurement.get_id()):
                     measurements_cached.append(measurement)
+                if measurement.get_timestamp() > earlier_day and measurement.get_supply() is not None:
+                    sensor.set_is_active_sensor(True)
             if sensor_id in measurements_new:
                 measurements_cached += measurements_new[sensor_id]
-            if len(measurements_cached) == 0 or measurements_cached[-1].get_timestamp() < earlier_day:
-                sensor.set_measurements_cached([last_measurements[sensor_id]])
-            else:
+            if sensor.is_active_sensor():
                 sensor.set_measurements_cached(self.make_grid_service.make_grid(measurements_cached, sensor_id, 1))
-            if sensor.get_measurements_cached()[-1].get_timestamp() >= earlier_day:
-                sensor.set_is_active_sensor(True)
             else:
-                sensor.set_is_active_sensor(False)
+                sensor.set_measurements_cached([last_measurements[sensor_id]])
             self.sensor_repository.update(sensor)
         self.sensor_cached_repository.write(sensors)
 
