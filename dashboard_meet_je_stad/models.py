@@ -206,7 +206,7 @@ class Measurement(models.Model):
         return self._pm25
 
     def set_pm25(self, value: float|None):
-        return self.set_float(value)
+        self._pm25 = self.set_float(value)
 
     def get_pm10(self) -> float|None:
         return self._pm10
