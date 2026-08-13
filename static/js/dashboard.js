@@ -64,13 +64,7 @@ class Dashboard {
         this.map.on('movestart', this.disposePopover.bind(this));
         this.sensor.on('change', this.sensorChange.bind(this));
         this.type.on('change', this.graph.bind(this));
-
-        if ($("input[name=interval][value='1month']").prop("checked")) {
-            this.graphColumn();
-        } else {
-            this.graph();
-        }
-
+        this.graph();
 
         /*
          The popup of the sensor requested waits 500ms to show because the map needs time to load.
@@ -240,12 +234,11 @@ class Dashboard {
 
     graph() {
         google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(this.drawChart.bind(this));
-    }
-
-    graphColumn() {
-        google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(this.drawColumnChart.bind(this));
+        if ($("input[name=interval][value='1month']").prop("checked")) {
+            google.charts.setOnLoadCallback(this.drawColumnChart.bind(this));
+        } else {
+            google.charts.setOnLoadCallback(this.drawChart.bind(this));
+        }
     }
 
     drawChart() {
@@ -339,18 +332,21 @@ class Dashboard {
         let date;
         let dateNow = new Date();
 
-        for (let i = 0; i < dataSensor['supply'].length; i++) {
-            date = new Date(dataSensor['timestamp'][i] + " UTC")
-            let dateString = date.getMonth() + 1 + '-' + date.getDate();
-            if (dateString === dateNow.getMonth() + 1 + '-' + dateNow.getDate()) {
-                continue;
-            }
-            if (dateString in counts) {
-                counts[dateString] += 1;
-            } else {
-                counts[dateString] = 1;
+        if (typeof dataSensor !== 'undefined') {
+            for (let i = 0; i < dataSensor['supply'].length; i++) {
+                date = new Date(dataSensor['timestamp'][i] + " UTC")
+                let dateString = date.getMonth() + 1 + '-' + date.getDate();
+                if (dateString === dateNow.getMonth() + 1 + '-' + dateNow.getDate()) {
+                    continue;
+                }
+                if (dateString in counts) {
+                    counts[dateString] += 1;
+                } else {
+                    counts[dateString] = 1;
+                }
             }
         }
+
         let rows = []
         for (let key in counts) {
             rows.push([key, counts[key]]);
@@ -358,7 +354,7 @@ class Dashboard {
         data.addRows(rows)
 
         let options = {
-            title: 'Maandoverzicht',
+            title: 'Maandoverzicht metingen',
             vAxis: { title: 'Aantal' },
             hAxis: { format: 'dag' },
             legend: { position: 'none' }
