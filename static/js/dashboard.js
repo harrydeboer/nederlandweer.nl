@@ -24,6 +24,7 @@ class Dashboard {
         }
 
         this.type = $('input[name=type]');
+        this.interval = $('input[name=interval]');
         this.features = this.makeFeatures();
 
         const vectorSource = new ol.source.Vector({
@@ -64,6 +65,7 @@ class Dashboard {
         this.map.on('movestart', this.disposePopover.bind(this));
         this.sensor.on('change', this.sensorChange.bind(this));
         this.type.on('change', this.graph.bind(this));
+        this.interval.on('change', this.graph.bind(this));
         this.graph();
 
         /*
@@ -302,7 +304,12 @@ class Dashboard {
         data.addColumn('date', 'Date');
         data.addColumn('number', 'Value');
 
+        let earlierDate = new Date();
+        earlierDate.setDate(earlierDate.getDate() - 1);
         horizontalData.forEach(function(element, index) {
+            if (horizontalData[index] < earlierDate ) {
+                return;
+            }
             data.addRow([horizontalData[index], verticalData[index]])
         })
 

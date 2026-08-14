@@ -46,7 +46,6 @@ class HomepageView:
             if sensor_id is not None and sensor_id != '' and interval == '1month' and len(form.errors) == 0:
                 sensor_selected.set_measurements_cached(
                     self.measurement_repository.get_previous_month(sensor_id))
-                sensor_selected = sensor_selected
 
         """The sensors that are not chosen are filtered away and the form is made again with the filtered sensors.
         If a sensor is chosen that is not valid an error message is added.
