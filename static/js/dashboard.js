@@ -326,10 +326,10 @@ class Dashboard {
 
     drawColumnChart() {
 
-        let sensor_selected = $('#sensor');
+        let sensor_selected = this.sensors[this.sensor.val()];
         let dataSensor;
-        if (typeof sensor_selected.data('sensor')['supply'] !== 'undefined') {
-            dataSensor = sensor_selected.data('sensor');
+        if (typeof sensor_selected['supply'] !== 'undefined') {
+            dataSensor = sensor_selected;
         }
         let data = new google.visualization.DataTable();
         data.addColumn('string', 'Dag');
@@ -338,8 +338,11 @@ class Dashboard {
         let counts = {}
         let date;
         let dateNow = new Date();
+        let earlierDate = new Date();
+        earlierDate.setDate(earlierDate.getDate() - 2);
+        let first = new Date(dataSensor.timestamp[0] + ' UTC');
 
-        if (typeof dataSensor !== 'undefined') {
+        if (typeof dataSensor !== 'undefined' && first < earlierDate) {
             for (let i = 0; i < dataSensor['supply'].length; i++) {
                 date = new Date(dataSensor['timestamp'][i] + " UTC")
                 let dateString = date.getMonth() + 1 + '-' + date.getDate();

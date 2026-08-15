@@ -54,7 +54,7 @@ class HomepageView:
         for sensor_id_old, sensor in sensors.items():
             if not inactive and not sensor.is_active_sensor():
                 continue
-            if pm and not sensor.is_particulate_matter:
+            if pm and not sensor.is_particulate_matter():
                 continue
             sensors_filtered[sensor_id_old] = sensor
         form = DashboardForm(request.GET, sensors=sensors_filtered, inactive=inactive, pm=pm)
