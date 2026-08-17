@@ -4,6 +4,7 @@ from dashboard_meet_je_stad.service.meet_je_stad_api_service import MeetJeStadAP
 from dashboard_meet_je_stad.repository.measurement_repository import MeasurementRepository
 from dashboard_meet_je_stad.repository.sensor_cached_repository import SensorCachedRepository
 from dashboard_meet_je_stad.repository.sensor_repository import SensorRepository
+from dashboard_meet_je_stad.repository.user_repository import UserRepository
 from django.core.management.base import BaseCommand
 import os
 import math
@@ -11,6 +12,8 @@ import datetime
 import dotenv
 import sys
 from dashboard_meet_je_stad.models import Sensor
+from django.core import mail
+from django.template.loader import render_to_string
 
 
 """The command retrieves new measurements, updates the sensor and the cache."""
@@ -22,6 +25,7 @@ class Command(BaseCommand):
         self.measurement_repository = MeasurementRepository()
         self.sensor_cached_repository = SensorCachedRepository()
         self.sensor_repository = SensorRepository()
+        self.user_repository = UserRepository()
         self.cleanup_service = CleanupService()
         self.make_grid_service = MakeGridService()
 
@@ -121,6 +125,10 @@ class Command(BaseCommand):
         If the sensor has a measurement that is more recent than a day earlier it is set to active.
         """
         self.measurement_repository.bulk_create(measurements_utrecht)
+        sensors_old = []
+        for sensor_id, sensor in sensors.items():
+            if sensor.is_active_sensor():
+                sensors_old.append(sensor_id)
         for sensor_id, sensor in sensors.items():
             measurements_cached = []
             sensor.set_is_active_sensor(False)
@@ -139,6 +147,22 @@ class Command(BaseCommand):
                 sensor.set_measurements_cached([last_measurements[sensor_id]])
             self.sensor_repository.update(sensor)
         self.sensor_cached_repository.write(sensors)
+
+        newly_inactive = []
+        for sensor_id in sensors_old:
+            if not sensors[sensor_id].is_active_sensor():
+                newly_inactive.append(str(sensor_id))
+
+        if len(newly_inactive) > 0:
+            subject = 'Sensors inactief'
+            html_message = render_to_string('admin/message.html',
+                                            {'sensor_ids': ','.join(newly_inactive)})
+            plain_message = html_message
+            from_email = 'From <noreply@meetjestadutrecht.nl>'
+            for user in self.user_repository.find_all():
+                if user.is_superuser:
+                    to = user.email
+                    mail.send_mail(subject, plain_message, from_email, [to], html_message=html_message)
 
         dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')
         dotenv.set_key(dotenv_file, "END_DATE", date_now.strftime('%Y-%m-%d,%H:%M:%S'), quote_mode='never')
