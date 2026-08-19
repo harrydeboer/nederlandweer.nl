@@ -169,7 +169,7 @@ class Command(BaseCommand):
                     to = user.email
                     try:
                         mail.send_mail(subject, plain_message, from_email, [to], html_message=html_message)
-                    except TimeoutError:
+                    except TimeoutError|OSError:
                         self.stdout.write(self.style.ERROR('Could not send mail.'))
 
         self.stdout.write(self.style.SUCCESS('Successfully updated dataset.'))
