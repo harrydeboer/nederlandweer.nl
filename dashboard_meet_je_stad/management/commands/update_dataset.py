@@ -150,7 +150,7 @@ class Command(BaseCommand):
             self.sensor_repository.update(sensor)
         self.sensor_cached_repository.write(sensors)
 
-        newly_inactive = ['1']
+        newly_inactive = []
         for sensor_id in sensors_old:
             if not sensors[sensor_id].is_active_sensor():
                 newly_inactive.append(str(sensor_id))
