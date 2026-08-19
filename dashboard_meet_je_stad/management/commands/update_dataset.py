@@ -150,7 +150,7 @@ class Command(BaseCommand):
             self.sensor_repository.update(sensor)
         self.sensor_cached_repository.write(sensors)
 
-        newly_inactive = []
+        newly_inactive = ['1']
         for sensor_id in sensors_old:
             if not sensors[sensor_id].is_active_sensor():
                 newly_inactive.append(str(sensor_id))
@@ -169,7 +169,7 @@ class Command(BaseCommand):
                     to = user.email
                     try:
                         mail.send_mail(subject, plain_message, from_email, [to], html_message=html_message)
-                    except TimeoutError:
+                    except (TimeoutError, OSError):
                         self.stdout.write(self.style.ERROR('Could not send mail.'))
 
         self.stdout.write(self.style.SUCCESS('Successfully updated dataset.'))
