@@ -150,10 +150,13 @@ class Command(BaseCommand):
             self.sensor_repository.update(sensor)
         self.sensor_cached_repository.write(sensors)
 
-        newly_inactive = []
+        newly_inactive = ['1']
         for sensor_id in sensors_old:
             if not sensors[sensor_id].is_active_sensor():
                 newly_inactive.append(str(sensor_id))
+
+        dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')
+        dotenv.set_key(dotenv_file, "END_DATE", date_now.strftime('%Y-%m-%d,%H:%M:%S'), quote_mode='never')
 
         if len(newly_inactive) > 0:
             subject = 'Sensors inactief'
@@ -164,9 +167,9 @@ class Command(BaseCommand):
             for user in self.user_repository.find_all():
                 if user.is_superuser:
                     to = user.email
-                    mail.send_mail(subject, plain_message, from_email, [to], html_message=html_message)
-
-        dotenv.set_key(dotenv_file, "LAST_SENSOR_ID", str(last_sensor_id), quote_mode='never')
-        dotenv.set_key(dotenv_file, "END_DATE", date_now.strftime('%Y-%m-%d,%H:%M:%S'), quote_mode='never')
+                    try:
+                        mail.send_mail(subject, plain_message, from_email, [to], html_message=html_message)
+                    except TimeoutError:
+                        self.stdout.write(self.style.ERROR('Could not send mail.'))
 
         self.stdout.write(self.style.SUCCESS('Successfully updated dataset.'))
