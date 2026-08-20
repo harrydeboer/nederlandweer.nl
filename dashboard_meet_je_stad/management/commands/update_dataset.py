@@ -163,7 +163,7 @@ class Command(BaseCommand):
             html_message = render_to_string('admin/message.html',
                                             {'sensor_ids': ','.join(newly_inactive)})
             plain_message = html_message
-            from_email = 'From <noreply@meetjestadutrecht.nl>'
+            from_email = 'Meet Je Stad Utrecht <noreply@meetjestadutrecht.nl>'
             for user in self.user_repository.find_all():
                 if user.is_superuser:
                     to = user.email
