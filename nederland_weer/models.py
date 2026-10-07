@@ -9,6 +9,8 @@ class Station(models.Model):
     _end_year = models.IntegerField()
     _begin_year_perc_rain = models.IntegerField()
     _begin_year_amount_rain = models.IntegerField()
+    _longitude = models.FloatField(null=True)
+    _latitude = models.FloatField(null=True)
 
     def get_id(self) -> int:
         return self._id
@@ -45,6 +47,23 @@ class Station(models.Model):
 
     def set_begin_year_amount_rain(self, begin_year: int):
         self._begin_year_amount_year = begin_year
+
+    def get_longitude(self) -> float | None:
+        return self._longitude
+
+    def set_longitude(self, value: str|None):
+        self._longitude = self.set_float(value)
+
+    def get_latitude(self) -> float | None:
+        return self._latitude
+
+    def set_latitude(self, value: str|None):
+        self._latitude = self.set_float(value)
+
+    def set_float(self, value) -> float | None:
+        if value == '' or value is None:
+            return None
+        return float(value)
 
 class DawnDusk:
 

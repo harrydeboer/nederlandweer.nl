@@ -1,2 +1,3 @@
 [{"model": "nederland_weer.station", "pk": 260, "fields": {"_name": "De Bilt", "_begin_year": 1906, "_end_year": 2025,
-  "_begin_year_perc_rain": 1930, "_begin_year_amount_rain": 1906}}]
+  "_begin_year_perc_rain": 1930, "_begin_year_amount_rain": 1906,
+  "_longitude": 5.178047418027813, "_latitude": 52.10198449330324}}]
