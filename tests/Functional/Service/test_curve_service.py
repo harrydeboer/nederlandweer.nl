@@ -12,7 +12,10 @@ class TestCurveService(TestCase):
         station_de_bilt = stations['De Bilt']
         (json_data, title,
          vertical, horizontal, text_output) = CurveService().make_curves(
-            station_de_bilt.id, 'temperature-day', station_de_bilt.begin_year, station_de_bilt.end_year)
+            station_de_bilt.get_id(),
+            'temperature-day',
+            station_de_bilt.get_begin_year(),
+            station_de_bilt.get_end_year())
         self.assertIsInstance(json_data, str)
         self.assertIsInstance(title, str)
         self.assertIsInstance(vertical, str)

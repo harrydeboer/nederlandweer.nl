@@ -3,11 +3,48 @@ from django.db import models
 
 
 class Station(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    begin_year = models.IntegerField()
-    end_year = models.IntegerField()
-    begin_year_perc_rain = models.IntegerField()
-    begin_year_amount_rain = models.IntegerField()
+    _id = models.AutoField(primary_key=True)
+    _name = models.CharField(max_length=255, unique=True)
+    _begin_year = models.IntegerField()
+    _end_year = models.IntegerField()
+    _begin_year_perc_rain = models.IntegerField()
+    _begin_year_amount_rain = models.IntegerField()
+
+    def get_id(self) -> int:
+        return self._id
+
+    def set_id(self, station_id: int):
+        self._id = station_id
+
+    def get_name(self) -> str:
+        return self._name
+
+    def set_name(self, name: str):
+        self._name = name
+
+    def get_begin_year(self) -> int:
+        return self._begin_year
+
+    def set_begin_year(self, begin_year: int):
+        self._begin_year = begin_year
+
+    def get_end_year(self) -> int:
+        return self._end_year
+
+    def set_end_year(self, end_year: int):
+        self._end_year = end_year
+
+    def get_begin_year_perc_rain(self) -> int:
+        return self._begin_year_perc_rain
+
+    def set_begin_year_perc_rain(self, begin_year: int):
+        self._begin_year_perc_year = begin_year
+
+    def get_begin_year_amount_rain(self) -> int:
+        return self._begin_year_amount_rain
+
+    def set_begin_year_amount_rain(self, begin_year: int):
+        self._begin_year_amount_year = begin_year
 
 class DawnDusk:
 

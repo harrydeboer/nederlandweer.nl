@@ -26,7 +26,7 @@ class HomepageView:
         if form.is_valid():
             station_id = int(form['station'].value())
             for index, station in stations.items():
-                if station.id == station_id:
+                if station.get_id() == station_id:
                     break
             if self._validate(form, station):
                 (json_data, title,
@@ -38,8 +38,8 @@ class HomepageView:
         return render(request, 'homepage/index.html', {
             'form': form,
             'json': json_data,
-            'minYear': int(station.begin_year),
-            'maxYear': int(station.end_year),
+            'minYear': int(station.get_begin_year()),
+            'maxYear': int(station.get_end_year()),
             'title': title,
             'vertical': vertical,
             'horizontal': horizontal,
@@ -53,16 +53,17 @@ class HomepageView:
         error_message = ''
         if last_year < first_year:
             error_message = 'Het laatste jaar kan niet eerder zijn dan het eerste jaar.'
-        elif first_year < station.begin_year or last_year > station.end_year:
-            error_message = 'Jaren buiten het bereik ' + str(station.begin_year) + '-' + str(station.end_year) + '.'
-        elif component == 'perc-rain' and first_year < station.begin_year_perc_rain:
-            error_message = 'Begin jaar kan niet voor ' + str(station.begin_year_perc_rain) + ' zijn.'
-        elif component == 'amount-rain' and first_year < station.begin_year_amount_rain:
-            error_message = 'Begin jaar kan niet voor ' + str(station.begin_year_amount_rain) + ' zijn.'
+        elif first_year < station.get_begin_year() or last_year > station.get_end_year():
+            error_message = ('Jaren buiten het bereik ' + str(station.get_begin_year()) + '-'
+                             + str(station.get_end_year()) + '.')
+        elif component == 'perc-rain' and first_year < station.get_begin_year_perc_rain():
+            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_perc_rain()) + ' zijn.'
+        elif component == 'amount-rain' and first_year < station.get_begin_year_amount_rain():
+            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_amount_rain()) + ' zijn.'
         elif component == 'temperature-year' and last_year - first_year + 1 < 9:
             error_message = 'Bereik moet ten minste 9 jaar zijn als er een jaar grafiek gemaakt wordt.'
-        elif component == 'extreme' and first_year < station.begin_year_amount_rain:
-            error_message = 'Begin jaar kan niet voor ' + str(station.begin_year_amount_rain) + ' zijn.'
+        elif component == 'extreme' and first_year < station.get_begin_year_amount_rain():
+            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_amount_rain()) + ' zijn.'
         if error_message:
             form.add_error('begin_year', error_message)
             return False

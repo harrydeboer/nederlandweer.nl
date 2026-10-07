@@ -22,8 +22,8 @@ class Command(BaseCommand):
                 zip_ref.extractall(path_project + '/data')
             pathlib.Path.unlink(path_project + '/data/test.zip')
             measurements = MeasurementRepository().find_all(station.id)
-            stations[name].begin_year = measurements[0][1][:4]
-            stations[name].end_year = measurements[-1][1][:4]
+            stations[name].set_begin_year(measurements[0][1][:4])
+            stations[name].set_end_year(measurements[-1][1][:4])
 
         for index, station in stations.items():
             station_repository.update(station)

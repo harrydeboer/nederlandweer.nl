@@ -13,12 +13,12 @@ class DashboardForm(forms.Form):
             super().__init__(**kwargs)
         choices = []
         for index, station in stations.items():
-            choices.append((station.id, station.name))
+            choices.append((station.get_id(), station.get_name()))
         self.fields['station'] = ChoiceField(initial='260', choices=choices, required=True,
                                              widget=forms.Select(attrs={'class': 'form-select'}))
-        self.fields['begin_year'] = IntegerField(initial=stations['De Bilt'].begin_year,
+        self.fields['begin_year'] = IntegerField(initial=stations['De Bilt'].get_begin_year(),
                                                  widget=forms.NumberInput(attrs={'class': 'form-control'}))
-        self.fields['end_year'] = IntegerField(initial=stations['De Bilt'].end_year,
+        self.fields['end_year'] = IntegerField(initial=stations['De Bilt'].get_end_year(),
                                                widget=forms.NumberInput(attrs={'class': 'form-control'}))
 
     choices = [

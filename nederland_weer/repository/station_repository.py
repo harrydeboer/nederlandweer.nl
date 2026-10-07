@@ -7,7 +7,7 @@ class StationRepository:
     def find_all(self) -> Dict[str, Station]:
         stations = {}
         for station in Station.objects.all():
-            stations[station.name] = station
+            stations[station.get_name()] = station
 
         return stations
 
