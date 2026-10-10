@@ -65,6 +65,19 @@ class Station(models.Model):
             return None
         return float(value)
 
+    def to_dict(self) -> dict:
+        properties = {}
+
+        for field in Station._meta.fields:
+            prop = field.attname
+            try:
+                attribute = getattr(self, 'get_' + prop[1:])
+            except AttributeError:
+                attribute = getattr(self, prop[1:])
+            properties[prop[1:]] = attribute()
+
+        return properties
+
 class DawnDusk:
 
     def __init__(self, day: int, dawn: float, dusk: float):

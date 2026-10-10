@@ -5,6 +5,7 @@ from nederland_weer.form.dashboard_form import DashboardForm
 from nederland_weer.service.curve_service import CurveService
 from nederland_weer.models import Station
 from nederland_weer.repository.station_repository import StationRepository
+import json
 
 
 class HomepageView:
@@ -22,6 +23,9 @@ class HomepageView:
         title = ''
         vertical = ''
         horizontal = ''
+        stations_dict = {}
+        for station_name, station in stations.items():
+            stations_dict[station_name] = station.to_dict()
         station = station_de_bilt
         if form.is_valid():
             station_id = int(form['station'].value())
@@ -38,6 +42,7 @@ class HomepageView:
         return render(request, 'homepage/index.html', {
             'form': form,
             'json': json_data,
+            'stations_json': json.dumps(stations_dict),
             'minYear': int(station.get_begin_year()),
             'maxYear': int(station.get_end_year()),
             'title': title,

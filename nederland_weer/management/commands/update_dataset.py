@@ -17,11 +17,11 @@ class Command(BaseCommand):
 
         for name, station in stations.items():
             urllib.request.urlretrieve("https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_"
-                                       + str(station.id) + ".zip", 'data/test.zip')
+                                       + str(station.get_id()) + ".zip", 'data/test.zip')
             with zipfile.ZipFile(path_project + '/data/test.zip', 'r') as zip_ref:
                 zip_ref.extractall(path_project + '/data')
             pathlib.Path.unlink(path_project + '/data/test.zip')
-            measurements = MeasurementRepository().find_all(station.id)
+            measurements = MeasurementRepository().find_all(station.get_id())
             stations[name].set_begin_year(measurements[0][1][:4])
             stations[name].set_end_year(measurements[-1][1][:4])
 

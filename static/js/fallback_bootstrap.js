@@ -1,0 +1,26 @@
+if(window.getComputedStyle(document.body)['color'] !== 'rgb(33, 37, 41)') {
+    let rel = document.createElement('link');
+    rel.rel = "stylesheet";
+    rel.href = "/css/bootstrap.min.css"
+    document.head.append(rel);
+
+    let relApp = document.createElement('link');
+    relApp.rel = "stylesheet";
+    relApp.href = "/css/app.css"
+    document.head.append(relApp);
+}
+
+if (!window.bootstrap) {
+    let myScript = document.createElement('script');
+
+    myScript.setAttribute('src','/dist/bootstrap.bundle.min.js');
+
+    document.head.append(myScript);
+
+    function defer() {
+        if (!window.bootstrap) {
+            setTimeout(function() { defer() }, 50);
+        }
+    }
+    defer();
+}
