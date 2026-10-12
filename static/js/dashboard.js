@@ -47,9 +47,10 @@ class Dashboard {
         this.map.on('click', this.mapClick.bind(this));
         this.map.on('pointermove', this.mapPointer.bind(this));
         this.map.on('movestart', this.disposePopover.bind(this));
+        this.station.on('change', this.stationChange.bind(this));
 
         /*
-         The popup of the sensor requested waits 500ms to show because the map needs time to load.
+         The popup of the station requested waits 500ms to show because the map needs time to load.
          */
         let that = this;
         setTimeout(function () {
@@ -67,7 +68,7 @@ class Dashboard {
                 id: station['id'].toString(),
                 longitude: station['longitude'],
                 latitude: station['latitude'],
-                name: '<p class="station-title">Sensor ' + station_name + '</p>'
+                name: '<p class="station-title">Station ' + station_name + '</p>'
             });
             feature.setStyle(
                 new ol.style.Style({
@@ -124,11 +125,11 @@ class Dashboard {
     mapClick(event) {
         if (this.popupIcon(event)) {
             this.station.val();
-            this.sensorChange();
+            this.stationChange();
         }
     }
 
-    sensorChange() {
+    stationChange() {
         if (this.station.val() !== '') {
             this.popupIcon(this.station.val());
         }
