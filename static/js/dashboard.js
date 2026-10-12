@@ -1,0 +1,148 @@
+class Dashboard {
+
+    constructor(form) {
+        this.form = form;
+        let stations = $('#stations');
+        if (stations.length > 0) {
+            this.stations = stations.data('stations');
+        } else {
+            return;
+        }
+        this.features = this.makeFeatures();
+        this.station = $('#id_station');
+
+        const vectorSource = new ol.source.Vector({
+            features: this.features,
+        });
+
+        const vectorLayer = new ol.layer.Vector({
+            source: vectorSource,
+        });
+
+        /*
+        Make a map of Utrecht.
+         */
+        this.map = new ol.Map({
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM(),
+                }),
+                vectorLayer
+            ],
+            target: document.getElementById('map'),
+            view: new ol.View({
+
+                center: ol.proj.fromLonLat([5.11, 52.15]),
+                zoom: 7.6,
+            }),
+        });
+
+        this.popup = new ol.Overlay({
+            element: $('#popup')[0],
+            positioning: 'bottom-center',
+            stopEvent: false,
+        });
+        this.map.addOverlay(this.popup);
+
+        this.map.on('click', this.mapClick.bind(this));
+        this.map.on('pointermove', this.mapPointer.bind(this));
+        this.map.on('movestart', this.disposePopover.bind(this));
+
+        /*
+         The popup of the sensor requested waits 500ms to show because the map needs time to load.
+         */
+        let that = this;
+        setTimeout(function () {
+            that.popupIcon(that.station.val());
+        }, 500);
+    }
+
+    makeFeatures() {
+        let features = []
+        Object.keys(this.stations).forEach((station_name) => {
+            let station = this.stations[station_name];
+            let sourceImage = '/static/img/station-green.png';
+            let feature = new ol.Feature({
+                geometry: new ol.geom.Point(ol.proj.fromLonLat([station['longitude'], station['latitude']]),),
+                id: station['id'].toString(),
+                longitude: station['longitude'],
+                latitude: station['latitude'],
+                name: '<p class="station-title">Sensor ' + station_name + '</p>'
+            });
+            feature.setStyle(
+                new ol.style.Style({
+                    image: new ol.style.Icon({
+                        crossOrigin: 'anonymous',
+                        src: sourceImage,
+                        width: 30,
+                        height: 30,
+                    }),
+                }),
+            );
+            features.push(feature)
+        });
+
+        return features;
+    }
+
+    popupIcon(evt) {
+        let feature;
+        if (typeof evt === 'object') {
+            feature = this.map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+                return feature;
+            });
+        } else {
+            this.features.forEach(function (element) {
+                if (element.get('id') === evt) {
+                    feature = element;
+                }
+            })
+        }
+        this.disposePopover();
+        if (!feature) {
+            return 0;
+        }
+        if (typeof evt === 'object') {
+            this.popup.setPosition(evt.coordinate);
+        } else {
+            this.popup.setPosition(ol.proj.fromLonLat([feature.get('longitude'), feature.get('latitude')]));
+        }
+        this.popover = new bootstrap.Popover($('#popup')[0], {
+            placement: 'top',
+            html: true,
+            content: feature.get('name'),
+        });
+        this.popover.show();
+
+        if (typeof evt === 'object') {
+            this.station.val(feature.get('id'));
+        }
+
+        return evt;
+    }
+
+    mapClick(event) {
+        if (this.popupIcon(event)) {
+            this.station.val();
+            this.sensorChange();
+        }
+    }
+
+    sensorChange() {
+        if (this.station.val() !== '') {
+            this.popupIcon(this.station.val());
+        }
+    }
+
+    mapPointer(event) {
+        const hit = this.map.hasFeatureAtPixel(event.pixel);
+        this.map.getTargetElement().style.cursor = hit ? 'pointer' : '';
+    }
+
+    disposePopover() {
+        if (this.popover) {
+            this.popover.dispose();
+            this.popover = undefined;
+        }
+    }
+}

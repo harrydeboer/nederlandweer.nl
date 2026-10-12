@@ -1,0 +1,22 @@
+if(getComputedStyle(document.querySelector(':root')).getPropertyValue('--ol-subtle-background-color')
+    !== 'rgba(128, 128, 128, 0.25)') {
+    let rel = document.createElement('link');
+    rel.rel = "stylesheet";
+    rel.href = "/static/css/ol.min.css"
+    document.head.append(rel);
+}
+
+if (!window.ol) {
+    let myScript = document.createElement('script');
+
+    myScript.setAttribute('src','/static/dist/ol.min.js');
+
+    document.head.append(myScript);
+
+    function defer() {
+        if (!window.ol) {
+            setTimeout(function() { defer(); }, 50);
+        }
+    }
+    defer();
+}

@@ -1,3 +1,8 @@
+let dashboardForm = $('#dashboard-form');
+if (dashboardForm.length > 0) {
+    new Dashboard(dashboardForm);
+}
+
 function graph(title, vertical, horizontal) {
     google.charts.load('current', {'packages':['corechart'], 'language': 'nl'});
     google.charts.setOnLoadCallback(function(){ drawChart(title, vertical, horizontal) });

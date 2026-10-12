@@ -2,6 +2,26 @@
 
 $font-stack: 'Open Sans', sans-serif;
 
+#map {
+  height: 650px;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+#map .ol-viewport {
+  border-radius: 25px;
+}
+
+.station-title {
+  color: blue;
+  font-weight: bold;
+}
+
+#station {
+  width: 300px;
+  margin-top: 25px;
+}
+
 body {
   font-family: $font-stack;
   font-size: 20px;
