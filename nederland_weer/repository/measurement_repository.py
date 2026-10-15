@@ -1,59 +1,17 @@
-import numpy as np
-import csv
+from nederland_weer.models import Measurement
+from typing import List
 
 
 class MeasurementRepository:
 
-    def find_all(self, station_id: int) -> np.ndarray:
+    def find_all(self, station_id: int) -> List[Measurement]:
+        return list(Measurement.objects.all().filter(_station_id=station_id))
 
-        # Read txt file as list.
-        txt_list = []
-        with open('data/etmgeg_' + str(station_id) + '.txt', newline='') as input_file:
-            reader = csv.reader(input_file)
-            last_good_row = None
-            for row in reader:
+    def find_last(self, station_id: int) -> Measurement| None:
+        return Measurement.objects.all().filter(_station_id=station_id).last()
 
-                if not row:
-                    continue
+    def create(self, measurement: Measurement):
+        measurement.save()
 
-                if row[0] != '  ' + str(station_id):
-                    continue
-
-                # During the war a lot of data is not available. The gaps are filled with the last good row.
-                if len(row) > 10 and row[11] == '     ':
-                    if last_good_row is None:
-                        last_good_row = txt_list[-1:][0]
-                    new_list = last_good_row
-                    new_list[1] = row[1]
-                    txt_list.append(new_list)
-                else:
-                    last_good_row = None
-                    txt_list.append(row)
-
-        measurements = np.asarray(txt_list)
-
-        # Remove the days of the first years until most data is available.
-        for index, row in enumerate(measurements):
-
-            year = int(row[1][:4])
-
-            # Most data is available from 1904 and onwards.
-            if year == 1906:
-                measurements = measurements[index:]
-                break
-
-        # Remove the days of the last year if it is not complete.
-        year_to_delete = None
-        for index, row in enumerate(reversed(measurements)):
-
-            year = int(row[1][:4])
-            if index == 0 and row[1][4:8] != '1231':
-                year_to_delete = year
-                continue
-
-            if year_to_delete is not None:
-                if year == year_to_delete - 1:
-                    measurements = measurements[:-index]
-                    break
-
-        return measurements
+    def delete(self, measurement: Measurement) -> None:
+        measurement.delete()

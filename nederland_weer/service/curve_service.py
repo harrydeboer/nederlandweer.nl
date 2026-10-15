@@ -4,7 +4,6 @@ import numpy as np
 import json
 import locale
 import datetime as dt
-from nederland_weer.models import Measurement
 from typing import Tuple
 
 
@@ -113,7 +112,7 @@ class CurveService:
 
         return json_data, title, vertical, horizontal, text_output
 
-    def _curve_to_json(self, y: np.ndarray, is_day: bool, column_name: str = None) -> str:
+    def _curve_to_json(self, y: np.ndarray, is_day: bool, column_name: str|None = None) -> str:
         if column_name == 'perc_sunshine':
             dawn_dusks = self.dawn_dusk_repository.find_all()
             for index, day in enumerate(y):
@@ -145,10 +144,12 @@ class CurveService:
     # Make a numpy array of weather values per day and per year.
     def _make_array(self, column_name: str) -> np.ndarray:
 
-        dates = self.measurements[:, 1]
-
-        column_number, factor = Measurement().__getattribute__(column_name)
-        column = self.measurements[:, column_number]
+        dates = []
+        column = []
+        for measurement in self.measurements:
+            dates.append(dt.datetime.strftime(measurement.get_timestamp(), '%Y%m%d'))
+            attribute = getattr(measurement, 'get_' + column_name)
+            column.append(attribute())
 
         # The date array is initialized with zeros.
         day_year_array = np.zeros([365, self.last_year - self.first_year + 1])
@@ -174,12 +175,12 @@ class CurveService:
             if year % 4 == 0 and days_in_the_year > 59:
                 days_in_the_year -= 1
 
-            if column[index] == '     ':
+            if column[index] is None:
                 if last_good_value is None:
                     last_good_value = column[index - 1]
-                day_year_array[days_in_the_year, year - self.first_year] = float(last_good_value) * factor
+                day_year_array[days_in_the_year, year - self.first_year] = float(last_good_value)
             else:
-                day_year_array[days_in_the_year, year - self.first_year] = float(column[index]) * factor
+                day_year_array[days_in_the_year, year - self.first_year] = float(column[index])
 
         return day_year_array
 

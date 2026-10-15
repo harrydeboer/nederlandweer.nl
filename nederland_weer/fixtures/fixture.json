@@ -1,3 +1,68 @@
-[{"model": "nederland_weer.station", "pk": 260, "fields": {"_name": "De Bilt", "_begin_year": 1906, "_end_year": 2025,
-  "_begin_year_perc_rain": 1930, "_begin_year_amount_rain": 1906,
-  "_longitude": 5.178047418027813, "_latitude": 52.10198449330324}}]
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$lqG7kDopZkJLRA9reWnZgn$EIXWqZlFauvy1Xj57IrOMUVp+uM5TS6dYSpZkz3zbz4=",
+      "last_login": "2026-06-30T13:58:29.395Z",
+      "is_superuser": true,
+      "username": "superuser",
+      "first_name": "",
+      "last_name": "",
+      "email": "superuser@test.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2026-02-11T10:33:46.769Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$lqG7kDopZkJLRA9reWnZgn$EIXWqZlFauvy1Xj57IrOMUVp+uM5TS6dYSpZkz3zbz4=",
+      "last_login": "2026-06-30T13:58:29.395Z",
+      "is_superuser": false,
+      "username": "test",
+      "first_name": "",
+      "last_name": "",
+      "email": "test@test.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-02-11T10:33:46.769Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "nederland_weer.station",
+    "pk": 260,
+    "fields": {
+      "_name": "De Bilt",
+      "_begin_year": 1906,
+      "_end_year": 2025,
+      "_begin_year_perc_rain": 1930,
+      "_begin_year_amount_rain": 1906,
+      "_longitude": 5.178047418027813,
+      "_latitude": 52.10198449330324
+    }
+  },
+  {
+    "model": "nederland_weer.measurement",
+    "pk": 1,
+    "fields": {
+      "_id": 1, "_station_id": 260,
+      "_timestamp": "1906-01-01 00:00:00.000 +0000",
+      "_min_temp": 0,
+      "_mean_temp": 2.5,
+      "_max_temp": 5,
+      "_wind_direction": 3,
+      "_wind_speed_va": 5,
+      "_wind_speed":  5,
+      "_perc_sunshine": 10,
+      "_perc_rain": 10,
+      "_amount_rain":  5
+    }
+  }
+]

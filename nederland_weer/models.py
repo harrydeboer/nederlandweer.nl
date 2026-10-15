@@ -1,5 +1,7 @@
 import datetime
 from django.db import models
+from typing import Any
+from django.db.models.constraints import UniqueConstraint
 
 
 class Station(models.Model):
@@ -85,17 +87,131 @@ class DawnDusk:
         self.dawn = dawn
         self.dusk = dusk
 
-class Measurement:
-    # (column_number, factor)
-    min_temp = (12, 0.1)
-    mean_temp = (11, 0.1)
-    max_temp = (14, 0.1)
-    wind_direction = (2, 1)
-    wind_speed_va = (3, 0.1)
-    wind_speed = (4, 0.1)
-    perc_sunshine = (19, 1)
-    perc_rain = (21, 0.416666666666)
-    amount_rain = (22, 0.1)
+class Measurement(models.Model):
+    _id = models.AutoField(primary_key=True)
+    _station = models.ForeignKey(Station, on_delete=models.CASCADE)
+    _timestamp = models.DateTimeField()
+    _min_temp = models.FloatField(null=True)
+    _mean_temp = models.FloatField(null=True)
+    _max_temp = models.FloatField(null=True)
+    _wind_direction = models.FloatField(null=True)
+    _wind_speed_va = models.FloatField(null=True)
+    _wind_speed = models.FloatField(null=True)
+    _perc_sunshine = models.FloatField(null=True)
+    _perc_rain = models.FloatField(null=True)
+    _amount_rain = models.FloatField(null=True)
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=("_station", "_timestamp"), name="unique_measurement"
+            ),
+        ]
+
+    def __init__(self, *args: Any, **kwargs: Any):
+        if 'row' in kwargs:
+            row = kwargs['row']
+            kwargs.pop('row')
+        else:
+            row = []
+        super().__init__(*args, **kwargs)
+        if len(row) == 0:
+            return
+        self.set_station_id(int(row[0]))
+        self.set_timestamp(datetime.datetime.strptime(
+            row[1],"%Y%m%d").replace(tzinfo=datetime.timezone.utc))
+        self.set_min_temp(row[12])
+        self.set_mean_temp(row[11])
+        self.set_max_temp(row[14])
+        self.set_wind_direction(row[2])
+        self.set_wind_speed_va(row[3])
+        self.set_wind_speed(row[4])
+        self.set_perc_sunshine(row[19])
+        self.set_perc_rain(row[21])
+        self.set_amount_rain(row[22])
+
+    def get_id(self) -> int:
+        return self._id
+
+    def set_id(self, measurement_id: int):
+        self._id = measurement_id
+
+    def get_timestamp(self) -> datetime.datetime:
+        return self._timestamp
+
+    def set_timestamp(self, value: datetime.datetime):
+        self._timestamp = value
+
+    def get_min_temp(self) -> float | None:
+        return self._min_temp
+
+    def set_min_temp(self, value: str|None):
+        self._min_temp = self.set_float(value, 0.1)
+
+    def get_mean_temp(self) -> float | None:
+        return self._mean_temp
+
+    def set_mean_temp(self, value: str|None):
+        self._mean_temp = self.set_float(value, 0.1)
+
+    def get_max_temp(self) -> float | None:
+        return self._max_temp
+
+    def set_max_temp(self, value: str|None):
+        self._max_temp = self.set_float(value, 0.1)
+
+    def get_wind_direction(self) -> float | None:
+        return self._wind_direction
+
+    def set_wind_direction(self, value: str|None):
+        self._wind_direction = self.set_float(value)
+
+    def get_wind_speed_va(self) -> float | None:
+        return self._wind_speed_va
+
+    def set_wind_speed_va(self, value: str|None):
+        self._wind_speed_va = self.set_float(value, 0.1)
+
+    def get_wind_speed(self) -> float | None:
+        return self._wind_speed
+
+    def set_wind_speed(self, value: str|None):
+        self._wind_speed = self.set_float(value, 0.1)
+
+    def get_perc_sunshine(self) -> float | None:
+        return self._perc_sunshine
+
+    def set_perc_sunshine(self, value: str|None):
+        self._perc_sunshine = self.set_float(value)
+
+    def get_perc_rain(self) -> float | None:
+        return self._perc_rain
+
+    def set_perc_rain(self, value: str|None):
+        self._perc_rain = self.set_float(value, 0.416666666666)
+
+    def get_amount_rain(self) -> float | None:
+        return self._amount_rain
+
+    def set_amount_rain(self, value: str|None):
+        self._amount_rain = self.set_float(value, 0.1)
+
+    def get_station_id(self):
+        return self._station_id
+
+    def set_station_id(self, value:int):
+        self._station_id = value
+
+    def get_station(self):
+        return self._station
+
+    def set_station(self, station: Station):
+        self._station = station
+
+    def set_float(self, value, factor: float = 1) -> float | None:
+        if value == '' or value == '     ' or value is None:
+            return None
+        return float(value) * factor
 
 class Page:
     title ='Nederland Weer'
