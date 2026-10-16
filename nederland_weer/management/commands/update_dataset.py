@@ -8,6 +8,7 @@ import os
 from django.apps import apps
 import csv
 import datetime
+import sys
 
 
 class Command(BaseCommand):
@@ -17,21 +18,24 @@ class Command(BaseCommand):
         super().__init__()
         self.measurement_repository = MeasurementRepository()
         self.station_repository = StationRepository()
+        path = os.path.dirname(apps.get_app_config('nederland_weer').path)
+        if sys.argv[1:2] == ['test']:
+            self.path_data = path + '/tests/data/'
+        else:
+            self.path_data = path + '/data/'
 
     def handle(self, *args, **options):
         stations = self.station_repository.find_all()
-        path_project = os.path.dirname(apps.get_app_config('nederland_weer').path)
-
         for name, station in stations.items():
             urllib.request.urlretrieve("https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_"
-                                       + str(station.get_id()) + ".zip", 'data/test.zip')
-            with zipfile.ZipFile(path_project + '/data/test.zip', 'r') as zip_ref:
-                zip_ref.extractall(path_project + '/data')
-            os.unlink(path_project + '/data/test.zip')
+                                       + str(station.get_id()) + ".zip", self.path_data + 'test.zip')
+            with zipfile.ZipFile(self.path_data + 'test.zip', 'r') as zip_ref:
+                zip_ref.extractall(self.path_data)
+            os.unlink(self.path_data + 'test.zip')
 
             # Read txt file as list.
             txt_list = []
-            with open('data/etmgeg_' + str(station.get_id()) + '.txt', newline='') as input_file:
+            with open(self.path_data + 'etmgeg_' + str(station.get_id()) + '.txt', newline='') as input_file:
                 reader = csv.reader(input_file)
                 last_good_row = None
                 for row in reader:
