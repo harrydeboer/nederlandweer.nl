@@ -42,13 +42,13 @@ class Station(models.Model):
         return self._begin_year_perc_rain
 
     def set_begin_year_perc_rain(self, begin_year: int):
-        self._begin_year_perc_year = begin_year
+        self._begin_year_perc_rain = begin_year
 
     def get_begin_year_amount_rain(self) -> int:
         return self._begin_year_amount_rain
 
     def set_begin_year_amount_rain(self, begin_year: int):
-        self._begin_year_amount_year = begin_year
+        self._begin_year_amount_rain = begin_year
 
     def get_longitude(self) -> float | None:
         return self._longitude

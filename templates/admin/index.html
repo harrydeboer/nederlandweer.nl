@@ -1,0 +1,12 @@
+{% extends "base_admin.html" %}
+
+{% load mtime %}
+
+{% block title %}
+    Voorpagina
+{% endblock %}
+
+{% block content %}
+    <a href="/admin/auth/user/">Gebruikers</a>
+    <a href="/admin/auth/user/add/" class="addlink" aria-describedby="auth-user">Toevoegen</a>
+{% endblock %}

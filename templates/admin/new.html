@@ -1,0 +1,39 @@
+{% extends "base_admin.html" %}
+
+{% load mtime %}
+
+{% block title %}
+    Nieuw Station
+{% endblock %}
+
+{% block content %}
+    <div id="error-message">
+        {% for key, error in form.errors.items %}
+            {{ error }}
+        {% endfor %}
+    </div>
+    <form action="" method="post" id="station-form">
+        <div class="row">
+            <div class="col">ID</div>
+            <div class="col">Naam</div>
+            <div class="col">Begin jaar</div>
+            <div class="col">Eind jaar</div>
+            <div class="col">Begin jaar perc ragen</div>
+            <div class="col">Begin jaar hoeveelheid regen</div>
+            <div class="col">Longitude</div>
+            <div class="col">Latitude</div>
+        </div>
+        <div class="row">
+            <div class="col">{{ form.id }}</div>
+            <div class="col">{{ form.name }}</div>
+            <div class="col">{{ form.begin_year }}</div>
+            <div class="col">{{ form.end_year }}</div>
+            <div class="col">{{ form.begin_year_perc_rain }}</div>
+            <div class="col">{{ form.begin_year_amount_rain }}</div>
+            <div class="col">{{ form.longitude }}</div>
+            <div class="col">{{ form.latitude }}</div>
+        </div>
+        <input type="submit" value="Opslaan" class="btn btn-success">
+        {% csrf_token %}
+    </form>
+{% endblock %}

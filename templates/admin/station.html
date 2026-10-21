@@ -1,0 +1,27 @@
+{% extends "base_admin.html" %}
+
+{% load mtime %}
+
+{% block title %}
+    Station
+{% endblock %}
+
+{% block content %}
+    <a href="/admin/station/nieuw">Maak Station</a>
+    <div class="row">
+        <div class="col">ID</div>
+        <div class="col">Name</div>
+        <div class="col">Longitude</div>
+        <div class="col">Latitude</div>
+        <div class="col">Wijzig</div>
+    </div>
+    {% for key, station in stations.items %}
+        <div class="row">
+            <div class="col">{{ station.get_id }}</div>
+            <div class="col">{{ station.get_name }}</div>
+            <div class="col">{{ station.get_longitude }}</div>
+            <div class="col">{{ station.get_latitude }}</div>
+            <div class="col"><a href="/admin/station/wijzig/{{ station.get_id }}" >wijzig</a></div>
+        </div>
+    {% endfor %}
+{% endblock %}

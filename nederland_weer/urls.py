@@ -16,9 +16,11 @@ Including another URLconf
 from django.urls import path
 from nederland_weer.view.homepage_view import HomepageView
 from nederland_weer.view.security_view import SecurityView
+from nederland_weer.view.station_view import StationView
 from django.contrib.sitemaps.views import sitemap
 from nederland_weer.page_sitemap import PageSitemap
 from django.views.decorators.cache import cache_page
+from django.contrib import admin
 
 
 urlpatterns = [
@@ -33,4 +35,9 @@ urlpatterns = [
         {"sitemaps": {'page' : PageSitemap}},
         name="django.contrib.sitemaps.views.sitemap",
     ),
+    path('admin/stations', StationView().index, name='stations'),
+    path('admin/station/nieuw', StationView().new, name='new_station'),
+    path('admin/station/wijzig/<int:station_id>', StationView().edit, name='edit_station'),
+    path('admin/station/verwijder/<int:station_id>', StationView().delete, name='delete_station'),
+    path('admin/', admin.site.urls),
 ]

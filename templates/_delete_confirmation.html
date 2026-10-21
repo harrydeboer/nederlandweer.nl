@@ -1,0 +1,21 @@
+<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-modal">
+    Verwijder {{ entityName }}
+</button>
+<div class="modal fade" id="delete-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>{{ warning }}</h3>
+            </div>
+            <div class="modal-body">
+                <form action="/admin/station/verwijder/{{ station.get_id }}" method="post" id="station-form-delete">
+                    <input type="submit" value="Delete" class="btn btn-danger">
+                    {% csrf_token %}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
