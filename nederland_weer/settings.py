@@ -143,6 +143,8 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
     ]
 
+STATIC_ROOT = "/var/static"
+
 if os.getenv('DEBUG') == '1':
     CSRF_COOKIE_SECURE = False
 else:
