@@ -9,6 +9,7 @@ from django.apps import apps
 import csv
 import datetime
 import sys
+from pathlib import Path
 
 
 class Command(BaseCommand):
@@ -23,6 +24,8 @@ class Command(BaseCommand):
             self.path_data = path + '/tests/data/'
         else:
             self.path_data = path + '/data/'
+        if not os.path.exists(self.path_data):
+            Path(self.path_data).mkdir(parents=True, exist_ok=True)
 
     def handle(self, *args, **options):
         stations = self.station_repository.find_all()
