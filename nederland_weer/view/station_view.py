@@ -23,14 +23,7 @@ class StationView:
         station = Station()
         form = StationForm(request.POST, station=station)
         if form.is_valid():
-            station.set_id(form.cleaned_data['id'])
-            station.set_name(form.cleaned_data['name'])
-            station.set_begin_year(form.cleaned_data['begin_year'])
-            station.set_end_year(form.cleaned_data['end_year'])
-            station.set_begin_year_perc_rain(form.cleaned_data['begin_year_perc_rain'])
-            station.set_begin_year_amount_rain(form.cleaned_data['begin_year_amount_rain'])
-            station.set_longitude(form.cleaned_data['longitude'])
-            station.set_latitude(form.cleaned_data['latitude'])
+            self._dress(station, form)
             self.station_repository.create(station)
 
             return redirect('stations')
@@ -42,14 +35,7 @@ class StationView:
         station = self.station_repository.get(station_id)
         form = StationForm(request.POST, station=station)
         if form.is_valid():
-            station.set_id(form.cleaned_data['id'])
-            station.set_name(form.cleaned_data['name'])
-            station.set_begin_year(form.cleaned_data['begin_year'])
-            station.set_end_year(form.cleaned_data['end_year'])
-            station.set_begin_year_perc_rain(form.cleaned_data['begin_year_perc_rain'])
-            station.set_begin_year_amount_rain(form.cleaned_data['begin_year_amount_rain'])
-            station.set_longitude(form.cleaned_data['longitude'])
-            station.set_latitude(form.cleaned_data['latitude'])
+            self._dress(station, form)
             self.station_repository.update(station)
 
             return redirect('stations')
@@ -58,7 +44,18 @@ class StationView:
 
     @method_decorator(staff_member_required)
     def delete(self, request: WSGIRequest, station_id) -> HttpResponse:
+        request.is_secure()
         station = self.station_repository.get(station_id)
         self.station_repository.delete(station)
 
         return redirect('stations')
+
+    def _dress(self, station: Station, form: StationForm):
+        station.set_id(form.cleaned_data['id'])
+        station.set_name(form.cleaned_data['name'])
+        station.set_begin_year(form.cleaned_data['begin_year'])
+        station.set_end_year(form.cleaned_data['end_year'])
+        station.set_begin_year_perc_rain(form.cleaned_data['begin_year_perc_rain'])
+        station.set_begin_year_amount_rain(form.cleaned_data['begin_year_amount_rain'])
+        station.set_longitude(form.cleaned_data['longitude'])
+        station.set_latitude(form.cleaned_data['latitude'])

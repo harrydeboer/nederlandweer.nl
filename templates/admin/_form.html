@@ -1,0 +1,36 @@
+<form action="" method="post" id="station-form">
+    <div class="row">
+        <div class="col">ID</div>
+        <div class="col">{{ form.id }}</div>
+    </div>
+    <div class="row">
+        <div class="col">Naam</div>
+        <div class="col">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col">Beginjaar</div>
+        <div class="col">{{ form.begin_year }}</div>
+    </div>
+    <div class="row">
+        <div class="col">Eindjaar</div>
+        <div class="col">{{ form.end_year }}</div>
+    </div>
+    <div class="row">
+        <div class="col">Begin jaar percentage regen</div>
+        <div class="col">{{ form.begin_year_perc_rain }}</div>
+    </div>
+    <div class="row">
+        <div class="col">Begin jaar hoeveelheid regen</div>
+        <div class="col">{{ form.begin_year_amount_rain }}</div>
+    </div>
+    <div class="row">
+        <div class="col">Longitude</div>
+        <div class="col">{{ form.longitude }}</div>
+    </div>
+    <div class="row">
+        <div class="col">Latitude</div>
+        <div class="col">{{ form.latitude }}</div>
+    </div>
+    <input type="submit" value="{{ submit_label }}" class="btn btn-success">
+    {% csrf_token %}
+</form>
