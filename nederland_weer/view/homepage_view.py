@@ -61,10 +61,22 @@ class HomepageView:
         elif first_year < station.get_begin_year() or last_year > station.get_end_year():
             error_message = ('Jaren buiten het bereik ' + str(station.get_begin_year()) + '-'
                              + str(station.get_end_year()) + '.')
+        elif component == 'wind-speed' and first_year < station.get_begin_year_wind_speed():
+            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_wind_speed()) + ' zijn.'
+        elif component == 'wind-speed-va' and first_year < station.get_begin_year_wind_speed_va():
+            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_wind_speed_va()) + ' zijn.'
+        elif component == 'tropical' and first_year < station.get_begin_year_max_temp():
+            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_max_temp) + ' zijn.'
+        elif component == 'perc-sunshine' and first_year < station.get_begin_year_perc_sunshine():
+            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_perc_sunshine()) + ' zijn.'
         elif component == 'perc-rain' and first_year < station.get_begin_year_perc_rain():
             error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_perc_rain()) + ' zijn.'
         elif component == 'amount-rain' and first_year < station.get_begin_year_amount_rain():
             error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_amount_rain()) + ' zijn.'
+        elif component == 'temperature-day' and first_year < station.get_begin_year_mean_temp():
+            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_mean_temp()) + ' zijn.'
+        elif component == 'temperature-year' and first_year < station.get_begin_year_mean_temp():
+            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_mean_temp()) + ' zijn.'
         elif component == 'temperature-year' and last_year - first_year + 1 < 9:
             error_message = 'Bereik moet ten minste 9 jaar zijn als er een jaar grafiek gemaakt wordt.'
         elif component == 'extreme' and first_year < station.get_begin_year_amount_rain():

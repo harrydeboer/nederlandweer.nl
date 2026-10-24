@@ -24,8 +24,11 @@ class StationTest(TestCase):
         self.client.post("/admin/station/nieuw",
                          {'id': 1, 'name': 'test',
                           'begin_year': 1906, 'end_year': 2025,
-                          'begin_year_perc_rain': 1907, 'begin_year_amount_rain': 1906,
-                          'longitude': 3, 'latitude': 3})
+                          'begin_year_min_temp': 1906, 'begin_year_mean_temp': 1906, 'begin_year_max_temp': 1906,
+                          'begin_year_wind_direction': 1906, 'begin_year_wind_speed': 1906,
+                          'begin_year_wind_speed_va': 1906,
+                          'begin_year_perc_sunshine': 1906, 'begin_year_perc_rain': 1907,
+                          'begin_year_amount_rain': 1906, 'longitude': 3, 'latitude': 3})
 
         station = self.station_repository.get(1)
 
@@ -38,8 +41,11 @@ class StationTest(TestCase):
         self.client.post("/admin/station/wijzig/" + str(station.get_id()),
                          {'id': 1, 'name': 'test2',
                           'begin_year': 1906, 'end_year': 2025,
-                          'begin_year_perc_rain': 1907, 'begin_year_amount_rain': 1906,
-                          'longitude': 3, 'latitude': 3})
+                          'begin_year_min_temp': 1906, 'begin_year_mean_temp': 1906, 'begin_year_max_temp': 1906,
+                          'begin_year_wind_direction': 1906, 'begin_year_wind_speed': 1906,
+                          'begin_year_wind_speed_va': 1906,
+                          'begin_year_perc_sunshine': 1906, 'begin_year_perc_rain': 1907,
+                          'begin_year_amount_rain': 1906, 'longitude': 3, 'latitude': 3})
 
         station = self.station_repository.get(1)
 
