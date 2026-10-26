@@ -1,9 +1,12 @@
+from typing import List
+import datetime
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
 from django.shortcuts import render
 from nederland_weer.form.dashboard_form import DashboardForm
+from nederland_weer.repository.measurement_repository import MeasurementRepository
 from nederland_weer.service.curve_service import CurveService
-from nederland_weer.models import Station
+from nederland_weer.models import Measurement
 from nederland_weer.repository.station_repository import StationRepository
 import json
 
@@ -12,6 +15,7 @@ class HomepageView:
 
     def __init__(self):
         self.curve_service = CurveService()
+        self.measurement_repository = MeasurementRepository()
         self.station_repository = StationRepository()
 
     def index(self, request: WSGIRequest) -> HttpResponse:
@@ -32,55 +36,36 @@ class HomepageView:
             for index, station in stations.items():
                 if station.get_id() == station_id:
                     break
-            if self._validate(form, station):
+            measurements = self.measurement_repository.find_all(int(station.get_id()))
+            if self._validate(form, measurements):
                 (json_data, title,
                  vertical, horizontal, text_output) = (
-                    self.curve_service.make_curves(int(station_id), form['component'].value(),
-                                                  int(form['begin_year'].value()),
-                                                  int(form['end_year'].value())))
+                    self.curve_service.make_curves(form['component'].value(), measurements))
 
         return render(request, 'homepage/index.html', {
             'form': form,
             'json': json_data,
             'stations_json': json.dumps(stations_dict),
-            'minYear': int(station.get_begin_year()),
-            'maxYear': int(station.get_end_year()),
             'title': title,
             'vertical': vertical,
             'horizontal': horizontal,
             'text_output': text_output,
         })
 
-    def _validate(self, form: DashboardForm, station: Station) -> bool:
+    def _validate(self, form: DashboardForm, measurements: List[Measurement]) -> bool:
         component = form['component'].value()
-        first_year = int(form['begin_year'].value())
-        last_year = int(form['end_year'].value())
+        first_year = datetime.datetime.strptime(form['begin_year'].value(), '%d-%m-%Y').year
+        last_year = datetime.datetime.strptime(form['end_year'].value(), '%d-%m-%Y').year
+        begin_year = measurements[0].get_timestamp().year
+        end_year = measurements[-1].get_timestamp().year
         error_message = ''
         if last_year < first_year:
             error_message = 'Het laatste jaar kan niet eerder zijn dan het eerste jaar.'
-        elif first_year < station.get_begin_year() or last_year > station.get_end_year():
-            error_message = ('Jaren buiten het bereik ' + str(station.get_begin_year()) + '-'
-                             + str(station.get_end_year()) + '.')
-        elif component == 'wind-speed' and first_year < station.get_begin_year_wind_speed():
-            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_wind_speed()) + ' zijn.'
-        elif component == 'wind-speed-va' and first_year < station.get_begin_year_wind_speed_va():
-            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_wind_speed_va()) + ' zijn.'
-        elif component == 'tropical' and first_year < station.get_begin_year_max_temp():
-            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_max_temp) + ' zijn.'
-        elif component == 'perc-sunshine' and first_year < station.get_begin_year_perc_sunshine():
-            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_perc_sunshine()) + ' zijn.'
-        elif component == 'perc-rain' and first_year < station.get_begin_year_perc_rain():
-            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_perc_rain()) + ' zijn.'
-        elif component == 'amount-rain' and first_year < station.get_begin_year_amount_rain():
-            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_amount_rain()) + ' zijn.'
-        elif component == 'temperature-day' and first_year < station.get_begin_year_mean_temp():
-            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_mean_temp()) + ' zijn.'
-        elif component == 'temperature-year' and first_year < station.get_begin_year_mean_temp():
-            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_mean_temp()) + ' zijn.'
+        elif first_year < begin_year or last_year > end_year:
+            error_message = ('Jaren buiten het bereik ' + str(begin_year) + '-'
+                             + str(end_year) + '.')
         elif component == 'temperature-year' and last_year - first_year + 1 < 9:
             error_message = 'Bereik moet ten minste 9 jaar zijn als er een jaar grafiek gemaakt wordt.'
-        elif component == 'extreme' and first_year < station.get_begin_year_amount_rain():
-            error_message = 'Begin jaar kan niet voor ' + str(station.get_begin_year_amount_rain()) + ' zijn.'
         if error_message:
             form.add_error('begin_year', error_message)
             return False

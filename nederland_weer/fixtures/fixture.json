@@ -40,17 +40,6 @@
     "pk": 260,
     "fields": {
       "_name": "De Bilt",
-      "_begin_year": 1906,
-      "_end_year": 2025,
-      "_begin_year_min_temp": 1906,
-      "_begin_year_mean_temp": 1906,
-      "_begin_year_max_temp": 1906,
-      "_begin_year_wind_direction": 1906,
-      "_begin_year_wind_speed": 1906,
-      "_begin_year_wind_speed_va": 1906,
-      "_begin_year_perc_sunshine": 1930,
-      "_begin_year_perc_rain": 1930,
-      "_begin_year_amount_rain": 1906,
       "_longitude": 5.178047418027813,
       "_latitude": 52.10198449330324
     }
@@ -60,7 +49,24 @@
     "pk": 1,
     "fields": {
       "_id": 1, "_station_id": 260,
-      "_timestamp": "1906-01-01 00:00:00.000 +0000",
+      "_timestamp": "1901-01-01 00:00:00.000 +0000",
+      "_min_temp": 0,
+      "_mean_temp": 2.5,
+      "_max_temp": 5,
+      "_wind_direction": 3,
+      "_wind_speed_va": 5,
+      "_wind_speed":  5,
+      "_perc_sunshine": 10,
+      "_perc_rain": 10,
+      "_amount_rain":  5
+    }
+  },
+  {
+    "model": "nederland_weer.measurement",
+    "pk": 2,
+    "fields": {
+      "_id": 2, "_station_id": 260,
+      "_timestamp": "2026-01-01 00:00:00.000 +0000",
       "_min_temp": 0,
       "_mean_temp": 2.5,
       "_max_temp": 5,

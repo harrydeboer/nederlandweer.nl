@@ -1,17 +1,33 @@
+from typing import List
 from nederland_weer.models import Measurement
 import numpy as np
 import datetime as dt
 
+
 class MeasurementRepository:
 
-    def find_all(self, station_id: int, component: str, begin_year: int, end_year: int) -> np.ndarray:
-        measurements = Measurement.objects.all().filter(_station_id=station_id)
+    def find_all(self, station_id: int) -> List[Measurement]:
+        return list(Measurement.objects.all().filter(_station_id=station_id))
+
+    def make_array(self, measurements: List[Measurement], component: str, begin_year: int, end_year: int) -> np.ndarray:
         day_year_array = np.zeros([365, end_year - begin_year + 1])
         last_good_value = None
+        first_year = measurements[0].get_timestamp().year
+        last_year = measurements[-1].get_timestamp().year
+        first_day = measurements[0].get_timestamp().day
+        last_day = measurements[-1].get_timestamp().day
+        first_month = measurements[0].get_timestamp().month
+        last_month = measurements[-1].get_timestamp().month
         for index, measurement in enumerate(measurements):
             year = int(measurement.get_timestamp().year)
             month = int(measurement.get_timestamp().month)
             day = int(measurement.get_timestamp().day)
+
+            if year == first_year and (first_day != 1 or first_month != 1):
+                continue
+
+            if year == last_year and (last_day != 31 or last_month != 12):
+                continue
 
             attribute = getattr(measurement, 'get_' + component)
 
@@ -27,18 +43,13 @@ class MeasurementRepository:
             if year % 4 == 0 and days_in_the_year > 59:
                 days_in_the_year -= 1
 
-            # The year, month and day are converted into a day number of the year.
-            days_in_the_year = (dt.date(year, month, day) - dt.date(year, 1, 1)).days
-
-            # When the year is a leap year the day number is lowered after leap day.
-            # This way there are 365 days used in the leap year also.
-            if year % 4 == 0 and days_in_the_year > 59:
-                days_in_the_year -= 1
-
             if attribute() is None:
                 if last_good_value is None:
                     last_good_value = getattr(measurements[index - 1], 'get_' + component)()
-                day_year_array[days_in_the_year, year - begin_year] = float(last_good_value)
+                if last_good_value is None:
+                    continue
+                else:
+                    day_year_array[days_in_the_year, year - begin_year] = float(last_good_value)
             else:
                 day_year_array[days_in_the_year, year - begin_year] = float(attribute())
 

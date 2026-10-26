@@ -7,17 +7,6 @@ from django.db.models.constraints import UniqueConstraint
 class Station(models.Model):
     _id = models.AutoField(primary_key=True)
     _name = models.CharField(max_length=255, unique=True)
-    _begin_year = models.IntegerField()
-    _end_year = models.IntegerField()
-    _begin_year_min_temp = models.IntegerField()
-    _begin_year_mean_temp = models.IntegerField()
-    _begin_year_max_temp = models.IntegerField()
-    _begin_year_wind_direction = models.IntegerField()
-    _begin_year_wind_speed_va = models.IntegerField()
-    _begin_year_wind_speed = models.IntegerField()
-    _begin_year_perc_sunshine = models.IntegerField()
-    _begin_year_perc_rain = models.IntegerField()
-    _begin_year_amount_rain = models.IntegerField()
     _longitude = models.FloatField()
     _latitude = models.FloatField()
 
@@ -32,72 +21,6 @@ class Station(models.Model):
 
     def set_name(self, name: str):
         self._name = name
-
-    def get_begin_year(self) -> int:
-        return self._begin_year
-
-    def set_begin_year(self, begin_year: int):
-        self._begin_year = begin_year
-
-    def get_end_year(self) -> int:
-        return self._end_year
-
-    def set_end_year(self, end_year: int):
-        self._end_year = end_year
-
-    def get_begin_year_min_temp(self) -> int:
-        return self._begin_year_min_temp
-
-    def set_begin_year_min_temp(self, begin_year: int):
-        self._begin_year_min_temp = begin_year
-
-    def get_begin_year_mean_temp(self) -> int:
-        return self._begin_year_mean_temp
-
-    def set_begin_year_mean_temp(self, begin_year: int):
-        self._begin_year_mean_temp = begin_year
-
-    def get_begin_year_max_temp(self) -> int:
-        return self._begin_year_max_temp
-
-    def set_begin_year_max_temp(self, begin_year: int):
-        self._begin_year_max_temp = begin_year
-
-    def get_begin_year_wind_direction(self) -> int:
-        return self._begin_year_wind_direction
-
-    def set_begin_year_wind_direction(self, begin_year: int):
-        self._begin_year_wind_direction = begin_year
-
-    def get_begin_year_wind_speed(self) -> int:
-        return self._begin_year_wind_speed
-
-    def set_begin_year_wind_speed(self, begin_year: int):
-        self._begin_year_wind_speed = begin_year
-
-    def get_begin_year_wind_speed_va(self) -> int:
-        return self._begin_year_wind_speed_va
-
-    def set_begin_year_wind_speed_va(self, begin_year: int):
-        self._begin_year_wind_speed_va = begin_year
-
-    def get_begin_year_perc_sunshine(self) -> int:
-        return self._begin_year_perc_sunshine
-
-    def set_begin_year_perc_sunshine(self, begin_year: int):
-        self._begin_year_perc_sunshine = begin_year
-
-    def get_begin_year_perc_rain(self) -> int:
-        return self._begin_year_perc_rain
-
-    def set_begin_year_perc_rain(self, begin_year: int):
-        self._begin_year_perc_rain = begin_year
-
-    def get_begin_year_amount_rain(self) -> int:
-        return self._begin_year_amount_rain
-
-    def set_begin_year_amount_rain(self, begin_year: int):
-        self._begin_year_amount_rain = begin_year
 
     def get_longitude(self) -> float | None:
         return self._longitude

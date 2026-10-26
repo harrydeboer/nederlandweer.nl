@@ -1,10 +1,11 @@
+from nederland_weer.models import Measurement
 from nederland_weer.repository.dawn_dusk_repository import DawnDuskRepository
 from nederland_weer.repository.measurement_repository import MeasurementRepository
 import numpy as np
 import json
 import locale
 import datetime as dt
-from typing import Tuple
+from typing import Tuple, List
 
 
 class CurveService:
@@ -12,49 +13,52 @@ class CurveService:
     def __init__(self):
         self.measurement_repository = MeasurementRepository()
         self.dawn_dusk_repository = DawnDuskRepository()
-        self.first_year = None
-        self.last_year = None
         self.y_smooth = None
+        self.begin_year = None
+        self.end_year = None
 
-    def make_curves(self, station_id: int, component: str, begin_year: int, end_year: int)\
-            -> Tuple[str, str, str, str, str]:
-        self.first_year = begin_year
-        self.last_year = end_year
+    def make_curves(self, component: str, measurements: List[Measurement]) -> Tuple[str, str, str, str, str]:
+        begin_year = measurements[0].get_timestamp().year
+        end_year = measurements[-1].get_timestamp().year
+        self.begin_year = begin_year
+        self.end_year = end_year
         text_output = ''
         if component == 'temperature-day':
             locale.setlocale(locale.LC_TIME, "nl_NL.utf8")
-            json_data = self._curve_to_json(self.measurement_repository.find_all(station_id,
-                                                                                 'mean_temp', begin_year,
-                                                                                 end_year).mean(axis=1), True)
+            json_data = self._curve_to_json(self.measurement_repository.make_array(measurements,
+                                                                                   'mean_temp',
+                                                                                   begin_year,
+                                                                                   end_year).mean(axis=1), True)
             text_output = 'Eerste zomerdag: ' + self._get_first_date_summer(self.y_smooth).strftime("%d %B") + '.'
             title = 'Temperatuur'
             vertical = 'temperatuur °C'
             horizontal = 'dag'
         elif component == 'temperature-year':
-            json_data = self._curve_to_json(self.measurement_repository.find_all(station_id,
-                                                                                 'mean_temp', begin_year,
-                                                                                 end_year).mean(axis=0), False)
+            json_data = self._curve_to_json(self.measurement_repository.make_array(measurements,
+                                                                                   'mean_temp',
+                                                                                   begin_year,
+                                                                                   end_year).mean(axis=0), False)
             text_output = 'Temperatuur stijging: ' + str(
                 int((self.y_smooth[-1] - self.y_smooth[0]) * 10) / 10).replace('.', ',') + "°."
             title = 'Temperatuur'
             vertical = 'temperatuur °C'
             horizontal = 'jaar'
         elif component == 'amount-rain':
-            json_data = self._curve_to_json(self.measurement_repository.find_all(station_id,
+            json_data = self._curve_to_json(self.measurement_repository.make_array(measurements,
                                                                                  'amount_rain', begin_year,
                                                                                  end_year).mean(axis=1), True)
             title = 'Regen hoeveelheid'
             vertical = 'regen hoeveelheid mm'
             horizontal = 'dag'
         elif component == 'perc-rain':
-            json_data = self._curve_to_json(self.measurement_repository.find_all(station_id,
+            json_data = self._curve_to_json(self.measurement_repository.make_array(measurements,
                                                                                  'perc_rain', begin_year,
                                                                                  end_year).mean(axis=1), True)
             title = 'Regen percentage'
             vertical = 'regen percentage'
             horizontal = 'dag'
         elif component == 'perc-sunshine':
-            json_data = self._curve_to_json(self.measurement_repository.find_all(station_id,
+            json_data = self._curve_to_json(self.measurement_repository.make_array(measurements,
                                                                                  'perc_sunshine', begin_year,
                                                                                  end_year).mean(axis=1),
                                             True, 'perc_sunshine')
@@ -62,7 +66,7 @@ class CurveService:
             vertical = 'percentage zon'
             horizontal = 'dag'
         elif component == 'wind-speed':
-            json_data = self._curve_to_json(self.measurement_repository.find_all(station_id,
+            json_data = self._curve_to_json(self.measurement_repository.make_array(measurements,
                                                                                  'wind_speed', begin_year,
                                                                                  end_year).mean(axis=1), True)
             title = 'Wind snelheid'
@@ -70,12 +74,12 @@ class CurveService:
             horizontal = 'dag'
         elif component == 'wind-speed-va':
             # The vector average speed and direction are retrieved as a 2-dimensional day year array.
-            speed_2d = self.measurement_repository.find_all(station_id,
-                                                                                 'wind_speed_va', begin_year,
-                                                                                 end_year)
-            angle_2d = self.measurement_repository.find_all(station_id,
-                                                                                 'wind_direction', begin_year,
-                                                                                 end_year)
+            speed_2d = self.measurement_repository.make_array(measurements,
+                                                            'wind_speed_va', begin_year,
+                                                            end_year)
+            angle_2d = self.measurement_repository.make_array(measurements,
+                                                            'wind_direction', begin_year,
+                                                            end_year)
 
             # The 2-dimensional angle and speed are averaged over the years.
             angle = self._mean_of_angle(speed_2d, angle_2d)
@@ -85,9 +89,9 @@ class CurveService:
             vertical = 'hoek'
             horizontal = 'dag'
         elif component == 'tropical':
-            temperatures = self.measurement_repository.find_all(station_id,
-                                                                                 'max_temp', begin_year,
-                                                                                 end_year)
+            temperatures = self.measurement_repository.make_array(measurements,
+                                                                'max_temp', begin_year,
+                                                                end_year)
             data_temp = np.zeros(temperatures.shape[1])
             index_year = 0
             for year in np.transpose(temperatures):
@@ -100,9 +104,9 @@ class CurveService:
             vertical = 'aantal'
             horizontal = 'jaar'
         elif component == 'extreme':
-            rain_amounts = self.measurement_repository.find_all(station_id,
-                                                                                 'amount_rain', begin_year,
-                                                                                 end_year)
+            rain_amounts = self.measurement_repository.make_array(measurements,
+                                                                'amount_rain', begin_year,
+                                                                end_year)
             data_rain = np.zeros(rain_amounts.shape[1])
             index_year = 0
             rain_amount_average = 0
@@ -149,10 +153,10 @@ class CurveService:
             length = int(self.y_smooth.size / 3)
             self.y_smooth = self.y_smooth[length: 2 * length]
         else:
-            x = np.arange(self.first_year, self.last_year + 1)
+            x = np.arange(self.begin_year, self.end_year + 1)
 
-            # The box_points is a fraction of the difference between lastYear and firstYear.
-            box_points = int((self.last_year - self.first_year) / 120 * 30)
+            # The box_points is a fraction of the difference between end year and begin year.
+            box_points = int((self.end_year - self.begin_year) / 120 * 30)
 
             self.y_smooth = self._make_smooth_curve_linear_extrapolate(y, box_points)
 

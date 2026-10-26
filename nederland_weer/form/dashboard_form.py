@@ -1,6 +1,6 @@
 from django import forms
-from django.forms.fields import ChoiceField
-from django.forms.fields import IntegerField
+from django.forms.fields import ChoiceField, DateField
+import datetime
 
 
 class DashboardForm(forms.Form):
@@ -16,10 +16,10 @@ class DashboardForm(forms.Form):
             choices.append((station.get_id(), station.get_name()))
         self.fields['station'] = ChoiceField(initial='260', choices=choices, required=True,
                                              widget=forms.Select(attrs={'class': 'form-select'}))
-        self.fields['begin_year'] = IntegerField(initial=stations['De Bilt'].get_begin_year(),
-                                                 widget=forms.NumberInput(attrs={'class': 'form-control'}))
-        self.fields['end_year'] = IntegerField(initial=stations['De Bilt'].get_end_year(),
-                                               widget=forms.NumberInput(attrs={'class': 'form-control'}))
+        self.fields['begin_year'] = DateField(initial='01-01-1901',
+                                                 widget=forms.DateInput(attrs={'class': 'form-control'}))
+        self.fields['end_year'] = DateField(initial=datetime.datetime.now(),
+                                               widget=forms.DateInput(attrs={'class': 'form-control'}))
 
     choices = [
         ("", "-"),
@@ -38,6 +38,6 @@ class DashboardForm(forms.Form):
 
     station = forms.ChoiceField()
 
-    begin_year = forms.IntegerField()
+    begin_year = forms.DateField()
 
-    end_year = forms.IntegerField()
+    end_year = forms.DateField()

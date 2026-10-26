@@ -1,21 +1,18 @@
 from django.test import TestCase
-from nederland_weer.service.curve_service import CurveService
+from nederland_weer.repository.measurement_repository import MeasurementRepository
 from nederland_weer.repository.station_repository import StationRepository
+from nederland_weer.service.curve_service import CurveService
 
 
 class TestCurveService(TestCase):
     fixtures = ['fixture.json']
 
     def testFindAll(self) -> None:
-        station_repository = StationRepository()
-        stations = station_repository.find_all()
-        station_de_bilt = stations['De Bilt']
+        stations = StationRepository().find_all()
+        measurements = MeasurementRepository().find_all(stations['De Bilt'].get_id())
         (json_data, title,
-         vertical, horizontal, text_output) = CurveService().make_curves(
-            station_de_bilt.get_id(),
-            'temperature-day',
-            station_de_bilt.get_begin_year(),
-            station_de_bilt.get_end_year())
+         vertical, horizontal, text_output) = CurveService().make_curves('temperature-day',
+            measurements)
         self.assertIsInstance(json_data, str)
         self.assertIsInstance(title, str)
         self.assertIsInstance(vertical, str)
