@@ -55,7 +55,7 @@ class Dashboard {
         let that = this;
         setTimeout(function () {
             that.popupIcon(that.station.val());
-        }, 500);
+        }, 1000);
     }
 
     makeFeatures() {
