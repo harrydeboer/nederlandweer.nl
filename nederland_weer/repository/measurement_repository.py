@@ -1,3 +1,4 @@
+import datetime
 from typing import List
 from nederland_weer.models import Measurement
 import numpy as np
@@ -6,8 +7,10 @@ import datetime as dt
 
 class MeasurementRepository:
 
-    def find_all(self, station_id: int) -> List[Measurement]:
-        return list(Measurement.objects.all().filter(_station_id=station_id).order_by('_timestamp'))
+    def find_all(self, station_id: int, begin_year: datetime.datetime,
+                 end_year: datetime.datetime) -> List[Measurement]:
+        return list(Measurement.objects.all().filter(_station_id=station_id,
+                                                     _timestamp__range=(begin_year, end_year)).order_by('_timestamp'))
 
     def make_array(self, measurements: List[Measurement], component: str, begin_year: int, end_year: int) -> np.ndarray:
         first_year = measurements[0].get_timestamp().year

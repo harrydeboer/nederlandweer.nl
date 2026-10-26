@@ -30,6 +30,8 @@ class CurveService:
             self.begin_year = begin_year + 1
         if last_day != 31 or last_month != 12:
             self.end_year = end_year - 1
+        if (first_day != 1 or first_month != 1) and (last_day != 31 or last_month != 12) and end_year - begin_year < 2:
+            return '{}', 'N/B', 'n/b', 'n/b', ''
         text_output = ''
         if component == 'temperature-day':
             locale.setlocale(locale.LC_TIME, "nl_NL.utf8")

@@ -36,7 +36,11 @@ class HomepageView:
             for index, station in stations.items():
                 if station.get_id() == station_id:
                     break
-            measurements = self.measurement_repository.find_all(int(station.get_id()))
+            measurements = self.measurement_repository.find_all(int(station.get_id()),
+                                                                datetime.datetime.strptime(
+                                                                    form['begin_year'].value(), '%d-%m-%Y'),
+                                                                datetime.datetime.strptime(
+                                                                    form['end_year'].value(), '%d-%m-%Y'))
             if self._validate(form, measurements):
                 (json_data, title,
                  vertical, horizontal, text_output) = (
@@ -64,7 +68,8 @@ class HomepageView:
         elif first_year < begin_year or last_year > end_year:
             error_message = ('Jaren buiten het bereik ' + str(begin_year) + '-'
                              + str(end_year) + '.')
-        elif component == 'temperature-year' and last_year - first_year + 1 < 9:
+        elif ((component == 'temperature-year' or component == 'tropical' or component == 'extreme')
+              and last_year - first_year + 1 < 9):
             error_message = 'Bereik moet ten minste 9 jaar zijn als er een jaar grafiek gemaakt wordt.'
         if error_message:
             form.add_error('begin_year', error_message)
