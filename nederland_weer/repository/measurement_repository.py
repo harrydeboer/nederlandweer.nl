@@ -10,14 +10,20 @@ class MeasurementRepository:
         return list(Measurement.objects.all().filter(_station_id=station_id))
 
     def make_array(self, measurements: List[Measurement], component: str, begin_year: int, end_year: int) -> np.ndarray:
-        day_year_array = np.zeros([365, end_year - begin_year + 1])
-        last_good_value = None
         first_year = measurements[0].get_timestamp().year
         last_year = measurements[-1].get_timestamp().year
         first_day = measurements[0].get_timestamp().day
         last_day = measurements[-1].get_timestamp().day
         first_month = measurements[0].get_timestamp().month
         last_month = measurements[-1].get_timestamp().month
+        begin_year_array = begin_year
+        end_year_array = end_year
+        if first_day != 1 or first_month != 1:
+            begin_year_array = begin_year + 1
+        if last_day != 31 or last_month != 12:
+            end_year_array = end_year - 1
+        day_year_array = np.zeros([365, end_year_array - begin_year_array + 1])
+        last_good_value = None
         for index, measurement in enumerate(measurements):
             year = int(measurement.get_timestamp().year)
             month = int(measurement.get_timestamp().month)
@@ -32,7 +38,7 @@ class MeasurementRepository:
             attribute = getattr(measurement, 'get_' + component)
 
             # The years outside the GUI range are neglected.
-            if year < begin_year or year > end_year:
+            if year < begin_year_array or year > end_year_array:
                 continue
 
             # The year, month and day are converted into a day number of the year.
@@ -49,9 +55,9 @@ class MeasurementRepository:
                 if last_good_value is None:
                     continue
                 else:
-                    day_year_array[days_in_the_year, year - begin_year] = float(last_good_value)
+                    day_year_array[days_in_the_year, year - begin_year_array] = float(last_good_value)
             else:
-                day_year_array[days_in_the_year, year - begin_year] = float(attribute())
+                day_year_array[days_in_the_year, year - begin_year_array] = float(attribute())
 
         return day_year_array
 

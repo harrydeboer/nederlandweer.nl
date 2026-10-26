@@ -18,10 +18,18 @@ class CurveService:
         self.end_year = None
 
     def make_curves(self, component: str, measurements: List[Measurement]) -> Tuple[str, str, str, str, str]:
+        first_day = measurements[0].get_timestamp().day
+        last_day = measurements[-1].get_timestamp().day
+        first_month = measurements[0].get_timestamp().month
+        last_month = measurements[-1].get_timestamp().month
         begin_year = measurements[0].get_timestamp().year
         end_year = measurements[-1].get_timestamp().year
         self.begin_year = begin_year
         self.end_year = end_year
+        if first_day != 1 or first_month != 1:
+            self.begin_year = begin_year + 1
+        if last_day != 31 or last_month != 12:
+            self.end_year = end_year - 1
         text_output = ''
         if component == 'temperature-day':
             locale.setlocale(locale.LC_TIME, "nl_NL.utf8")
