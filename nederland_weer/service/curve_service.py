@@ -77,7 +77,7 @@ class CurveService:
             horizontal = 'dag'
         elif component == 'wind-speed':
             json_data = self._curve_to_json(self.measurement_repository.make_array(measurements,
-                                                                                 'wind_speed', begin_year,
+                                                                                 'mean_wind_speed', begin_year,
                                                                                  end_year).mean(axis=1), True)
             title = 'Wind snelheid'
             vertical = 'snelheid m/s'
