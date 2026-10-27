@@ -39,7 +39,7 @@ else:
     DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', 'nederlandweer',
-                 'nederlandweer.nl', 'www.nederlandweer.nl', '157.245.68.107']
+                 'nederlandweer.nl', 'www.nederlandweer.nl', '209.38.35.41']
 
 
 # Application definition
