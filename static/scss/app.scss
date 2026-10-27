@@ -3,13 +3,19 @@
 $font-stack: 'Open Sans', sans-serif;
 
 #map {
-  height: 650px;
+  height: 400px;
   margin-left: 15px;
   margin-right: 15px;
 }
 
 #map .ol-viewport {
   border-radius: 25px;
+}
+
+@media screen and (min-width: 416px) {
+  #map {
+    height: 680px;
+  }
 }
 
 .station-title {

@@ -38,9 +38,11 @@ class HomepageView:
                     break
             measurements = self.measurement_repository.find_all(int(station.get_id()),
                                                                 datetime.datetime.strptime(
-                                                                    form['begin_year'].value(), '%d-%m-%Y'),
+                                                                    form['begin_year'].value(), '%d-%m-%Y')
+                                                                .replace(tzinfo=datetime.timezone.utc),
                                                                 datetime.datetime.strptime(
-                                                                    form['end_year'].value(), '%d-%m-%Y'))
+                                                                    form['end_year'].value(), '%d-%m-%Y')
+                                                                .replace(tzinfo=datetime.timezone.utc))
             if self._validate(form, measurements):
                 (json_data, title,
                  vertical, horizontal, text_output) = (
@@ -58,8 +60,10 @@ class HomepageView:
 
     def _validate(self, form: DashboardForm, measurements: List[Measurement]) -> bool:
         component = form['component'].value()
-        first_year = datetime.datetime.strptime(form['begin_year'].value(), '%d-%m-%Y').year
-        last_year = datetime.datetime.strptime(form['end_year'].value(), '%d-%m-%Y').year
+        first_year = (datetime.datetime.strptime(form['begin_year'].value(), '%d-%m-%Y')
+                      .replace(tzinfo=datetime.timezone.utc).year)
+        last_year = (datetime.datetime.strptime(form['end_year'].value(), '%d-%m-%Y')
+                     .replace(tzinfo=datetime.timezone.utc).year)
         begin_year = measurements[0].get_timestamp().year
         end_year = measurements[-1].get_timestamp().year
         error_message = ''

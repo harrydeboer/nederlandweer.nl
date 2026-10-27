@@ -19,9 +19,12 @@ class Dashboard {
             source: vectorSource,
         });
 
-        /*
-        Make a map of Utrecht.
-         */
+        let width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+        let zoom = 7.6;
+        if (width <= 415) {
+            zoom = 6.7;
+        }
+
         this.map = new ol.Map({
             layers: [
                 new ol.layer.Tile({
@@ -33,7 +36,7 @@ class Dashboard {
             view: new ol.View({
 
                 center: ol.proj.fromLonLat([5.11, 52.15]),
-                zoom: 7.6,
+                zoom: zoom,
             }),
         });
 
