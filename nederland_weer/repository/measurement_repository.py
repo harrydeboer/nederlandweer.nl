@@ -65,7 +65,7 @@ class MeasurementRepository:
         return day_year_array
 
     def find_last(self, station_id: int) -> Measurement| None:
-        return Measurement.objects.all().filter(_station_id=station_id).last()
+        return Measurement.objects.all().filter(_station_id=station_id).order_by('_timestamp').last()
 
     def create(self, measurement: Measurement):
         measurement.save()
