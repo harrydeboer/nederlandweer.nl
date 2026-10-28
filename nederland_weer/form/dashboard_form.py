@@ -17,9 +17,13 @@ class DashboardForm(forms.Form):
         self.fields['station'] = ChoiceField(initial='260', choices=choices, required=True,
                                              widget=forms.Select(attrs={'class': 'form-select'}))
         self.fields['begin_year'] = DateField(initial='01-01-1901',
-                                                 widget=forms.DateInput(attrs={'class': 'form-control'}))
+                                                 widget=forms.DateInput(attrs={'class': 'form-control',
+                                                                               'placeholder': 'dd-mm-jjjj'},
+                                                                        format="%d-%m-%Y"), input_formats=["%d-%m-%Y"])
         self.fields['end_year'] = DateField(initial=datetime.datetime.now(),
-                                               widget=forms.DateInput(attrs={'class': 'form-control'}))
+                                               widget=forms.DateInput(attrs={'class': 'form-control',
+                                                                             'placeholder': 'dd-mm-jjjj'},
+                                                                      format="%d-%m-%Y"), input_formats=["%d-%m-%Y"])
 
     choices = [
         ("", "-"),

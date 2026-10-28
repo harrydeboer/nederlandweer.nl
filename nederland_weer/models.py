@@ -174,310 +174,236 @@ class Measurement(models.Model):
     def set_timestamp(self, value: datetime.datetime):
         self._timestamp = value
 
-    def get_wind_direction(self) -> float | None:
+    def get_wind_direction(self) -> int | None:
         return self._wind_direction
 
     def set_wind_direction(self, value: str|None):
         self._wind_direction = self.set_int(value)
 
     def get_wind_speed_va(self) -> float | None:
-        if self._wind_speed_va is None:
-            return None
-        return self._wind_speed_va * 0.1
+        return self.get_float(self._wind_speed_va, 0.1)
 
     def set_wind_speed_va(self, value: str|None):
         self._wind_speed_va = self.set_int(value)
 
     def get_mean_wind_speed(self) -> float | None:
-        if self._mean_wind_speed is None:
-            return None
-        return self._mean_wind_speed * 0.1
+        return self.get_float(self._mean_wind_speed, 0.1)
 
     def set_mean_wind_speed(self, value: str|None):
         self._mean_wind_speed = self.set_int(value)
 
     def get_max_wind_speed(self) -> float | None:
-        if self._max_wind_speed is None:
-            return None
-        return self._max_wind_speed * 0.1
+        return self.get_float(self._max_wind_speed, 0.1)
 
     def set_max_wind_speed(self, value: str|None):
         self._max_wind_speed = self.set_int(value)
 
-    def get_max_wind_speed_hour(self) -> float | None:
-        if self._max_wind_speed_hour is None:
-            return None
-        return self._max_wind_speed_hour * 0.1
+    def get_max_wind_speed_hour(self) -> int | None:
+        return self._max_wind_speed_hour
 
     def set_max_wind_speed_hour(self, value: str|None):
         self._max_wind_speed_hour = self.set_int(value)
 
     def get_min_wind_speed(self) -> float | None:
-        if self._min_wind_speed is None:
-            return None
-        return self._min_wind_speed * 0.1
+        return self.get_float(self._min_wind_speed, 0.1)
 
     def set_min_wind_speed(self, value: str|None):
         self._min_wind_speed = self.set_int(value)
 
-    def get_min_wind_speed_hour(self) -> float | None:
-        if self._min_wind_speed_hour is None:
-            return None
-        return self._min_wind_speed_hour * 0.1
+    def get_min_wind_speed_hour(self) -> int | None:
+        return self._min_wind_speed_hour
 
     def set_min_wind_speed_hour(self, value: str|None):
         self._min_wind_speed_hour = self.set_int(value)
 
     def get_wind_gust(self) -> float | None:
-        if self._wind_gust is None:
-            return None
-        return self._wind_gust * 0.1
+        return self.get_float(self._wind_gust, 0.1)
 
     def set_wind_gust(self, value: str|None):
         self._wind_gust = self.set_int(value)
 
-    def get_wind_gust_hour(self) -> float | None:
-        if self._wind_gust_hour is None:
-            return None
-        return self._wind_gust_hour * 0.1
+    def get_wind_gust_hour(self) -> int | None:
+        return self._wind_gust_hour
 
     def set_wind_gust_hour(self, value: str|None):
         self._wind_gust_hour = self.set_int(value)
 
     def get_min_temp(self) -> float | None:
-        if self._min_temp is None:
-            return None
-        return self._min_temp * 0.1
+        return self.get_float(self._min_temp, 0.1)
 
     def set_min_temp(self, value: str|None):
         self._min_temp = self.set_int(value)
 
-    def get_min_temp_hour(self) -> float | None:
-        if self._min_temp_hour is None:
-            return None
-        return self._min_temp_hour * 0.1
+    def get_min_temp_hour(self) -> int | None:
+        return self._min_temp_hour
 
     def set_min_temp_hour(self, value: str|None):
         self._min_temp_hour = self.set_int(value)
 
     def get_mean_temp(self) -> float | None:
-        if self._mean_temp is None:
-            return None
-        return self._mean_temp * 0.1
+        return self.get_float(self._mean_temp, 0.1)
 
     def set_mean_temp(self, value: str|None):
         self._mean_temp = self.set_int(value)
 
     def get_max_temp(self) -> float | None:
-        if self._max_temp is None:
-            return None
-        return self._max_temp * 0.1
+        return self.get_float(self._max_temp, 0.1)
 
     def set_max_temp(self, value: str|None):
         self._max_temp = self.set_int(value)
 
-    def get_max_temp_hour(self) -> float | None:
-        if self._max_temp_hour is None:
-            return None
-        return self._max_temp_hour * 0.1
+    def get_max_temp_hour(self) -> int | None:
+        return self._max_temp_hour
 
     def set_max_temp_hour(self, value: str|None):
         self._max_temp_hour = self.set_int(value)
 
     def get_min_temp_10(self) -> float | None:
-        if self._min_temp_10 is None:
-            return None
-        return self._min_temp_10 * 0.1
+        return self.get_float(self._min_temp_10, 0.1)
 
     def set_min_temp_10(self, value: str|None):
         self._min_temp_10 = self.set_int(value)
 
-    def get_min_temp_hour_10(self) -> float | None:
-        if self._min_temp_10_hour is None:
-            return None
-        return self._min_temp_10_hour * 0.1
+    def get_min_temp_hour_10(self) -> int | None:
+        return self._min_temp_10_hour
 
     def set_min_temp_hour_10(self, value: str | None):
         self._min_temp_10_hour = self.set_int(value)
 
     def get_amount_sunshine(self) -> float | None:
-        if self._amount_sunshine is None:
-            return None
-        return self._amount_sunshine * 0.1
+        return self.get_float(self._amount_sunshine, 0.1)
 
     def set_amount_sunshine(self, value: str|None):
         self._amount_sunshine = self.set_int(value)
 
-    def get_perc_sunshine(self) -> float | None:
-        if self._perc_sunshine is None:
-            return None
+    def get_perc_sunshine(self) -> int | None:
         return self._perc_sunshine
 
     def set_perc_sunshine(self, value: str|None):
         self._perc_sunshine = self.set_int(value)
 
-    def get_radiation(self) -> float | None:
+    def get_radiation(self) -> int | None:
         return self._radiation
 
     def set_radiation(self, value: str|None):
         self._radiation = self.set_int(value)
 
     def get_perc_rain(self) -> float | None:
-        if self._perc_rain is None:
-            return None
-        return self._perc_rain * 0.416666666666
+        return self.get_float(self._perc_rain, 0.416666666666)
 
     def set_perc_rain(self, value: str|None):
         self._perc_rain = self.set_int(value)
 
     def get_amount_rain(self) -> float | None:
-        if self._amount_rain is None:
-            return None
-        return self._amount_rain * 0.1
+        return self.get_float(self._amount_rain, 0.1)
 
     def set_amount_rain(self, value: str|None):
         self._amount_rain = self.set_int(value)
 
     def get_max_rain(self) -> float | None:
-        if self._max_rain is None:
-            return None
-        return self._max_rain * 0.1
+        return self.get_float(self._max_rain, 0.1)
 
     def set_max_rain(self, value: str|None):
         self._max_rain = self.set_int(value)
 
-    def get_max_rain_hour(self) -> float | None:
-        if self._max_rain_hour is None:
-            return None
-        return self._max_rain_hour * 0.1
+    def get_max_rain_hour(self) -> int | None:
+        return self._max_rain_hour
 
     def set_max_rain_hour(self, value: str|None):
         self._max_rain_hour = self.set_int(value)
 
     def get_mean_air_pressure(self) -> float | None:
-        if self._mean_air_pressure is None:
-            return None
-        return self._mean_air_pressure * 0.1
+        return self.get_float(self._mean_air_pressure, 0.1)
 
     def set_mean_air_pressure(self, value: str|None):
         self._mean_air_pressure = self.set_int(value)
 
     def get_max_air_pressure(self) -> float | None:
-        if self._max_air_pressure is None:
-            return None
-        return self._max_air_pressure * 0.1
+        return self.get_float(self._max_air_pressure, 0.1)
 
     def set_max_air_pressure(self, value: str|None):
         self._max_air_pressure = self.set_int(value)
 
-    def get_max_air_pressure_hour(self) -> float | None:
-        if self._max_air_pressure_hour is None:
-            return None
-        return self._max_air_pressure_hour * 0.1
+    def get_max_air_pressure_hour(self) -> int | None:
+        return self._max_air_pressure_hour
 
     def set_max_air_pressure_hour(self, value: str|None):
         self._max_air_pressure_hour = self.set_int(value)
 
     def get_min_air_pressure(self) -> float | None:
-        if self._min_air_pressure is None:
-            return None
-        return self._min_air_pressure * 0.1
+        return self.get_float(self._min_air_pressure, 0.1)
 
     def set_min_air_pressure(self, value: str | None):
         self._min_air_pressure = self.set_int(value)
 
-    def get_min_air_pressure_hour(self) -> float | None:
-        if self._min_air_pressure_hour is None:
-            return None
-        return self._min_air_pressure_hour * 0.1
+    def get_min_air_pressure_hour(self) -> int | None:
+        return self._min_air_pressure_hour
 
     def set_min_air_pressure_hour(self, value: str | None):
         self._min_air_pressure_hour = self.set_int(value)
 
-    def get_min_visibility(self) -> float | None:
-        if self._min_visibility is None:
-            return None
-        return self._min_visibility * 0.1
+    def get_min_visibility(self) -> int | None:
+        return self._min_visibility
 
     def set_min_visibility(self, value: str|None):
         self._min_visibility = self.set_int(value)
 
-    def get_min_visibility_hour(self) -> float | None:
-        if self._min_visibility_hour is None:
-            return None
-        return self._min_visibility_hour * 0.1
+    def get_min_visibility_hour(self) -> int | None:
+        return self._min_visibility_hour
 
     def set_min_visibility_hour(self, value: str|None):
         self._min_visibility_hour = self.set_int(value)
 
-    def get_max_visibility(self) -> float | None:
-        if self._max_visibility is None:
-            return None
-        return self._max_visibility * 0.1
+    def get_max_visibility(self) -> int | None:
+        return self._max_visibility
 
     def set_max_visibility(self, value: str | None):
         self._max_visibility = self.set_int(value)
 
-    def get_max_visibility_hour(self) -> float | None:
-        if self._max_visibility_hour is None:
-            return None
-        return self._max_visibility_hour * 0.1
+    def get_max_visibility_hour(self) -> int | None:
+        return self._max_visibility_hour
 
     def set_max_visibility_hour(self, value: str | None):
         self._max_visibility_hour = self.set_int(value)
 
-    def get_cloudiness(self) -> float | None:
-        if self._cloudiness is None:
-            return None
-        return self._cloudiness * 0.1
+    def get_cloudiness(self) -> int | None:
+        return self._cloudiness
 
     def set_cloudiness(self, value: str | None):
         self._cloudiness = self.set_int(value)
 
-    def get_mean_humidity(self) -> float | None:
-        if self._mean_humidity is None:
-            return None
-        return self._mean_humidity * 0.1
+    def get_mean_humidity(self) -> int | None:
+        return self._mean_humidity
 
     def set_mean_humidity(self, value: str | None):
         self._mean_humidity = self.set_int(value)
 
-    def get_max_humidity(self) -> float | None:
-        if self._max_humidity is None:
-            return None
-        return self._max_humidity * 0.1
+    def get_max_humidity(self) -> int | None:
+        return self._max_humidity
 
     def set_max_humidity(self, value: str | None):
         self._max_humidity = self.set_int(value)
 
-    def get_max_humidity_hour(self) -> float | None:
-        if self._max_humidity_hour is None:
-            return None
-        return self._max_humidity_hour * 0.1
+    def get_max_humidity_hour(self) -> int | None:
+        return self._max_humidity_hour
 
     def set_max_humidity_hour(self, value: str | None):
         self._max_humidity_hour = self.set_int(value)
 
-    def get_min_humidity(self) -> float | None:
-        if self._min_humidity is None:
-            return None
-        return self._min_humidity * 0.1
+    def get_min_humidity(self) -> int | None:
+        return self._min_humidity
 
     def set_min_humidity(self, value: str | None):
         self._min_humidity = self.set_int(value)
 
-    def get_min_humidity_hour(self) -> float | None:
-        if self._min_humidity_hour is None:
-            return None
-        return self._min_humidity_hour / 10
+    def get_min_humidity_hour(self) -> int | None:
+        return  self._min_humidity_hour
 
     def set_min_humidity_hour(self, value: str | None):
         self._min_humidity_hour = self.set_int(value)
 
     def get_evapotranspiration(self) -> float | None:
-        if self._evapotranspiration is None:
-            return None
-        return self._evapotranspiration * 0.1
+        return self.get_float(self._evapotranspiration, 0.1)
 
     def set_evapotranspiration(self, value: str | None):
         self._evapotranspiration = self.set_int(value)
@@ -493,6 +419,11 @@ class Measurement(models.Model):
 
     def set_station(self, station: Station):
         self._station = station
+
+    def get_float(self, value: int|None, factor: float):
+        if value is None:
+            return None
+        return value * factor
 
     def set_int(self, value) -> int | None:
         if value == '' or value == '     ' or value is None:
