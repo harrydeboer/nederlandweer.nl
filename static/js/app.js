@@ -33,6 +33,10 @@ function drawChart(title, vertical, horizontal) {
             data.addRow([jsonData[index][0], jsonData[index][1], jsonData[index][2]]);
         }
     })
+    let date_formatter = new google.visualization.DateFormat({
+        pattern: "MMM dd"
+    });
+    date_formatter.format(data, 0);
 
     let options = {
         title: title,
@@ -41,7 +45,7 @@ function drawChart(title, vertical, horizontal) {
         legend: { position: 'none' }
     };
     if (jsonData.length === 365) {
-        options['hAxis'] = { title: horizontal, format: 'MMM-dd' };
+        options['hAxis'] = { title: horizontal, format: 'MMM dd' };
     } else {
         options['hAxis'] = { title: horizontal };
     }

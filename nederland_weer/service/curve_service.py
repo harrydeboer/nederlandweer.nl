@@ -98,6 +98,7 @@ class CurveService:
             title = 'Wind richting'
             vertical = 'hoek'
             horizontal = 'dag'
+            text_output = 'Windrichting in graden (360=noord, 90=oost, 180=zuid, 270=west, 0=windstil/variabel)'
         elif component == 'tropical':
             temperatures = self.measurement_repository.make_array(measurements,
                                                                 'max_temp', begin_year,
